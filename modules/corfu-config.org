@@ -47,6 +47,7 @@ We have the choice between =company-mode= and =corfu= when it comes for auto com
 
   :hook ((org-mode        . corfu-mode)
          (emacs-lisp-mode . corfu-mode)
+         (ielm-mode       . corfu-mode)
          (eshell-mode     . corfu-mode))
   :init
   (corfu-popupinfo-mode)
