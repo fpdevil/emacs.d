@@ -21,3 +21,7 @@ modules/code/*.el
 
 # filter the LSP servers which would be installed
 .cache
+
+# do not push the latex image cache
+modules/ltximg
+modules/code/ltximg
