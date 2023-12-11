@@ -37,6 +37,7 @@
   - [[#improving-the-eshell][Improving the eshell]]
     - [[#toggle-eshell][Toggle Eshell]]
   - [[#for-faster-font-locking][For faster font locking]]
+- [[#for-handling-errors-and-warnings][For handling errors and warnings]]
 
 * Emacs custom configurations
 This contains all custom functions and configurations along with certain
@@ -785,4 +786,15 @@ slight glitch.
        jit-lock-stealth-time 2.5
        jit-lock-contextually t
        jit-lock-context-time 2)
+#+end_src
+
+* For handling errors and warnings
+
+Like everything in Emacs, handling of certain errors and/or warnings is
+configurable. Turning off the warnings is as easy as adding some options.
+For handling errors or warnings like ~ad-handle-definition: ‘url-cache-extract’
+got redefined~ we can follow the below:
+
+#+begin_src emacs-lisp :lexical no
+(setq ad-redefinition-action 'accept)
 #+end_src
