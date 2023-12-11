@@ -1,0 +1,49 @@
+* ELDOC Configuration
+
+#+begin_src emacs-lisp
+(use-package eldoc
+  :defer t
+  :diminish eldoc-mode
+  :init
+  (setq eldoc-idle-delay 0.1
+	    eldoc-echo-area-use-multiline-p t        ; Prevent eldoc from resizing
+	    eldoc-echo-area-prefer-doc-buffer t)
+  (eldoc-mode 1)
+  :config
+  (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
+  (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook 'turn-on-eldoc-mode)
+
+  ;; if performance is of concern
+  ;; Only use helper functions to call up information when I want more details.
+  ;; Avoid using automatic pop-up modes like eldoc-box-hover-mode. They
+  ;; hurt buffer performance like nothing else in the LSP space.
+  ;; (global-set-key (kbd "C-c e k") #'eldoc-box-help-at-point)
+  ;; (define-key eglot-mode-map (kbd "C-c e K") #'eldoc-box-eglot-help-at-point)
+
+  ;; highlight the arguments in `font-lock-variable-name-face'.
+  (defun aqua/frob-eldoc-argument-list (string)
+    "Upcase and fontify STRING for use with `eldoc-mode'."
+    (propertize (upcase string)
+                'face 'font-lock-variable-name-face))
+  (setq eldoc-argument-case 'aqua/frob-eldoc-argument-list))
+#+end_src
+
+** Eldoc box
+
+=ElDoc box= package displays ElDoc documentations in a childframe.
+
+#+begin_src emacs-lisp :lexical no
+;; eldoc box
+(use-package eldoc-box
+  :defer t
+  :quelpa
+  (:fetcher github :repo "casouri/eldoc-box")
+  :config
+  '(progn
+     (eldoc-box-hover-mode)
+     ;; (eldoc-box-hover-at-point-mode)
+     (with-eval-after-load "eglot-mode"
+       (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
+       (add-to-list 'eglot-ignored-server-capabilites :hoverProvider))))
+#+end_src

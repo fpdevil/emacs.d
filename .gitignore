@@ -1,0 +1,23 @@
+# misc
+.DS_Store
+elpa
+quelpa
+straight
+
+# auto saves
+savefile
+
+# python jedi and elpy related
+.python-environments
+elpy
+
+# early init auto generated
+early-init.el
+
+# generated el files
+config.el
+modules/*.el
+modules/code/*.el
+
+# filter the LSP servers which would be installed
+.cache

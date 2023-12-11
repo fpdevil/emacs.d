@@ -1,0 +1,79 @@
+* YaSnippet Configuration
+
+=YASnippet= is a code template system for Emacs. For snippet completion's use ~yasnippet~
+
+#+begin_src emacs-lisp :lexical no
+(use-package yasnippet
+  :defer 2
+
+  :diminish (yas-minor-mode . " Ⓨ")
+
+  ;; :hook (after-init-hook . yas-global-mode)
+
+  :bind (:map yas-minor-mode-map
+              ("M-<tab>" . yas-expand))
+
+  :init (progn
+          ;; enable yasnippet globally
+          (yas-global-mode +1)
+
+          (setq yas-minor-mode-map nil)
+
+          ;; silent message in start.
+          (advice-add #'yas-reload-all :around #'ad/silent-message)
+
+          ;; set snippets directory location
+          ;; (setq yas-snippet-dirs `(,(expand-file-name "snippets" user-emacs-directory)))
+          (if (file-exists-p "~/.emacs.d/snippets")
+              (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+            (setq yas-snippet-dirs '()))
+          (setq yas-snippet-dirs (cons (expand-file-name "snippets" user-emacs-directory)
+                                       (yas-snippet-dirs)))
+          (setq yas-triggers-in-field t))
+
+  :config (progn
+            (add-to-list 'yas-key-syntaxes 'yas-shortest-key-until-whitespace)
+
+            ;; Do not activate for read only and non-existent snippets
+            (set-default 'yas--dont-activate
+                         #'(lambda ()
+                             (or buffer-read-only
+                                 (and yas-snippet-dirs
+                                      (null (yas--get-snippet-tables))))))
+
+            ;; Select a snippet with popup library
+            (setq yas-prompt-functions '(yas-dropdown-prompt
+                                         yas-ido-prompt
+                                         yas-completing-prompt
+                                         yas-no-prompt))
+
+            ;; Tweaking Yasnippet for Org mode
+            (defun yas--org-very-safe-expand ()
+              (let ((yas-fallback-behavior 'return-nil)) (yas-expand)))
+            (add-hook 'org-mode-hook
+                      (lambda ()
+                        (make-variable-buffer-local 'yas-trigger-key)
+                        (setq yas-trigger-key [tab])
+                        (add-to-list 'org-tab-first-hook 'yas--org-very-safe-expand))))
+
+  :preface
+  (defun ad/silent-message (original &rest args)
+    "Silent function `ORIGINAL' message."
+    (let ((inhibit-message t)
+          (message-log-max nil))
+      (apply original args)))
+
+
+  ;; Silences the warning when running a snippet with backticks (runs a command in the snippet)
+  (require 'warnings)
+  (add-to-list 'warning-suppress-types '(yasnippet backquote-change)))
+#+end_src
+
+** Snippets collection
+=yasnippet-snippets= is a package that provides a collection of yasnippet snippets for many languages.
+
+#+begin_src emacs-lisp :lexical no
+;; a collection of yasnippet snippets for many languages
+(use-package yasnippet-snippets
+  :after yasnippet)
+#+end_src

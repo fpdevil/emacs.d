@@ -1,0 +1,121 @@
+#+TITLE: GO configuration
+
+* GOlang development
+~Go Mode~ is an Emacs mode for the Golang programming. The prerequisite for this
+is to install ~gopls~ for ~LSP~ support.
+
+#+begin_src sh :tangle no
+# for fetching the module
+go get golang.org/x/tools/gopls@latest
+
+# global installation
+go install -v golang.org/x/tools/gopls@latest
+go install -v golang.org/x/tools/cmd/goimports@latest
+
+# To clear all the modcache under ${GOPATH}/pkg/
+go clean -modcache
+#+end_src
+
+By default =gopls= doesn’t enable all analyzers. We can find the list of analysers
+and their default values [[https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md][here]]. A few of the analysers which we may manually
+enable in our configuration are:
+
+fieldalignment: find structs that would use less memory if their fields were sorted
+nilness: check for redundant or impossible nil comparisons
+shadow: check for possible unintended shadowing of variables
+unusedparams: check for unused parameters of functions
+unusedwrite: checks for unused writes
+useany: check for constraints that could be simplified to “any”
+unusedvariable: check for unused variables
+
+#+begin_src emacs-lisp :tangle no
+;; ^Set up before-save hooks to format buffer and add/delete imports.
+;; ^Make sure you don't have other gofmt/goimports hooks enabled.
+(defun aqua/lsp-go-before-save ()
+  "Format buffer and organize imports in Go mode."
+  (when (eq major-mode 'go-mode)
+    (lsp-organize-imports)
+    (lsp-format-buffer)))
+
+;; go-mode hook for golang development
+(use-package go-mode
+  :hook (before-save . aqua/lsp-go-before-save)
+
+  :config
+  (progn
+    (require 'lsp-go)
+
+    ;; gopls does not enable all analyzers by default
+    ;; let us select few as listed in
+    ;; https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
+    (setq lsp-go-analyses
+          '((fieldargument  . t)
+            (nilness        . t)
+            (shadow         . t)
+            (unusedparams   . t)
+            (unusedwrite    . t)
+            (useany         . t)
+            (unusedvariable . t)))
+    ;; formatting...
+    (setq-local tab-width 4)
+    (setq gofmt-command "goimports")
+    (add-hook 'before-save-hook 'gofmt-before-save))
+
+  :custom
+  (lsp-register-custom-settings
+  '(("gopls.completeUnimported" t t)
+    ("gopls.staticcheck"        t t))))
+#+end_src
+
+** Company mode for go
+Disabling this at this moment.
+#+begin_src emacs-lisp :lexical no :tangle no
+;; company minor mode for go
+(use-package company-go
+ :init
+ (progn
+   (add-hook 'go-mode-hook
+             (lambda ()
+               (set (make-local-variable 'company-backends) '(company-go))
+               (company-mode)))))
+#+end_src
+
+** eldoc for go language
+go-eldoc.el provides eldoc for Go language. go-eldoc.el shows type information
+for variable, functions and current argument position of function.
+#+begin_src emacs-lisp :lexical no
+;; eldoc for go language
+(use-package go-eldoc
+  :config
+  (progn
+    (add-hook 'go-mode-hook 'go-eldoc-setup)))
+#+end_src
+
+* Eglot optional settings
+#+begin_src emacs-lisp
+(use-package go-mode
+  :ensure
+
+  :mode (("\\.go\\'" . go-mode))
+
+  :init
+  (add-hook 'go-mode-hook 'eglot-ensure)
+
+  :config
+  ;; Optional: install eglot-format-buffer as a save hook.
+  ;; The depth of -10 places this before eglot's willSave notification,
+  ;; so that that notification reports the actual contents that will be saved.
+  (defun eglot-format-buffer-on-save ()
+    (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+  (add-hook 'go-mode-hook #'eglot-format-buffer-on-save))
+#+end_src
+
+The =LSP= server settings are controlled by the =eglot-workspace-configuration= variable, which can be set either globally in =.emacs= or in a =.dir-locals.el= file in the project root.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'eglot
+  (setq-default eglot-workspace-configuration
+      '((:gopls .
+          ((staticcheck . t)
+          (matcher . "CaseSensitive"))))))
+#+end_src

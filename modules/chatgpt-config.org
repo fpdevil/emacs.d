@@ -1,0 +1,107 @@
+* OpenAI                                                              :TOC_4:
+- [[#chatgpt][ChatGPT]]
+  - [[#chatgpt-shell][chatgpt-shell]]
+  - [[#dall-e][Dall-E]]
+  - [[#invocation-of-chatgpt-shell][Invocation of chatgpt shell]]
+- [[#chatgpt---another-flavour][ChatGPT - Another flavour]]
+  - [[#configuration--usage][Configuration & Usage]]
+
+* ChatGPT
+ChatGPT, which stands for Chat Generative Pre-trained Transformer, is a large
+language model-based chatbot developed by OpenAI.
+
+** chatgpt-shell
+=chatgpt-shell= is an interface to the ChatGPT system from Emacs.
+
+A security key from =OpenAI= is required in order to make this work, which can be
+obtained from =api.openai.com= as under.
+
+Login to https://api.openai.com and generate a new secret key by setting the
+name as =openai key= and copy the same.
+
+#+begin_example
+openai key = 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
+
+# Now add the key to mac security manager if sourced from there
+
+$ security add-generic-password -a "openai key" -w "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" -s "api.openai.com"
+
+Otherwise add it to the ~/.authinfo configuration file
+#+end_example
+
+=chatgpt-shell= depends on shell-maker. This dependency is resolved without issues
+on MELPA but seems to run into issues if installed using =straight= or =quelpa=.
+
+#+begin_src emacs-lisp :lexical no
+;; installing the dependencies for chatgpt-shell
+(use-package shell-maker
+  :quelpa (:host github :repo "xenodium/chatgpt-shell/shell-maker.el"))
+#+end_src
+
+#+begin_src emacs-lisp
+;; chatgpt shell interface from Emacs
+(use-package chatgpt-shell
+  :quelpa
+  (:fetcher github :repo "xenodium/chatgpt-shell")
+  :config
+  (setq chatgpt-shell-openai-key
+      (auth-source-pick-first-password :host "api.openai.com")))
+#+end_src
+
+** Dall-E
+
+#+begin_src emacs-lisp
+(use-package dall-e-shell
+  :quelpa (:host github :repo "xenodium/chatgpt-shell/dall-e-shell.el")
+  :config
+  (setq dall-e-shell-openai-key
+      (auth-source-pick-first-password :host "api.openai.com")))
+#+end_src
+
+
+** Invocation of chatgpt shell
+Launch the =repl= with =M-x chatgpt-shell=.
+
+For clearing the buffer, type =clear= at the prompt or use either =M-x
+chatgpt-shell-clear-buffer= or =M-x comint-clear-buffer=.
+
+=chatgpt-shell= can either wait until the entire response is received before
+displaying, or it can progressively display as chunks arrive (streaming).
+Streaming is enabled by default and use =(setq chatgpt-shell-chatgpt-streaming
+nil)= to disable it.
+
+* ChatGPT - Another flavour
+This specific Emacs package allows to use ChatGPT inside Emacs. This Emacs Code
+extension allows you to use the official OpenAI API to generate code or natural
+language responses from OpenAI's ChatGPT to your questions, right within the
+editor.
+
+ref: https://github.com/emacs-openai/chatgpt
+
+#+begin_src emacs-lisp :lexical no
+;; Use ChatGPT inside Emacs
+;; install openai which is a dependency for chatgpt
+(use-package openai
+  :defer 2
+  :quelpa (openai :fetcher github :repo "emacs-openai/openai"))
+
+;; install chatgpt
+(use-package chatgpt
+  :defer 3
+  :quelpa (chatgpt :fetcher github :repo "emacs-openai/chatgpt")
+  :init
+  (setq openai-key (auth-source-pick-first-password :host "api.openai.com")))
+#+end_src
+
+** Configuration & Usage
+After installation as shown earlier and before we can use this package it is
+required to set up the API key for openai library. The key may be stored in
+=~/.authinfo= and should be retrieved and assigned to the variable =openai-key=.
+
+To start the package invoke =M-x chatgpt=.
+
+To know information about the system invoke =M-x chatgpt-info=.
+
+We will then be asked to insert the response; in this _window_, we have to press
+_return_ in order to send the message, and then *Shift+return* to insert a _newline_
+like in a normal browser!

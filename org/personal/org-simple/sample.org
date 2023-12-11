@@ -1,0 +1,1094 @@
+#+TITLE: Sample Org document
+#+AUTHOR: Sampath Singamsetty
+#+EMAIL: Singamsetty.Sampath@gmail.com
+
+#+STARTUP: align
+#+OPTIONS: toc:nil \n:nil
+
+#+latex_header: \usepackage{makeidx}
+#+latex_header: \makeindex
+#+latex_header: \usepackage{cleveref}
+
+#+latex_header: \usepackage{longtable}
+#+latex_header: \usepackage{tabularx}
+#+latex_header: \usepackage{placeins} % prevent table from floating past
+
+#+macro: emacs-version (eval emacs-version)
+#+macro: org-version (eval org-version)
+#+macro: today (eval (format-time-string "%m-%d-%Y"))
+
+\maketitle
+\tableofcontents
+
+
+\begin{abstract}
+The document provides the features of org-mode on Emacs and specifically serves as a reference on how to program with multiple langugaes like, emacs-lisp, python, golang, C & C++ etc on org-babel. Org mode also provides first hand support for Bibliography and Citations through various addon packages and examples for the same are included.
+\end{abstract}
+
+* Introduction <<intro-section>>
+This guide features the way =org-babel= interacts with various languages by
+harnessing the rich type setting features of LaTeX and Emacs. It was originally
+written on {{{today}}} using Emacs {{{emacs-version}}} and Org-mode
+{{{org-mode}}} running on Mac OS X.
+
+This is a very simple org document that uses bibliography, citations and target
+labels. The next section Sec. ref:citations-section uses a ~CUSTOM_ID~.
+
+
+** Applications -- uses of integrated code and data
+
+- Reproducible Research (RR)
+  #+begin_quote Buckheit and Donoho 1995
+    An article about computational science in a scientific publication
+    is not the scholarship itself, it is merely advertising of the
+    scholarship. The actual scholarship is the complete software
+    development environment and complete set of instructions which
+    generated the figures.
+  #+end_quote
+
+- Literate Programming (LP)
+  #+begin_quote Knuth 1984
+    Let us change our traditional attitude to the construction of
+    programs: Instead of imagining that our main task is to instruct a
+    computer what to do, let us concentrate rather on explaining to
+    human beings what we want a computer to do.
+  #+end_quote
+
+- /working/ notes
+
+- executable class notes, presentations and tutorials
+
+
+* Citations
+:PROPERTIES:
+:CUSTOM_ID: citations-section
+:END:
+
+A few typical citations:
+- cite :: [[cite:&Shannon:2001:MTC:584091.584093]]
+- citeauthor :: [[citeauthor:&Shannon:2001:MTC:584091.584093]]
+- citeauthor :: [[citeauthor*:&kitchin-2015-examp-effec]]
+- citenum :: [[citenum:&Shannon:2001:MTC:584091.584093]]
+
+index:label!table
+#+name: tab-data
+#+caption: some tabular data.
+| x | y |
+| 0 | 1 |
+
+
+index:label!figure
+#+name: fig-cos
+#+caption: You need a caption.
+[[./fig.png]]
+
+Here is an equation using a latex label inside it.:
+
+\begin{equation}\label{eq-int}
+\int_0^1 e^x dx
+\end{equation}
+
+\begin{equation*}\label{eq-logistic-map}
+  x_{n+1}=rx_{n}(1-x_{n})
+\end{equation*}
+
+** Cross references <<cross-section>>
+index:cross-references
+
+Refer to the section ref:intro-section. The required data is displayed in the
+table ref:tab-data.
+
+Some of the alternate forms of references can be placed as below:
+
+- page :: Fig. ref:fig-cos is on page  pageref:fig-cos
+- name :: nameref:fig-cos (uses the caption)
+- equation :: Eq. eqref:eq-int
+
+With the engagement of [[https://ctan.org/pkg/cleveref?lang=en][cleveref]] latex package, these cross-references will be modified during compile
+time so that they have a descriptor in front of each label:
+
+- cref:intro-section
+- cref:tab-data
+- cref:fig-cos
+- cref:eq-int
+
+And here are the same versions in capitalised format:
+
+- Cref:intro-section
+- Cref:tab-data
+- Cref:fig-cos
+- Cref:eq-int
+
+We may also club several references together like Cref:intro-section,tab-data,fig-cos,eq-int.
+
+And as far as the numerical sequences are concerned, they will be collapsed
+during compilation to a range: cref:cross-section,misc-section,citations-section
+
+The current setup configuration information is in the section Cref:current-config-section.
+
+** Current configuration <<current-config-section>>
+Below are the versions of artefacts.
+
+
+#+call: emacs-version()
+
+#+call: org-version()
+
+Typing =C-c C-c= (which is the equivalent of pressing =Control= together with =C=
+twice) on the lines above will call and execute the code blocks declared below.
+It also works when the cursor is /on/ the code blocks.
+
+#+Name: org-version
+#+begin_src emacs-lisp
+(org-version)
+#+end_src
+
+#+RESULTS: org-version
+: 9.6.6
+
+#+Name: emacs-version
+#+begin_src emacs-lisp
+(emacs-version)
+#+end_src
+
+#+RESULTS: emacs-version
+: GNU Emacs 29.1 (build 1, aarch64-apple-darwin23.0.0, NS appkit-2487.00 Version 14.0 (Build 23A344))
+:  of 2023-10-21
+
+#+Name: os-version
+#+begin_src sh :results overwrite
+uname -a
+#+end_src
+
+#+RESULTS: os-version
+: Darwin Sampaths-MacBook-Pro.local 23.1.0 Darwin Kernel Version 23.1.0: Mon Oct  9 21:27:24 PDT 2023; root:xnu-10002.41.9~6/RELEASE_ARM64_T6000 arm64
+
+
+* Tables <<tables-section>>
+Tables with lots of text in LaTeX often lead to tables that do not fit on a
+page. This section shows how to produce tables with automatic line breaks.
+
+The ~tabularx~ latex package has the capability to break lines automatically by
+using the column specifier X.
+
+index:label!temperature-table
+#+name: temprature-day
+#+caption: Temperature, Day & Place
+#+attr_latex: :environment tabular :width \textwidth :align { | l | l | l | p{5cm} |}
+|-----------+----------+----------+----------------------------------------------------------------------------------------------------------------|
+| Day       | Min Temp | Max Temp | Summary                                                                                                        |
+|           |          |          | <40>                                                                                                           |
+|-----------+----------+----------+----------------------------------------------------------------------------------------------------------------|
+| Monday    | 11C      | 22C      | A clear day with lots of sunshine. However, the strong breeze will bring down the temperatures                 |
+| Tuesday   | 9C       | 19C      | Cloudy with rain, across many northern regions. Clear spells across most of Scotland and Northern Ireland, but rain reaching the far northwest. |
+| Wednesday | 10C      | 21C      | Rain will still linger for the morning. Conditions will improve by early afternoon and continue throughout the evening. |
+|-----------+----------+----------+----------------------------------------------------------------------------------------------------------------|
+\FloatBarrier
+
+** Latex Fonts
+LaTeX chooses the appropriate font and font size based on the logical structure
+of the document (e.g. sections). But in some cases, you may want to set fonts
+and sizes by hand and this section shows the various font sizes available.
+To scale text relative to the default body text size, use the commands listed in
+the table ref:latex-fonts
+
+index:label!font-size
+#+name: latex-fonts
+#+caption: LaTeX Font Sizes
+#+attr_latex: \centering
+|--------------+-----------------------------|
+| *Font Size*    | *Text*                        |
+|--------------+-----------------------------|
+| tiny         | \tiny{Jai Shri Ram}         |
+| scriptsize   | \scriptsize{Jai Shri Ram}   |
+| footnotesize | \footnotesize{Jai Shri Ram} |
+| small        | \small{Jai Shri Ram}        |
+| normalsize   | \normalsize{Jai Shri Ram}   |
+| large        | \large{Jai Shri Ram}        |
+| Large        | \Large{Jai Shri Ram}        |
+| LARGE        | \LARGE{Jai Shri Ram}        |
+| huge         | \huge{Jai Shri Ram}         |
+| Huge         | \Huge{Jai Shri Ram}         |
+|--------------+-----------------------------|
+\FloatBarrier
+
+index:org-babel
+* Babel source code blocks
+
+index:org-babel!shell
+** Using shell
+
+#+BEGIN_SRC sh :dir ~
+  ls -log
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_EXAMPLE
+total 264
+drwx------@   6      192 Oct 15 11:03 Applications
+drwx------+   3       96 Dec  1 23:13 Desktop
+drwx------@   9      288 Nov  2 17:30 Documents
+drwx------@  18      576 Dec  5 06:42 Downloads
+drwx------@ 100     3200 Oct 19 12:09 Library
+drwx------    6      192 Oct  7  2022 Movies
+drwx------+   6      192 Mar  9  2022 Music
+drwx------+   4      128 Feb  2  2022 Pictures
+drwxr-xr-x    3       96 Mar  4  2022 Postman
+drwxr-xr-x+   4      128 Feb  2  2022 Public
+drwxr-xr-x   28      896 Dec  5 12:03 aquamacs.d
+-rw-r--r--    1   131679 Dec  4 12:26 org-config.org
+drwxr-xr-x  102     3264 Nov 27 09:40 scimax
+drwxr-xr-x   14      448 Oct  4 10:18 sw
+#+END_EXAMPLE
+\FloatBarrier
+
+index:org-babel!emacs-lisp
+** Emacs lisp code
+
+index:label!fib-inputs
+#+name: fib-inputs
+#+caption: fibonacci inputs
+| 1 | 2 | 3 | 4 |  5 |  6 |  7 |  8 |  9 | 10 |
+| 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 |
+
+
+Get the version information using =elisp= as below:
+
+#+begin_src emacs-lisp :lexical no :results raw
+(princ (concat
+        (format "Emacs version: %s\n"
+                (emacs-version))
+        (format "org version: %s\n"
+                (org-version))))
+#+end_src
+
+#+RESULTS:
+Emacs version: GNU Emacs 29.1 (build 1, aarch64-apple-darwin23.0.0, NS appkit-2487.00 Version 14.0 (Build 23A344))
+ of 2023-10-21
+org version: 9.6.6
+
+#+name: fibonacci-seq
+#+begin_src emacs-lisp :var fib-inputs=fib-inputs
+(defun fibonacci (n)
+  (if (or (= n 0) (= n 1))
+      n
+    (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
+
+(mapcar (lambda (row)
+          (mapcar #'fibonacci row)) fib-inputs)
+#+end_src
+
+#+RESULTS: fibonacci-seq
+| 1 | 1 | 2 |  3 |  5 |   8 |  13 |  21 |   34 |   55 |
+| 1 | 3 | 8 | 21 | 55 | 144 | 377 | 987 | 2584 | 6765 |
+
+
+Printing some cool numbers
+
+#+name: cool-numbers
+#+begin_src emacs-lisp :lexical no
+(mapcar (lambda (i)
+          (list i          (random 10)
+                (expt i 2) (random 100)
+                (expt i 3) (random 1000)))
+        (number-sequence 1 10))
+#+end_src
+
+#+RESULTS: cool-numbers
+|  1 | 2 |   1 | 13 |    1 |   5 |
+|  2 | 5 |   4 |  7 |    8 | 338 |
+|  3 | 9 |   9 | 68 |   27 | 514 |
+|  4 | 1 |  16 | 73 |   64 | 476 |
+|  5 | 4 |  25 | 63 |  125 | 414 |
+|  6 | 0 |  36 | 64 |  216 | 791 |
+|  7 | 9 |  49 | 69 |  343 | 952 |
+|  8 | 9 |  64 | 84 |  512 | 490 |
+|  9 | 3 |  81 | 48 |  729 | 771 |
+| 10 | 4 | 100 | 37 | 1000 | 931 |
+\FloatBarrier
+
+index:org-babel!c-cpp
+** C & C++ code
+Get the installed ~gcc~ and ~g++~ versions for running the gnu *C*.
+
+#+begin_src shell :results raw
+gcc --version
+
+g++ --version
+#+end_src
+
+#+RESULTS:
+Apple clang version 15.0.0 (clang-1500.0.40.1)
+Target: arm64-apple-darwin23.1.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+Apple clang version 15.0.0 (clang-1500.0.40.1)
+Target: arm64-apple-darwin23.1.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+
+
+Some simple =C= programs:
+
+#+header: :var mystring="Sunday" :var myint=81 :var mydouble=3.141567
+#+begin_src C :includes <stdio.h>
+printf("mystring %s\n", mystring);
+printf ("myint    %d\n", myint);
+printf ("mydouble %g\n", mydouble);
+#+end_src
+
+#+RESULTS:
+| mystring |  Sunday |
+| myint    |      81 |
+| mydouble | 3.14157 |
+
+index:org-babel!c-cpp!data
+*** Passing input data to code
+We can pass a table of data as shown in ref:somedata to the =C++= code block.
+
+#+name: somedata
+#+caption: Sample input data
+| nb    | sqr | noise |
+|-------+-----+-------|
+| zero  |   0 |  0.23 |
+| one   |   1 |  1.31 |
+| two   |   4 |  4.61 |
+| three |   9 |  9.05 |
+| four  |  16 | 16.55 |
+
+This table will be converted to a variable in the script.
+
+#+name: c-table
+#+header: :results pp
+#+header: :var somedata=somedata
+#+begin_src C++ :results verbatim :main no :flags -std=c++17 :cache yes
+#include "stdlib.h"
+#include "stdio.h"
+
+int main() {
+    for (int i=0; i<somedata_rows; i++) {
+        printf ("%2d ", i);
+        for (int j=1; j<somedata_cols; j++) {
+            const char* cell = somedata[i][j];
+            printf ("%5s %5g ", cell, 1000*atof(cell));
+        }
+        printf("\n");
+    }
+    return 0;
+}
+#+end_src
+
+#+RESULTS[bdaa030d3e285477d713d83884f350e3eff489bb]: c-table
+: 0     0     0  0.23   230
+: 1     1  1000  1.31  1310
+: 2     4  4000  4.61  4610
+: 3     9  9000  9.05  9050
+: 4    16 16000 16.55 16550
+
+
+#+HEADER: :includes (list "<iostream>" "<iomanip>" "<cmath>" "<string>")
+#+HEADER: :exports both
+#+BEGIN_SRC cpp
+for(int i = -4; i < 10; i++){
+  std::cout << std::setw(10) << std::fixed << std::setprecision(2) << static_cast<double>(i)
+            << std::setw(10) << std::fixed << std::setprecision(3) << log(i)
+            << "\n";
+}
+#+END_SRC
+
+#+RESULTS:
+| -4.0 |   nan |
+| -3.0 |   nan |
+| -2.0 |   nan |
+| -1.0 |   nan |
+|  0.0 |  -inf |
+|  1.0 |   0.0 |
+|  2.0 | 0.693 |
+|  3.0 | 1.099 |
+|  4.0 | 1.386 |
+|  5.0 | 1.609 |
+|  6.0 | 1.792 |
+|  7.0 | 1.946 |
+|  8.0 | 2.079 |
+|  9.0 | 2.197 |
+
+** Special CPP Code blocks
+Some of the code blocks might need special libraries like for example the =OpenCV=
+code block listed in here. It needs the compiled libraries for recognising the
+open cv libraries as shown below and compiling and linking the same.
+
+#+name: opencv-libs
+#+begin_src sh :results raw :cache yes
+pkg-config --cflags --libs opencv4
+#+end_src
+
+We can either specify these either with =:libs= value as header or mention them as
+a =header-args= property for block.
+
+Now the drawer contains a large amount of text, but how much exactly?
+
+#+begin_src sh :var input=opencv-libs
+echo $input
+#+end_src
+
+** OpenCV
+:PROPERTIES:
+:header-args: :libs -L/usr/local/lib -lopencv_gapi -lopencv_stitching -lopencv_alphamat -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn_objdetect -lopencv_dnn_superres -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_hfs -lopencv_img_hash -lopencv_intensity_transform -lopencv_line_descriptor -lopencv_mcc -lopencv_quality -lopencv_rapid -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_highgui -lopencv_datasets -lopencv_text -lopencv_plot -lopencv_videostab -lopencv_videoio -lopencv_wechat_qrcode -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_video -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_imgcodecs -lopencv_features2d -lopencv_dnn -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core
+:END:
+
+
+#+begin_src C++ :noweb yes :flags -std=c++17 -rpath /usr/local/lib :results output pp
+#include "opencv2/core/version.hpp"
+#include <opencv2/core.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main() {
+    cout << "OpenCV Version: " << CV_VERSION << endl;
+    cout << "OpenCV version: " << CV_VERSION << endl;
+    cout << "Major version: " << CV_MAJOR_VERSION << endl;
+    cout << "Minor version: " << CV_MINOR_VERSION << endl;
+    cout << "Subminor version: " << CV_SUBMINOR_VERSION << endl;
+}
+#+end_src
+
+#+RESULTS[b10f8e61c9b111a1c6192dac808f55af59f4cdbf]:
+: OpenCV Version: 4.8.1
+: OpenCV version: 4.8.1
+: Major version: 4
+: Minor version: 8
+: Subminor version: 1
+
+
+Passing multiple =includes= requires defining them within a list as shown for the
+next =C++= code block
+
+#+header: :includes '(<vector> <iostream>)
+#+begin_src C++ :results verbatim :main no :flags -std=c++17
+using namespace std;
+
+int main() {
+    vector<string> str_vec = {"bit",    "nibble",     "byte",      "char",
+                             "int",    "long",       "long long", "float",
+                             "double", "long double"};
+
+    for (auto item : str_vec) {
+        cout << item << endl;
+    }
+    cout << endl;
+
+    return EXIT_SUCCESS;
+}
+#+end_src
+
+#+RESULTS[99c7753fb3f70f6379d4a377b79a64b836345bc5]:
+#+BEGIN_EXAMPLE
+bit
+nibble
+byte
+char
+int
+long
+long long
+float
+double
+long double
+
+#+END_EXAMPLE
+
+
+index:org-babel!c-cpp!lambdas
+*** Examples using lambdas
+
+#+header: :includes '(<algorithm> <array> <iostream> <string_view>)
+#+begin_src C++ :results verbatim :main no :flags -std=c++17 :exports both
+int main()
+{
+  constexpr std::array months{ // pre-C++17 use std::array<const char*, 12>
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  };
+
+  // Search for two consecutive months that start with the same letter.
+  const auto sameLetter{ std::adjacent_find(months.begin(), months.end(),
+                                      [](const auto& a, const auto& b) {
+                                        return a[0] == b[0];
+                                      }) };
+
+  // Make sure that two months were found.
+  if (sameLetter != months.end())
+  {
+    // std::next returns the next iterator after sameLetter
+    std::cout << *sameLetter << " and " << *std::next(sameLetter)
+              << " start with the same letter\n";
+  }
+
+  return 0;
+}
+#+end_src
+
+#+RESULTS[48b8e6f7c28d725d99e197e5ad84a57559e47912]:
+: June and July start with the same letter
+
+
+index:org-babel!c-cpp!noweb
+*** Using the noweb syntax
+Source code blocks can include references to other source code blocks, using a
+~:noweb~ syntax.
+
+First we define named code blocks
+#+NAME: srcMyfunc
+  #+BEGIN_SRC C
+void myfunc() {
+  printf("print from srcMyfunc\n");
+}
+  #+END_SRC
+
+#+NAME: srcMain
+  #+BEGIN_SRC C
+int main(int argc,char **argv) {
+  printf("Hello srcMain\n");
+  myfunc();
+  exit(0);
+}
+  #+END_SRC
+
+Now we define a block that includes the earlier 2 code blocks (which requires
+the ~:noweb~ yes option). We could tangle this block, but we can also execute it directly.
+
+  #+BEGIN_SRC C :results raw :noweb yes
+  #include "stdlib.h"
+  #include "stdio.h"
+
+  <<srcMyfunc>>
+  <<srcMain>>
+    #+END_SRC
+
+#+RESULTS:
+Hello srcMain
+print from srcMyfunc
+
+
+
+index:org-babel!golang
+** GO
+~golang~ is supported with the package ~ob-go~.
+
+#+begin_src go :imports '("fmt" "time") :exports both
+fmt.Println("Current Time:", time.Now())
+#+end_src
+
+#+RESULTS:
+: Current Time: 2023-12-05 01:51:36.342882 +0530 IST m=+0.000508084
+
+index:org-babel!python
+** Python code
+
+#+begin_src python :results raw :wrap EXAMPLE :eval no
+from os import listdir
+
+[print(x) for x in listdir('.')]
+#+end_src
+
+#+RESULTS:
+#+begin_EXAMPLE
+sampath-blx.bib
+configured.txt
+tmp-mount-LqLbug
+Sublime Text.4cff18d2bab96a93366319a9e0fa060d.2e4cf9cca27a5f387b813a14542b4513.sock
+ticket-SZvgnd
+com.google.Keystone
+list.txt
+powerlog
+basic.bib
+references.bib
+fig.png
+sample.html
+com.citrix.ctxworkspaceupdater.err
+sampath.pdf
+sample.org
+msu-target-sbRBV3Z5
+obipy-resources
+clear.sh
+sample.pdf
+tmp-mount-RdHg0p
+example.org
+com.apple.launchd.pKm8IiPShI
+basic.org
+ltximg
+JavaScriptCheatSheet
+workflow.png
+.auctex-auto
+ticket-cVpnkF
+basic.pdf
+#+end_EXAMPLE
+\FloatBarrier
+
+We can control whether the output will have horizontal lines or not with the
+option ~:hlines yes/no~.
+Also whenever the option ~:results value~ is specified ~python~ should always return
+explicitly.
+
+#+name: many-cols
+#+caption: input data for python
+| a | b | c |
+|---+---+---|
+| d | e | f |
+|---+---+---|
+| g | h | i |
+
+#+name: no-hline
+#+begin_src python :var tab=many-cols :hlines no :results value
+return tab
+#+end_src
+
+#+RESULTS: no-hline
+| a | b | c |
+| d | e | f |
+| g | h | i |
+
+#+name: hlines
+#+begin_src python :var tab=many-cols :hlines yes :results value
+return tab
+#+end_src
+
+#+RESULTS: hlines
+| a | b | c |
+|---+---+---|
+| d | e | f |
+|---+---+---|
+| g | h | i |
+
+If both ~:session~ and ~:results output~ are present then the last line should be a
+function which returns something as shown next.
+
+#+name: session_value
+#+begin_src  python :results value :session foo
+def hello():
+    s = 'Hello World'
+    return s
+
+hello()
+#+end_src
+
+#+RESULTS: session_value
+: Hello World
+
+Here the body of the code block is implicitly wrapped in a function, the function is called and the return value of the function is the result of the block.
+
+Finally for ~:results value~ outside a session, use something like below:
+
+#+name: no_session_value
+#+begin_src python :results value
+s = 'Hello World!'
+return s
+#+end_src
+
+#+RESULTS: no_session_value
+: Hello World!
+
+#+begin_src python :results output
+import random
+
+random.seed(1)
+print("Hello World! Here's a random number: %f" % random.random())
+#+end_src
+
+#+RESULTS:
+: Hello World! Here's a random number: 0.134364
+
+#+begin_src python :results output
+def fib(n):    # Write Fibonacci series up to n.
+    """ Print a Fibonacci series up to n."""
+    a, b = 0, 1
+    while a < n:
+        print(a, end=' ')
+        a, b = b, a+b
+    print()
+
+fib(100)
+#+end_src
+
+#+RESULTS:
+: 0 1 1 2 3 5 8 13 21 34 55 89
+
+index:org-babel!python!matplotlib
+*** Using matplotlib
+
+~Matplotlib~ is a comprehensive library for creating static, animated, and
+interactive visualizations in Python. ~Matplotlib~ makes easy things easy and hard
+things possible.
+
+#+begin_src ipython :results drawer :async t :session py2session :eval no
+%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+
+fig = plt.figure(facecolor='white')
+plt.hist(np.random.randn(500000), bins=100)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./obipy-resources/HIRSoE.png]]
+:end:
+\FloatBarrier
+
+#+begin_src ipython :session hello :results raw drawer :async t :eval no
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+import matplotlib.pyplot as plt
+import numpy as np
+
+# fig, ax = plt.subplots()
+# ax.plot([1, 2, 3, 4], [1, 4, 2, 3])
+p = plt.hist(np.random.randn(1000), bins=20)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[2]:
+[[file:./obipy-resources/XRonsh.svg]]
+:end:
+\FloatBarrier
+
+
+~plt.show()~ doesn't produce output directly, however we can use ~:results output
+file~ instead of ~:results file~ (which is the same as ~:results value file~).
+This means that the data to create the image is taken from =stdout= instead of the
+value returned directly by _python_. Because of this we can employ
+~plt.savefig(sys.stdout.buffer)~ to output the image as shown here:
+
+#+BEGIN_SRC python :results output file :file example.png :output-dir /tmp :eval no
+import sys
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2 * np.pi, 100)
+y = np.sin(x)
+plt.plot(x, y)
+plt.savefig(sys.stdout.buffer)
+#+END_SRC
+
+#+RESULTS:
+[[file:/tmp/example.png]]
+\FloatBarrier
+
+index:org-babel!javascript
+** Javascript literate code
+
+#+begin_src js :results raw :wrap json
+fetch('https://jsonplaceholder.typicode.com/todos/5')
+    .then(x => x.json())
+    .then(x => console.log(x));
+#+end_src
+
+#+RESULTS:
+#+begin_json
+undefined{
+  userId: 1,
+  id: 5,
+  title: 'laboriosam mollitia et enim quasi adipisci quia provident illum',
+  completed: false
+}
+#+end_json
+
+index:org-babel!restclient
+** Restclient
+
+#+name: restclient
+#+begin_src restclient :results raw
+GET https://jsonplaceholder.typicode.com/todos/10
+User-Agent: Emacs Restclient
+#+end_src
+
+#+RESULTS: restclient
+#+BEGIN_SRC js
+{
+  "userId": 1,
+  "id": 10,
+  "title": "illo est ratione doloremque quia maiores aut",
+  "completed": true
+}
+// GET https://jsonplaceholder.typicode.com/todos/10
+// HTTP/1.1 200 OK
+// Date: Tue, 05 Dec 2023 07:57:05 GMT
+// Content-Type: application/json; charset=utf-8
+// Transfer-Encoding: chunked
+// Connection: keep-alive
+// Report-To: {"group":"heroku-nel","max_age":3600,"endpoints":[{"url":"https://nel.heroku.com/reports?ts=1701677750&sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d&s=ie5vkNeteiDSqvcaiTap3DSzGcH39sRPLE55Gt%2BOcsM%3D"}]}
+// Reporting-Endpoints: heroku-nel=https://nel.heroku.com/reports?ts=1701677750&sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d&s=ie5vkNeteiDSqvcaiTap3DSzGcH39sRPLE55Gt%2BOcsM%3D
+// Nel: {"report_to":"heroku-nel","max_age":3600,"success_fraction":0.005,"failure_fraction":0.05,"response_headers":["Via"]}
+// X-Powered-By: Express
+// X-Ratelimit-Limit: 1000
+// X-Ratelimit-Remaining: 999
+// X-Ratelimit-Reset: 1701677780
+// Vary: Origin, Accept-Encoding
+// Access-Control-Allow-Credentials: true
+// Cache-Control: max-age=43200
+// Pragma: no-cache
+// Expires: -1
+// X-Content-Type-Options: nosniff
+// Etag: W/"6d-BoXTpHBzlMEesiijbxzpwZqPXhI"
+// Via: 1.1 vegur
+// CF-Cache-Status: REVALIDATED
+// Server: cloudflare
+// CF-RAY: 830abc77aae18953-SIN
+// alt-svc: h3=":443"; ma=86400
+// Request duration: 1.338287s
+#+END_SRC
+
+*** Caching data
+Calling some API's returns huge data and we can capture it once, and then slice
+and dice it several ways. This is done by enabling caching. We will put the
+entire output into a drawer, which can be hidden from view.
+
+#+name: pokemon-cached
+#+begin_src restclient  :results value drawer :cache yes :exports code
+GET https://pokeapi.co/api/v2/pokemon-species/25/
+Accept: application/json
+#+end_src
+
+Now the drawer contains a large amount of text, but how much exactly?
+
+#+begin_src sh :stdin pokemon-cached :results output
+wc
+#+end_src
+
+#+RESULTS:
+:     1963    4772   62018
+
+This last command should have executed instantly, as it’s working off a cached response from the REST call.
+
+With large responses like this one, it can be hard to get what the overall
+structure is like, at a glance. Let’s use ~jq~ to create a few summaries of the
+document.
+
+#+begin_src sh :stdin pokemon-cached :wrap src json
+jq 'keys'
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+[
+  "base_happiness",
+  "capture_rate",
+  "color",
+  "egg_groups",
+  "evolution_chain",
+  "evolves_from_species",
+  "flavor_text_entries",
+  "form_descriptions",
+  "forms_switchable",
+  "gender_rate",
+  "genera",
+  "generation",
+  "growth_rate",
+  "habitat",
+  "has_gender_differences",
+  "hatch_counter",
+  "id",
+  "is_baby",
+  "is_legendary",
+  "is_mythical",
+  "name",
+  "names",
+  "order",
+  "pal_park_encounters",
+  "pokedex_numbers",
+  "shape",
+  "varieties"
+]
+#+end_src
+
+Now let’s look at the first item in the =names= array.
+
+
+#+begin_src sh :stdin pokemon-cached :wrap src json
+jq '.names[10]'
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+{
+  "language": {
+    "name": "zh-Hans",
+    "url": "https://pokeapi.co/api/v2/language/12/"
+  },
+  "name": "皮卡丘"
+}
+#+end_src
+
+We can get a results table by passing the results stream through the @csv
+filter:
+
+#+begin_src sh :stdin pokemon-cached :wrap src csv
+jq -r '.names[] | [.name, (.language | .name, .url)] | @csv'
+#+end_src
+
+#+RESULTS:
+#+begin_src csv
+"ピカチュウ","ja-Hrkt","https://pokeapi.co/api/v2/language/1/"
+"Pikachu","roomaji","https://pokeapi.co/api/v2/language/2/"
+"피카츄","ko","https://pokeapi.co/api/v2/language/3/"
+"皮卡丘","zh-Hant","https://pokeapi.co/api/v2/language/4/"
+"Pikachu","fr","https://pokeapi.co/api/v2/language/5/"
+"Pikachu","de","https://pokeapi.co/api/v2/language/6/"
+"Pikachu","es","https://pokeapi.co/api/v2/language/7/"
+"Pikachu","it","https://pokeapi.co/api/v2/language/8/"
+"Pikachu","en","https://pokeapi.co/api/v2/language/9/"
+"ピカチュウ","ja","https://pokeapi.co/api/v2/language/11/"
+"皮卡丘","zh-Hans","https://pokeapi.co/api/v2/language/12/"
+#+end_src
+
+#+name: basicauth
+#+begin_src shell :results raw
+curl -u "someapplication:password" \
+     -X GET "http://httpbin.org/basic-auth/someapplication/password" \
+     -H "accept: application/json"
+#+end_src
+
+#+RESULTS: basicauth
+{
+  "authenticated": true,
+  "user": "someapplication"
+}
+
+Now, assuming we received the token back we can use the same next
+
+#+name: token
+#+begin_src sh :stdin basicauth
+jq '.user' | base64
+#+end_src
+
+#+RESULTS: token
+: InNvbWVhcHBsaWNhdGlvbiIK
+
+index:citations
+** Example citations
+:PROPERTIES:
+:SOURCE: [[cite:&edgerton1972bhagavad]]
+:SUMMARY:  External
+:END:
+
+The *Bhagavad Gita* [[cite:&edgerton1972bhagavad]] is set in a narrative framework of dialogue between the Pandava prince Arjuna and his charioteer guide Krishna, an avatar of Lord Vishnu.
+
+* Interesting stuff <<interesting-section>>
+
+Pascal's Triangle with Lisp and Dot
+** Generating Pascal's Triangle
+#+name: pascals-triangle
+#+begin_src js :var i=2
+function getPascalsTriangle(n) {
+    var arr = {};
+    for(var row = 0; row < n; row++) {
+        arr[row] = [];
+        for(var col = 0; col < row+1; col++) {
+            if(col === 0 || col === row) {
+                arr[row][col] = 1;
+            } else {
+                arr[row][col] = arr[row-1][col-1] + arr[row-1][col];
+            }
+        }
+    }
+    return arr;
+}
+
+getPascalsTriangle(i)
+
+#+end_src
+
+#+RESULTS: pascals-triangle
+: undefined
+
+** Converting Pascal's Triangle to Dot with Python
+
+#+begin_src js :var data=pascals-triangle(5)
+console.log('data');
+console.log(JSON.parse(data));
+#+end_src
+
+#+RESULTS:
+: data
+
+#+name: pst-to-dot
+#+begin_src python :var pst=pascals-triangle(5) :results output :exports none
+def node(i, j):
+    return '"%d_%d"' % (i+1, j+1)
+
+def edge(i1, j1, i2, j2):
+    return '%s--%s;' % (node(i1, j1), node(i2,j2))
+
+def node_with_edges(i, j):
+    line = '%s [label="%d"];' % (node(i, j), pst[i][j])
+    if j > 0:
+        line += edge(i-1, j-1, i, j)
+    if j < len(pst[i])-1:
+        line += edge(i-1, j, i, j)
+    return line
+
+# pst = [list(filter(None, row)) for row in pst]
+pst = [node_with_edges(i, j) for i in range(len(pst)) for j in range(len(pst[i]))]
+print('\n'.join(pst))
+
+# print('\n'.join([node_with_edges(i, j)
+#                  for i in range(len(pst))
+#                  for j in range(len(pst[i]))]))
+#+end_src
+
+#+RESULTS: pst-to-dot
+
+** Graphing Pascal's Triangle with Dot
+
+#+headers: :file pascals-triangle.png :cmdline -Tpng
+#+begin_src dot :var pst-vals=pst-to-dot :exports results
+  graph {
+          $pst-vals
+  }
+#+end_src
+
+
+index:miscellneous
+* Miscellaneous <<misc-section>>
+
+[[list-of-tables:]]
+
+[[list-of-figures:]]
+
+[[printindex:]]
+
+\typeout{}
+\nocite{*}
+[[bibliographystyle:authordate1]]
+bibliography:references.bib
+
+
+* Bibliography                                                :ignoreheading:ignore:
+#+BEGIN_EXPORT latex
+\newpage
+\printbibliography
+#+END_EXPORT
+
+* build                                                            :noexport:
+
+** PDF generation
+
+~org-ref~ was designed for making PDFs via LaTeX. It should just work with a regular export mechanism. For this document your `org-latex-pdf-process' must run bibtex and makeindex.
+
+[[elisp:(org-open-file (org-latex-export-to-pdf))]]
+
+# Local Variables:
+# org-src-preserve-indentation: t
+# End:

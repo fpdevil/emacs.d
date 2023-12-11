@@ -1,0 +1,60 @@
+#+STARTUP: indent
+
+* File type handling
+The section deals with handling varying file formats and types like
+~json~, ~yaml~, ~toml~ etc.
+
+** Handling json files
+~json-mode~ provides a major mode for editing ~json~ format files in emacs and it extends the builtin js-mode to add better syntax highlighting for JSON with some nice editing keybindings.
+#+begin_src emacs-lisp
+(use-package json-mode
+  :ensure json-mode
+  :delight "J"
+  :config (bind-keys :map json-mode-map
+                     ("C-c i" . json-mode-beautify))
+  :mode ("\\.\\(json\\)$" . json-mode))
+#+end_src
+
+** Handling yaml files
+~yaml-mode~ package is an emacs major mode for editing files in the YAML data serialization format.
+#+begin_src emacs-lisp
+(use-package yaml-mode
+  :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
+  :ensure yaml-mode
+  :defer t)
+#+end_src
+
+** Handling toml files
+This is an Emacs Mojor mode for editing the TOML files. =TOML= files are pretty common in Rust as the package configurations are always in that format named as _Cargo.toml_.
+#+begin_src emacs-lisp
+;; editing TOML files
+;; Usefule specifically for Cargo.toml and other config files
+(use-package toml-mode
+  :quelpa
+  (:fetcher github :repo "dryman/toml-mode.el"))
+#+end_src
+
+
+** Treesitter
+Tree-sitter is a parser generator tool and an incremental parsing library. It
+can build a concrete syntax tree for a source file and efficiently update the
+syntax tree as the source file is edited.
+
+=tree-sitter= is an Emacs binding for Tree-sitter, an incremental parsing system.
+#+begin_src emacs-lisp :lexical no
+;; tree-sitter
+;; This is an emacs binding for Treesitter
+(use-package tree-sitter
+  :ensure t
+  :config
+  ;; activate tree-sitter on any buffer containing the code
+  ;; for which it has a valid parser available
+  (global-tree-sitter-mode)
+  ;; we can easily observe the difference tree-sitter-hl-mode makes
+  ;; for python, ts or tsx by switching on and off
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter)
+#+end_src

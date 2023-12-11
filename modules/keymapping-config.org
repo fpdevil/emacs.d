@@ -1,0 +1,118 @@
+* Key mapping configuration                                           :TOC_2:
+- [[#configure-key-bindings][Configure Key bindings]]
+  - [[#whichkey][WhichKey]]
+  - [[#common-key-mappings][Common key mappings]]
+- [[#command-log-mode][Command Log Mode]]
+- [[#hydra-for-rectangle][Hydra for rectangle]]
+- [[#a-hydra-for-switching-between-variable-pitch-fonts-on-the-fly][A Hydra for switching between variable pitch fonts on the fly]]
+
+* Configure Key bindings
+Standard keybinding or mapping settings and configurations are isolated to this
+emacs module.
+
+** WhichKey
+Using ~which-key~ for getting the emacs key mappings.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :diminish which-key-mode
+  :init
+  (which-key-mode)
+  :config
+  (setq which-key-min-display-lines 5
+        which-key-max-display-columns 5
+        which-key-max-description-length 70
+        which-key-idle-delay 0.5
+        which-key-allow-imprecise-window-fit t
+        which-key-show-early-on-C-h t
+        which-key-sort-order #'which-key-description-order))
+
+;; from https://github.com/isamert/dotfiles/blob/master/emacs/index.org
+(unless (eq system-type 'darwin)
+  ;; causes some annoyances on darwin
+  (use-package which-key-posframe
+    :after (which-key mini-frame)
+    :diminish
+    :quelpa (which-key-posframe
+             :fetcher github
+             :repo "yanghaoxie/which-key-posframe")
+    :config
+    (set-face-attribute 'which-key-posframe nil :background "#373b43")
+    (set-face-attribute 'which-key-posframe-border nil :background "#373b43")
+    ;; obtained the "#373b43" by calling `(mini-frame-get-background-color)'
+    (setq which-key-posframe-border-width 12)
+    (setq which-key-posframe-poshandler 'posframe-poshandler-frame-top-center)
+    (which-key-posframe-mode)))
+#+end_src
+
+** Common key mappings
+#+begin_src emacs-lisp
+;; aligning code in a prettier way
+(global-set-key (kbd "C-x \\") #'align-regexp)
+
+(define-key help-map "\C-h" 'which-key-C-h-dispatch)
+
+;; quick help
+(define-key 'help-command (kbd "C-i") #'info-display-manual)
+#+end_src
+
+* Command Log Mode
+~command-log-mode~ is useful for displaying a panel showing each key binding you
+use in a panel on the right side of the frame. Great for live streams and
+screencasts!
+
+#+begin_src emacs-lisp :lexical no
+;; command log mode
+;; Show event history and command history of some or all buffers.
+(use-package command-log-mode)
+#+end_src
+
+
+* Hydra for rectangle
+Let us configure a simple =Hydra= for invoking the rectangle commands
+
+#+begin_src emacs-lisp :lexical no
+;; Hydra for Rectangle
+(require 'rect)
+(defhydra hydra-rectangle (:body-pre (rectangle-mark-mode 1)
+                           :color pink
+                           :post (deactivate-mark))
+  "
+  ^_k_^     _d_elete    _s_tring
+_h_   _l_   _o_k        _y_ank
+  ^_j_^     _n_ew-copy  _r_eset
+^^^^        _e_xchange  _u_ndo
+^^^^        ^ ^         _p_aste
+"
+  ("h" rectangle-backward-char nil)
+  ("l" rectangle-forward-char nil)
+  ("k" rectangle-previous-line nil)
+  ("j" rectangle-next-line nil)
+  ("e" hydra-ex-point-mark nil)
+  ("n" copy-rectangle-as-kill nil)
+  ("d" delete-rectangle nil)
+  ("r" (if (region-active-p)
+           (deactivate-mark)
+         (rectangle-mark-mode 1)) nil)
+  ("y" yank-rectangle nil)
+  ("u" undo nil)
+  ("s" string-rectangle nil)
+  ("p" kill-rectangle nil)
+  ("o" nil nil))
+
+(global-set-key (kbd "C-x SPC") 'hydra-rectangle/body)
+#+end_src
+
+* A Hydra for switching between variable pitch fonts on the fly
+
+#+begin_src emacs-lisp :tangle no
+;; This Hydra lets to swich between variable pitch fonts.
+(defhydra hydra-variable-fonts (:pre (mixed-pitch-mode 0)
+                                   :color pink
+                                   :post (mixed-pitch-mode 1))
+  ("t" (set-face-attribute 'variable-pitch nil :family "Times New Roman" :height 160) "Times New Roman")
+  ("g" (set-face-attribute 'variable-pitch nil :family "EB Garamond" :height 160 :weight 'normal) "EB Garamond")
+  ("n" (set-face-attribute 'variable-pitch nil :slant 'normal :weight 'normal :height 160 :width 'normal :foundry "nil" :family "Nunito") "Nunito"))
+
+(global-set-key (kbd "C-c f v") 'hydra-variable-fonts)
+#+end_src

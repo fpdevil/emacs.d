@@ -1,0 +1,28 @@
+* XML support in Emacs
+#+begin_src emacs-lisp :lexical no
+;; xml through nxml
+;; checking for any lsp based xml handler so disabling
+(use-package nxml-mode
+  :ensure nil
+  :mode (("\\.plist\\'" . nxml-mode)
+         ("\\.rss\\'"   . nxml-mode)
+         ("\\.svg\\'"   . nxml-mode)
+         ("\\.xml\\'"   . nxml-mode)
+         ("\\.xsd\\'"   . nxml-mode)
+         ("\\.xslt\\'"  . nxml-mode)
+         ("\\.pom$"     . nxml-mode))
+  :config
+  ;; treat any file starting with xml as nxml-mode
+  (add-to-list 'magic-mode-alist '("<\\?xml" . nxml-mode))
+  ;; use nxml-mode instead of sgml, xml or html mode.
+  (mapc
+   (lambda (pair)
+     (if (or (eq (cdr pair) 'xml-mode)
+             (eq (cdr pair) 'sgml-mode))
+         (setcdr pair 'nxml-mode)))
+   auto-mode-alist)
+  :custom
+  (nxml-attribute-indent 4)
+  (nxml-child-indent 4)
+  (nxml-outline-child-indent 4))
+#+end_src

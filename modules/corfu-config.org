@@ -1,0 +1,111 @@
+#+TITLE: Emacs completion configuration using CORFU from corfu-config.org
+#+AUTHOR: Sampath Singamsetty
+
+* Corfu
+=corfu.el= is defined as =COmpletion in Region FUnction=
+
+* Introduction
+Corfu enhances in-buffer completion with a small completion popup. The current candidates are shown in a popup below or above the point. The candidates can be selected by moving up and down. Corfu is the minimalistic in-buffer completion counterpart of the Vertico minibuffer UI.
+
+Corfu is a small package, which relies on the Emacs completion facilities and concentrates on providing a polished completion UI. In-buffer completion UIs in Emacs can hook into completion-in-region, which implements the interaction with the user. Completions at point are either provided by commands like dabbrev-completion or by pluggable backends (completion-at-point-functions, Capfs) and are then passed to completion-in-region. Many programming, text and shell major modes implement a Capf. Corfu does not include its own completion backends. The Emacs built-in Capfs and the Capfs provided by third-party programming language packages are often sufficient. Additional Capfs and completion utilities are provided by the Cape package.
+
+** Installation
+We have the choice between =company-mode= and =corfu= when it comes for auto completions. Since =company-mode= is already installed and configured, let's try this specifically only for =org-mode=.
+
+#+begin_src emacs-lisp :lexical no
+;; corfu - Completion in Region Function
+(use-package corfu
+  :quelpa
+  (:fetcher github :repo "https://github.com/minad/corfu")
+
+  :config
+  (setq corfu-cycle t                        ;; Enable cycling for `corfu-next/previous'
+        corfu-auto t                         ;; Enable auto completion
+        corfu-auto-delay 0.1
+        corfu-auto-prefix 1
+        corfu-quit-at-boundary 'separator    ;; Automatically quit at word boundary
+        corfu-quit-no-match 'separator       ;; Automatically quit if there is no match
+        corfu-preselect 'prompt              ;; Preselect the prompt
+        corfu-on-exact-match 'quit           ;; Configure handling of exact matches
+        corfu-scroll-margin 5                ;; Use scroll margin
+        corfu-popup-delay 0.5)
+
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  :hook ((org-mode        . corfu-mode)
+         (emacs-lisp-mode . corfu-mode)
+         (eshell-mode     . corfu-mode))
+  :init
+  (corfu-popupinfo-mode)
+  (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+
+  (defun corfu-enable-always-in-minibuffer ()
+    "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+    (unless (or (bound-and-true-p mct--active) ; Useful if I ever use MCT
+                (bound-and-true-p vertico--input))
+      (setq-local corfu-auto nil)       ; Ensure auto completion is disabled
+      (corfu-mode 1))))
+#+end_src
+
+* CAPE
+
+~Cape~ provides Completion At Point Extensions which can be used in combination
+with Corfu, Company or the default completion UI. The completion backends used
+by completion-at-point are so called completion-at-point-functions (Capfs).
+
+#+begin_src emacs-lisp :lexical no
+;; cape.el - Let your completions fly!
+(use-package cape
+  :defer t
+
+  :quelpa
+  (:fetcher github :repo "minad/cape")
+
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-history)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-dict)
+
+  :config
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
+
+  :preface
+  (defun my/eglot-capf ()
+    (setq-local completion-at-point-functions
+                (list (cape-super-capf
+                       #'eglot-completion-at-point
+                       (cape-company-to-capf #'company-yasnippet))))))
+#+end_src
+
+* Colorful icon completion in Emacs
+=kind-icon= is  a package that  adds configurable icon or  text-based completion
+prefixes based on the ~:company-kind~ property that many completion backends (such
+as lsp-mode and Emacs 28's elisp-mode) provide.
+
+#+begin_src emacs-lisp :lexical no
+;; kind-icon colorful icon completion for Emacs
+(use-package
+  kind-icon
+  :straight '(kind-icon :host github :repo "jdtsmith/kind-icon")
+  :ensure t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src

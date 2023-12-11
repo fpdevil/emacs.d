@@ -1,0 +1,6 @@
+1. For justifying the text
+    M-3 M-x fill-region.
+
+C-u 70 M-q
+
+(Ctrl-u 70 Alt-q)
