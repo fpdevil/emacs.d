@@ -484,10 +484,9 @@ full of pleasant colours.
 Now set the required theme for Emacs using the custom function defined.
 
 #+begin_src emacs-lisp
-(aqua/toggle-theme 'shanty-themes-light)
+;; (aqua/toggle-theme 'shanty-themes-light)
 ;; (load-theme 'modus-operandi-tritanopia t)
-;; (load-theme 'sanityinc-tomorrow-eighties t)
-;; (load-theme 'atom-one-dark t)
+(load-theme 'catppuccin t)
 #+end_src
 
 * Switch themes using Hydra
