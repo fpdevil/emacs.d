@@ -29,3 +29,6 @@ modules/code/ltximg
 # ignore the below transient items
 smex-items
 tramp
+
+# ignore eshell commands and history
+eshell
