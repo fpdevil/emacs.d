@@ -796,5 +796,6 @@ For handling errors or warnings like ~ad-handle-definition: ‘url-cache-extract
 got redefined~ we can follow the below:
 
 #+begin_src emacs-lisp :lexical no
+;; Suppress warnings about functions being redefined
 (setq ad-redefinition-action 'accept)
 #+end_src
