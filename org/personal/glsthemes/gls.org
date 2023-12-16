@@ -1,0 +1,397 @@
+#+title: A Simple org document
+#+author: Sampath Singamsetty
+
+The document employs =engraved-faces= which serves as an alternate to =minted= and
+=listings= for the exported code font-locking.
+Try using Org Glossary for all your glosses, acronyms, and more within your
+favourite ML with a unicorn mascot. It attempts to provide powerful
+functionality, in keeping with the simplicity of the Org ML we all know and
+love.
+
+* Using engraved faces
+
+Engraving source code blocks using the installed ~Emacs~ themes.
+
+** Plain block default
+#+begin_src emacs-lisp
+(message "look ma, some %s" 'code)
+#+end_src
+
+** Using engraved faces
+Set the below so that the default backend is set to ~engraved~.
+#+begin_src emacs-lisp :exports code
+(setq org-latex-src-block-backend 'engraved)
+#+end_src
+
+#+RESULTS:
+: engraved
+
+#+attr_latex: :engraved-theme modus-vivendi
+#+begin_src shell
+echo "This is shell code"
+#+end_src
+
+#+attr_latex: :engraved-theme doom-vibrant
+#+begin_src emacs-lisp :lexical no
+(message "font lock with engrave-faces using %s theme" 'doom-vibrant)
+#+end_src
+
+#+attr_latex: :engraved-theme doom-solarized-light
+#+begin_src emacs-lisp :lexical no
+(message "font lock with engrave-faces using %s theme" 'doom-solarized-light)
+#+end_src
+
+#+attr_latex: :engraved-theme spacemacs-dark
+#+begin_src emacs-lisp :lexical no
+(message "font lock with engrave-faces using %s theme" 'spacemacs-dark)
+#+end_src
+
+#+attr_latex: :engraved-theme doom-material-dark
+#+begin_src emacs-lisp :lexical no
+(message "font lock with engrave-faces using %s theme" 'doom-material-dark)
+#+end_src
+
+#+attr_latex: :engraved-theme ayu-dark
+#+begin_src emacs-lisp :lexical no
+(message "font lock with engrave-faces using %s theme" 'ayu-dark)
+#+end_src
+
+#+attr_latex: :engraved-theme ayu-light
+#+begin_src emacs-lisp :lexical no
+(message "font lock with engrave-faces using %s theme" 'ayu-light)
+#+end_src
+
+
+#+attr_latex: :engraved-theme doom-solarized-dark-high-contrast
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-solarized-dark-high-contrast)
+#+end_src
+#+attr_latex: :engraved-theme doom-solarized-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-solarized-dark)
+#+end_src
+#+attr_latex: :engraved-theme doom-solarized-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-solarized-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-dark-high-contrast
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-dark-high-contrast)
+#+end_src
+#+attr_latex: :engraved-theme solarized-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-dark)
+#+end_src
+#+attr_latex: :engraved-theme solarized-gruvbox-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-gruvbox-dark)
+#+end_src
+#+attr_latex: :engraved-theme solarized-gruvbox-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-gruvbox-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-light-high-contrast
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-light-high-contrast)
+#+end_src
+#+attr_latex: :engraved-theme solarized-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-black
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-black)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-dark)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-white
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-white)
+#+end_src
+
+
+
+#+begin_src elisp :results output raw :results code
+(setq available-themes (mapcar 'symbol-name (custom-available-themes)))
+
+(dolist (theme available-themes)
+  (progn
+    (princ (format "(message \"font lock with engrave-faces using %s theme\" '%s)\n" theme theme))))
+#+end_src
+
+#+begin_src emacs-lisp :output raw :results code
+(message "(message \"output code\")")
+#+end_src
+
+#+name: themes
+#+begin_src emacs-lisp :results output raw
+(setq available-themes (mapcar 'symbol-name (custom-available-themes)))
+
+(dolist (theme available-themes)
+  (progn
+    (princ (format "%s," theme))))
+#+end_src
+
+
+#+THEMING
+#+begin_src python :results output raw
+data = "ayu-dark,monokai-alt,solarized-light,"
+
+[print(r"""#+attr_latex: :engraved-theme {}
+,#+begin_src emacs-lisp
+(message "font lock with engraved faces using %s theme" '{})
+,#+end_src""".format(x, x)) for x in data.rstrip(",").split(',')]
+#+end_src
+
+
+* C Code blocks
+
+** Memoized Fibonacci numbers.
+
+#+attr_latex: :engraved-theme doom-molokai
+#+begin_src C :results output :exports both
+#include <stdio.h>
+#include <stdlib.h>
+
+#define N 20
+static size_t count = 0;
+
+void iterativeFibonacci(int *resArray, int n)
+{
+	for (int i = 0; i < n; i++) {
+		resArray[i] = i == 0 || i == 1 ? i : resArray[i-1] + resArray[i-2];
+	}
+}
+
+/**
+,* Build a cache representing the Fibonacci sequence.
+,* Note that the second parameter is an array index which allows the cache to
+,* be checked for the required element.
+,*/
+int recursiveFibonacci(int *cache, int n)
+{
+	count++; // For analysis only
+
+	// If the cache holds -1 at the required index, it has not yet been computed.
+	if (cache[n] == -1) {
+		cache[n] = recursiveFibonacci(cache, n - 1) + recursiveFibonacci(cache, n - 2);
+	}
+	return cache[n];
+}
+
+void printArray(int *arr, int n) {
+	for (int i = 0; i < n; i++) {
+		printf(i == 0 ? "[ %d" : ", %d", arr[i]);
+	}
+	puts(" ]\n");
+}
+
+int main(void)
+{
+	int r[N];
+	iterativeFibonacci(r, N);
+	printArray(r, N);
+
+	// Initialise an array of N elements, each element set to -1
+	// Note that this is a GNU extension to the GCC compiler
+	int cache[N] = { [0 ... N-1] = -1 };
+
+	// Set the first two elements in the sequence, which are known
+	cache[0] = 0;
+	cache[1] = 1;
+
+	// The function receives a pointer to the cache array and the index of the last element.
+	recursiveFibonacci(cache, N - 1);
+	printArray(cache, N);
+	printf("recursiveFibonacci() has been invoked %lu times.\n", count);
+	return 0;
+}
+#+end_src
+
+* C++ Code blocks
+Various =C++= code blocks.
+
+** OpenCV
+:PROPERTIES:
+:header-args: :libs -L/usr/local/lib -lopencv_gapi -lopencv_stitching -lopencv_alphamat -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn_objdetect -lopencv_dnn_superres -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_hfs -lopencv_img_hash -lopencv_intensity_transform -lopencv_line_descriptor -lopencv_mcc -lopencv_quality -lopencv_rapid -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_highgui -lopencv_datasets -lopencv_text -lopencv_plot -lopencv_videostab -lopencv_videoio -lopencv_wechat_qrcode -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_video -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_imgcodecs -lopencv_features2d -lopencv_dnn -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core
+:END:
+
+#+attr_latex: :engraved-theme sanityinc-tomorrow-blue
+#+begin_src C++ :noweb yes :flags -std=c++17 -rpath /usr/local/lib :exports both
+#include "opencv2/core/version.hpp"
+#include <opencv2/core.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main() {
+    cout << "OpenCV Version: " << CV_VERSION << endl;
+    cout << "OpenCV version: " << CV_VERSION << endl;
+    cout << "Major version: " << CV_MAJOR_VERSION << endl;
+    cout << "Minor version: " << CV_MINOR_VERSION << endl;
+    cout << "Subminor version: " << CV_SUBMINOR_VERSION << endl;
+}
+#+end_src
+
+* Inline code blocks
+
+- SH src_sh[:exports code]{echo -e "test"}
+- HTML src_html[:exports code]{<abbr title="Hyper Text Markup Language">HTML</abbr>}
+- SHELL src_shell[:exports code]{openssl s_client -connect partnerservices-stage.united.com:443 2>&1 </dev/null | openssl x509 -noout -text | grep DNS | sed -e 's/DNS:/\n/g'}
+
+* Properties
+Some text before the properties, this should according to the manual, prevent
+properties from working...
+- Seems to work fine
+
+# These work for 'shell' only, not 'sh'.
+#+PROPERTY: header-args:shell :var propC_headArgsCshell_0="1st"
+#+PROPERTY: header-args:shell+ :var propC_headArgsCshellY_1="dc=example,dc=com"
+#+PROPERTY: header-args:shell+ :var propC_headArgsCshellY_2="cn=Manager"
+#
+# While these apply to all:
+#+PROPERTY: header-args  :var propC_headArgs_Cvar_1="dc0example,dc=com"
+#+PROPERTY: header-args+ :var propC_headArgsY_Cvar_2="cn=Manager"
+#
+# Following does not work, yes that is as shown in the guide!
+#+PROPERTY: var  propC_var_1="dc=example,dc=com"
+#+PROPERTY: var+ propC_varY_2="cn=Manager"
+#
+
+#+begin_quote
+Properties can be inserted on buffer level. That means they apply
+before the propC_headArgsCshell_0 headline and can be inherited by all entries in a
+file. Property blocks defined before propC_headArgsCshell_0 headline needs to be
+located at the top of the buffer, allowing only comments above.
+#+end_quote
+- source [[https://orgmode.org/manual/Property-Syntax.html][Property Syntax (The Org Manual)]]
+
+Using org-mode version
+#+begin_src emacs-lisp
+(org-version)
+#+end_src
+
+#+results:
+: 9.6.6
+
+* Example for shell
+#+begin_src shell :var Cvar_local0='dc=example,dc=net' Cvar_local1="cn=Manager,$Cvar_local0"
+echo Predict Arg Value
+echo value propC_headArgsCshell_0 $propC_headArgsCshell_0
+echo value Cvar_local0 $Cvar_local0
+echo value Cvar_local1 $Cvar_local1
+echo value! propC_var_1 $propC_var_1
+echo value! propC_varY_2 $propC_varY_2
+echo value propC_headArgsCshellY_1 $propC_headArgsCshellY_1
+echo value propC_headArgsCshellY_2 $propC_headArgsCshellY_2
+echo value propC_headArgs_Cvar_1 $propC_headArgs_Cvar_1
+echo value propC_headArgsY_Cvar_2 $propC_headArgsY_Cvar_2
+#+end_src
+
+#+results:
+| Predict | Arg                   | Value                  |
+| value   | propC_headArgsCshell_0  |                        |
+| value   | Cvar_local0            | dc=example             |
+| value   | Cvar_local1            | cn=Manager,$Cvar_local0 |
+| value!  | propC_var_1             |                        |
+| value!  | propC_varY_2            |                        |
+| value   | propC_headArgsCshellY_1 |                        |
+| value   | propC_headArgsCshellY_2 |                        |
+| value   | propC_headArgs_Cvar_1    |                        |
+| value   | propC_headArgsY_Cvar_2   |                        |
+
+
+* Example of sh
+using ~sh~ rather than shell, they are different:
+#+begin_src sh  :var Cvar_local0='dc=example,dc=net' Cvar_local1="cn=Manager,$Cvar_local0"
+echo predict arg value
+echo blank propC_headArgsCshell_0 $propC_headArgsCshell_0
+echo value Cvar_local0 $Cvar_local0
+echo value Cvar_local1 $Cvar_local1
+echo value! propC_var_1 $propC_var_1
+echo value! propC_varY_2 $propC_varY_2
+echo blank propC_headArgsCshellY_1 $propC_headArgsCshellY_1
+echo blank propC_headArgsCshellY_2 $propC_headArgsCshellY_2
+echo value propC_headArgs_Cvar_1 $propC_headArgs_Cvar_1
+echo value propC_headArgsY_Cvar_2 $propC_headArgsY_Cvar_2
+#+end_src
+
+#+RESULTS:
+#+BEGIN_EXAMPLE
+predict arg value
+blank propC_headArgsCshell_0
+value Cvar_local0 dc=example
+value Cvar_local1 cn=Manager,$Cvar_local0
+value! propC_var_1
+value! propC_varY_2
+blank propC_headArgsCshellY_1
+blank propC_headArgsCshellY_2
+value propC_headArgs_Cvar_1
+value propC_headArgsY_Cvar_2
+#+END_EXAMPLE
+
+* Miscellaneous
+
+
+#+BEGIN_SRC sh :results table :var data="1 2 3 4 5"
+echo $data > /tmp/foo
+for i in `cat /tmp/foo`; do
+  echo $i
+done
+rm -rf /tmp/foo
+#+END_SRC
+
+#+RESULTS:
+| 1 |
+| 2 |
+| 3 |
+| 4 |
+| 5 |
+
+#+NAME: abbrev
+| Base | Expansion                             |
+|------+---------------------------------------|
+| bc   | because                               |
+| wo   | without                               |
+| wi   | with                                  |
+| ex   | For example,                          |
+| qm   | sacha@sachachua.com                   |
+| qe   | http://sachachua.com/dotemacs         |
+| qw   | http://sachachua.com/                 |
+| qb   | http://sachachua.com/blog/            |
+| qc   | http://sachachua.com/blog/emacs-chat/ |
+
+#+begin_src emacs-lisp :exports code :var data=abbrev
+(mapc (lambda (x) (define-global-abbrev (car x) (cadr x))) data)
+#+end_src
+
+#+RESULTS:
+| bc | because                               |
+| wo | without                               |
+| wi | with                                  |
+| ex | For example,                          |
+| qm | sacha@sachachua.com                   |
+| qe | http://sachachua.com/dotemacs         |
+| qw | http://sachachua.com/                 |
+| qb | http://sachachua.com/blog/            |
+| qc | http://sachachua.com/blog/emacs-chat/ |
+
+
+* Glossary
+- glosses :: Brief notations, giving the meaning of a word or wording in a text.
+- lexicon :: A reference book giving information about the meanings, pronunciations, uses, and origins of words listed in alphabetical order.
+- appellation :: A word or combination of words by which a person or thing is regularly known.
+* Acronyms
+- ML :: Markup Language
+- AI :: Artificial Intelligence
+- NASA :: National Aeronautical And Space Administration
+* Index
+- unicorn
+- language

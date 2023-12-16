@@ -1,0 +1,160 @@
+#+begin_src emacs-lisp :exports code
+(setq org-latex-src-block-backend 'engraved)
+#+end_src
+
+#+RESULTS:
+: engraved
+
+#+name: themes
+#+begin_src emacs-lisp :results output raw
+(setq available-themes (mapcar 'symbol-name (custom-available-themes)))
+
+(dolist (theme available-themes)
+  (progn
+    (princ (format "%s," theme))))
+#+end_src
+
+
+#+name: ENGRAVE-FACES
+#+begin_src python :var data=themes :results output replace raw :eval no
+# data = "monokai-alt,solarized-light,"
+
+[print(r"""#+attr_latex: :engraved-theme {}
+,#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" '{})
+,#+end_src""".format(x, x)) for x in data.rstrip(",").split(',') if 'kao' in x]
+#+end_src
+
+
+#+attr_latex: :engraved-theme modus-vivendi
+#+begin_src emacs-lisp :lexical no
+(print (format "(message \"font lock with engraved-faces using %s theme\")" 'modus-vivendi))
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-white
+#+begin_src emacs-lisp :eval yes
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-white)
+#+end_src
+#+attr_latex: :engraved-theme doom-molokai
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-molokai)
+#+end_src
+#+attr_latex: :engraved-theme doom-monokai-classic
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-monokai-classic)
+#+end_src
+#+attr_latex: :engraved-theme doom-monokai-machine
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-monokai-machine)
+#+end_src
+#+attr_latex: :engraved-theme doom-monokai-octagon
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-monokai-octagon)
+#+end_src
+#+attr_latex: :engraved-theme doom-monokai-pro
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-monokai-pro)
+#+end_src
+#+attr_latex: :engraved-theme doom-monokai-ristretto
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-monokai-ristretto)
+#+end_src
+#+attr_latex: :engraved-theme doom-monokai-spectrum
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-monokai-spectrum)
+#+end_src
+#+attr_latex: :engraved-theme kaolin-mono-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'kaolin-mono-dark)
+#+end_src
+#+attr_latex: :engraved-theme kaolin-mono-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'kaolin-mono-light)
+#+end_src
+#+attr_latex: :engraved-theme monokai-alt
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'monokai-alt)
+#+end_src
+#+attr_latex: :engraved-theme poet-dark-monochrome
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'poet-dark-monochrome)
+#+end_src
+#+attr_latex: :engraved-theme poet-monochrome
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'poet-monochrome)
+#+end_src
+#+attr_latex: :engraved-theme sanityinc-tomorrow-blue
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'sanityinc-tomorrow-blue)
+#+end_src
+#+attr_latex: :engraved-theme doom-solarized-dark-high-contrast
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-solarized-dark-high-contrast)
+#+end_src
+#+attr_latex: :engraved-theme doom-solarized-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-solarized-dark)
+#+end_src
+#+attr_latex: :engraved-theme doom-solarized-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'doom-solarized-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-dark-high-contrast
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-dark-high-contrast)
+#+end_src
+#+attr_latex: :engraved-theme solarized-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-dark)
+#+end_src
+#+attr_latex: :engraved-theme solarized-gruvbox-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-gruvbox-dark)
+#+end_src
+#+attr_latex: :engraved-theme solarized-gruvbox-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-gruvbox-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-light-high-contrast
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-light-high-contrast)
+#+end_src
+#+attr_latex: :engraved-theme solarized-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-black
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-black)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-dark
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-dark)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-light
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-light)
+#+end_src
+#+attr_latex: :engraved-theme solarized-selenized-white
+#+begin_src emacs-lisp
+(message "font lock with engrave-faces using %s theme" 'solarized-selenized-white)
+#+end_src
+
+You can always invoke Emacs' calc library when dealing with large numbers.
+
+#+attr_latex: :engraved-theme catppuccin
+#+begin_src emacs-lisp :lexical no :eval no
+(defun factorial (n)
+  (string-to-number (factorial--1 n)))
+
+(defun factorial--1 (n)
+  (if (<= n 1)
+      "1"
+    (calc-eval (format "%s * %s"
+                       (number-to-string n)
+                       (factorial--1 (- n 1))))))
+
+(factorial 33)
+#+end_src
+
+#+RESULTS:
+: 8683317618811886495518194401280000000

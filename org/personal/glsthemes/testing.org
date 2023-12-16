@@ -1,0 +1,148 @@
+#+NAME: test_python
+
+* Miscellaneous
+
+#+BEGIN_SRC python :results none :exports none
+import numpy as np
+
+x0 = np.arange(-1, 1, 1/10.)
+x1 = np.arange(-1, 1, 1/10.)
+x0, x1 = np.meshgrid(x0, x1)
+y_truth = x0**2 - x1**2 + x1 - 1
+
+print('inside python')
+#+END_SRC
+
+#+NAME: script
+#+BEGIN_SRC shell :results output :noweb yes
+#!/bin/bash
+result=$(python3 <<EOF
+<<test_python>>
+EOF
+)
+echo $result
+echo "done test"
+#+END_SRC
+
+#+RESULTS: script
+: inside python
+: done test
+
+
+#+name: opencv-libs
+#+begin_src shell :results none :cache yes
+pkg-config --cflags --libs opencv
+#+end_src
+
+#+begin_src shell :results output :noweb yes
+echo $(<<opencv-libs>>)
+#+end_src
+
+#+begin_src shell :var results=opencv-libs :noweb yes
+echo $results
+#+end_src
+
+
+#+begin_src C :results output raw
+#include <stdio.h>
+
+// Define an array to store precomputed values
+#define MAX_FACT 100
+unsigned long long factorial[MAX_FACT];
+
+// Initialize the factorial array with -1
+void initialize() {
+    int i;
+    for (i = 0; i < MAX_FACT; i++) {
+        factorial[i] = -1;
+    }
+}
+
+// Recursive function to calculate factorial
+unsigned long long fact(int n) {
+    // Base case: 0! = 1
+    if (n == 0) {
+        return 1;
+    }
+
+    // If value is already computed, return it from the array
+    if (factorial[n] != -1) {
+        return factorial[n];
+    }
+
+    // Otherwise, compute the factorial and store it in the array
+    factorial[n] = n * fact(n - 1);
+
+    return factorial[n];
+}
+
+int main() {
+    initialize();
+
+    // int n;
+    // printf("Enter a positive integer: ");
+    // scanf("%d", &n);
+
+    int i;
+    for (i = 0; i <= MAX_FACT; i+=10) {
+      printf("Factorial of %d = %llu\n", i, fact(i));
+    }
+
+    return 0;
+}
+#+end_src
+
+#+RESULTS:
+Factorial of 0 = 1
+Factorial of 10 = 3628800
+Factorial of 20 = 2432902008176640000
+Factorial of 30 = 9682165104862298112
+Factorial of 40 = 18376134811363311616
+Factorial of 50 = 15188249005818642432
+Factorial of 60 = 9727775195120271360
+Factorial of 70 = 0
+Factorial of 80 = 0
+Factorial of 90 = 0
+Factorial of 100 = 0
+
+* OpenCV
+:PROPERTIES:
+:header-args: :libs -L/usr/local/lib -lopencv_gapi -lopencv_stitching -lopencv_alphamat -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn_objdetect -lopencv_dnn_superres -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_hfs -lopencv_img_hash -lopencv_intensity_transform -lopencv_line_descriptor -lopencv_mcc -lopencv_quality -lopencv_rapid -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_highgui -lopencv_datasets -lopencv_text -lopencv_plot -lopencv_videostab -lopencv_videoio -lopencv_wechat_qrcode -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_video -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_imgcodecs -lopencv_features2d -lopencv_dnn -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core
+:END:
+
+#+begin_src C++ :noweb yes :flags -std=c++17 -rpath /usr/local/lib
+#include "opencv2/core/version.hpp"
+#include <opencv2/core.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main() {
+    cout << "OpenCV Version: " << CV_VERSION << endl;
+    cout << "OpenCV version: " << CV_VERSION << endl;
+    cout << "Major version: " << CV_MAJOR_VERSION << endl;
+    cout << "Minor version: " << CV_MINOR_VERSION << endl;
+    cout << "Subminor version: " << CV_SUBMINOR_VERSION << endl;
+}
+#+end_src
+
+#+RESULTS[94cc2047cec232e67b03bf5457ec1c1a3c51ab55]:
+: OpenCV Version: 4.8.1
+: OpenCV version: 4.8.1
+: Major version: 4
+: Minor version: 8
+: Subminor version: 1
+
+#+call: emacs-version()
+
+
+#+name: numcpus
+#+begin_src emacs-lisp :results none
+(string-to-number (string-remove-suffix "\n" (shell-command-to-string "nproc")))
+#+end_src
+
+#+name: numcpusplusone
+#+begin_src emacs-lisp :results output :noweb yes
+(+ 1 <<numcpus()>>)
+#+end_src

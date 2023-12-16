@@ -29,7 +29,7 @@ The document provides the features of org-mode on Emacs and specifically serves 
 This guide features the way =org-babel= interacts with various languages by
 harnessing the rich type setting features of LaTeX and Emacs. It was originally
 written on {{{today}}} using Emacs {{{emacs-version}}} and Org-mode
-{{{org-mode}}} running on Mac OS X.
+{{{org-version}}} running on Mac OS X.
 
 This is a very simple org document that uses bibliography, citations and target
 labels. The next section Sec. ref:citations-section uses a ~CUSTOM_ID~.
@@ -139,29 +139,32 @@ twice) on the lines above will call and execute the code blocks declared below.
 It also works when the cursor is /on/ the code blocks.
 
 #+Name: org-version
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :exports both :eval no
 (org-version)
 #+end_src
 
 #+RESULTS: org-version
 : 9.6.6
+\FloatBarrier
 
 #+Name: emacs-version
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :exports both :eval no
 (emacs-version)
 #+end_src
 
 #+RESULTS: emacs-version
 : GNU Emacs 29.1 (build 1, aarch64-apple-darwin23.0.0, NS appkit-2487.00 Version 14.0 (Build 23A344))
 :  of 2023-10-21
+\FloatBarrier
 
 #+Name: os-version
-#+begin_src sh :results overwrite
+#+begin_src sh :results overwrite :exports both :eval no
 uname -a
 #+end_src
 
 #+RESULTS: os-version
 : Darwin Sampaths-MacBook-Pro.local 23.1.0 Darwin Kernel Version 23.1.0: Mon Oct  9 21:27:24 PDT 2023; root:xnu-10002.41.9~6/RELEASE_ARM64_T6000 arm64
+\FloatBarrier
 
 
 * Tables <<tables-section>>
@@ -175,14 +178,14 @@ index:label!temperature-table
 #+name: temprature-day
 #+caption: Temperature, Day & Place
 #+attr_latex: :environment tabular :width \textwidth :align { | l | l | l | p{5cm} |}
-|-----------+----------+----------+----------------------------------------------------------------------------------------------------------------|
-| Day       | Min Temp | Max Temp | Summary                                                                                                        |
-|           |          |          | <40>                                                                                                           |
-|-----------+----------+----------+----------------------------------------------------------------------------------------------------------------|
-| Monday    | 11C      | 22C      | A clear day with lots of sunshine. However, the strong breeze will bring down the temperatures                 |
+|-----------+----------+----------+---------------------------------------------------------------------------------------------------------------------------------------------|
+| Day       | Min Temp | Max Temp | Summary                                                                                                                                     |
+|           |          |          | <40>                                                                                                                                        |
+|-----------+----------+----------+---------------------------------------------------------------------------------------------------------------------------------------------|
+| Monday    | 11C      | 22C      | A clear day with lots of sunshine. However, the strong breeze will bring down the temperatures                                              |
 | Tuesday   | 9C       | 19C      | Cloudy with rain, across many northern regions. Clear spells across most of Scotland and Northern Ireland, but rain reaching the far northwest. |
-| Wednesday | 10C      | 21C      | Rain will still linger for the morning. Conditions will improve by early afternoon and continue throughout the evening. |
-|-----------+----------+----------+----------------------------------------------------------------------------------------------------------------|
+| Wednesday | 10C      | 21C      | Rain will still linger for the morning. Conditions will improve by early afternoon and continue throughout the evening.                     |
+|-----------+----------+----------+---------------------------------------------------------------------------------------------------------------------------------------------|
 \FloatBarrier
 
 ** Latex Fonts
@@ -218,33 +221,51 @@ index:org-babel
 index:org-babel!shell
 ** Using shell
 
-#+BEGIN_SRC sh :dir ~
+#+BEGIN_SRC sh :dir ~ :exports both
   ls -log
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_EXAMPLE
-total 264
-drwx------@   6      192 Oct 15 11:03 Applications
-drwx------+   3       96 Dec  1 23:13 Desktop
-drwx------@   9      288 Nov  2 17:30 Documents
-drwx------@  18      576 Dec  5 06:42 Downloads
-drwx------@ 100     3200 Oct 19 12:09 Library
-drwx------    6      192 Oct  7  2022 Movies
-drwx------+   6      192 Mar  9  2022 Music
-drwx------+   4      128 Feb  2  2022 Pictures
-drwxr-xr-x    3       96 Mar  4  2022 Postman
-drwxr-xr-x+   4      128 Feb  2  2022 Public
-drwxr-xr-x   28      896 Dec  5 12:03 aquamacs.d
--rw-r--r--    1   131679 Dec  4 12:26 org-config.org
-drwxr-xr-x  102     3264 Nov 27 09:40 scimax
-drwxr-xr-x   14      448 Oct  4 10:18 sw
+total 0
+drwx------@   6    192 Oct 15 11:03 Applications
+drwx------+   3     96 Dec 14 21:10 Desktop
+drwx------@   9    288 Nov  2 17:30 Documents
+drwx------@  20    640 Dec 16 10:14 Downloads
+drwx------@ 100   3200 Oct 19 12:09 Library
+drwx------    6    192 Oct  7  2022 Movies
+drwx------+   6    192 Mar  9  2022 Music
+drwx------+   4    128 Feb  2  2022 Pictures
+drwxr-xr-x    3     96 Mar  4  2022 Postman
+drwxr-xr-x+   4    128 Feb  2  2022 Public
+drwxr-xr-x   35   1120 Dec 11 22:22 aquamacs.d
+drwxr-xr-x   28    896 Dec  6 09:41 modules
+drwxr-xr-x  102   3264 Nov 27 09:40 scimax
+drwxr-xr-x   14    448 Oct  4 10:18 sw
 #+END_EXAMPLE
 \FloatBarrier
 
+** Prologue and Epilogue
+Use the ~:prologue~ and ~:epilogue~ header arguments to prepare for code blocks to
+be run, without printing the setup and teardown commands to the exported file.
+For instance, if the file to be read doesn’t exist, create it right before
+executing the code in the code block, and remove it after.
+
+#+header: :exports both
+#+header: :results output
+#+header: :prologue "echo 'Hello, new file created!' >> /tmp/file.txt"
+#+header: :epilogue "rm /tmp/file.txt"
+#+begin_src shell
+  cat -v /tmp/file.txt
+#+end_src
+
+#+RESULTS:
+: Hello, new file created!
+
+
 index:org-babel!emacs-lisp
 ** Emacs lisp code
-
+Here is an input data table for ~Fibonacci~ number generation.
 index:label!fib-inputs
 #+name: fib-inputs
 #+caption: fibonacci inputs
@@ -268,7 +289,7 @@ Emacs version: GNU Emacs 29.1 (build 1, aarch64-apple-darwin23.0.0, NS appkit-24
 org version: 9.6.6
 
 #+name: fibonacci-seq
-#+begin_src emacs-lisp :var fib-inputs=fib-inputs
+#+begin_src emacs-lisp :var fib-inputs=fib-inputs :exports both
 (defun fibonacci (n)
   (if (or (= n 0) (= n 1))
       n
@@ -281,12 +302,12 @@ org version: 9.6.6
 #+RESULTS: fibonacci-seq
 | 1 | 1 | 2 |  3 |  5 |   8 |  13 |  21 |   34 |   55 |
 | 1 | 3 | 8 | 21 | 55 | 144 | 377 | 987 | 2584 | 6765 |
-
+\FloatBarrier
 
 Printing some cool numbers
 
 #+name: cool-numbers
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :lexical no :exports both
 (mapcar (lambda (i)
           (list i          (random 10)
                 (expt i 2) (random 100)
@@ -295,55 +316,59 @@ Printing some cool numbers
 #+end_src
 
 #+RESULTS: cool-numbers
-|  1 | 2 |   1 | 13 |    1 |   5 |
-|  2 | 5 |   4 |  7 |    8 | 338 |
-|  3 | 9 |   9 | 68 |   27 | 514 |
-|  4 | 1 |  16 | 73 |   64 | 476 |
-|  5 | 4 |  25 | 63 |  125 | 414 |
-|  6 | 0 |  36 | 64 |  216 | 791 |
-|  7 | 9 |  49 | 69 |  343 | 952 |
-|  8 | 9 |  64 | 84 |  512 | 490 |
-|  9 | 3 |  81 | 48 |  729 | 771 |
-| 10 | 4 | 100 | 37 | 1000 | 931 |
+|  1 | 0 |   1 |  7 |    1 |   3 |
+|  2 | 3 |   4 | 97 |    8 |  59 |
+|  3 | 9 |   9 | 53 |   27 | 763 |
+|  4 | 2 |  16 | 20 |   64 | 426 |
+|  5 | 0 |  25 |  5 |  125 | 241 |
+|  6 | 5 |  36 |  6 |  216 | 241 |
+|  7 | 3 |  49 | 21 |  343 | 485 |
+|  8 | 9 |  64 | 94 |  512 | 191 |
+|  9 | 7 |  81 | 19 |  729 | 948 |
+| 10 | 4 | 100 | 98 | 1000 | 980 |
 \FloatBarrier
 
 index:org-babel!c-cpp
 ** C & C++ code
 Get the installed ~gcc~ and ~g++~ versions for running the gnu *C*.
 
-#+begin_src shell :results raw
+#+begin_src shell :results pp
 gcc --version
+#+end_src
 
+#+RESULTS:
+: Apple clang version 15.0.0 (clang-1500.1.0.2.5)
+: Target: arm64-apple-darwin23.1.0
+: Thread model: posix
+: InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+
+#+begin_src shell :results pp
 g++ --version
 #+end_src
 
 #+RESULTS:
-Apple clang version 15.0.0 (clang-1500.0.40.1)
-Target: arm64-apple-darwin23.1.0
-Thread model: posix
-InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
-Apple clang version 15.0.0 (clang-1500.0.40.1)
-Target: arm64-apple-darwin23.1.0
-Thread model: posix
-InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+: Apple clang version 15.0.0 (clang-1500.1.0.2.5)
+: Target: arm64-apple-darwin23.1.0
+: Thread model: posix
+: InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 
-
-Some simple =C= programs:
+Some simple =C= programs outputting some data:
 
 #+header: :var mystring="Sunday" :var myint=81 :var mydouble=3.141567
-#+begin_src C :includes <stdio.h>
+#+begin_src C :includes <stdio.h> :exports both
 printf("mystring %s\n", mystring);
-printf ("myint    %d\n", myint);
-printf ("mydouble %g\n", mydouble);
+printf("myint    %d\n", myint);
+printf("mydouble %g\n", mydouble);
 #+end_src
 
 #+RESULTS:
 | mystring |  Sunday |
 | myint    |      81 |
 | mydouble | 3.14157 |
+\FloatBarrier
 
 index:org-babel!c-cpp!data
-*** Passing input data to code
+*** Passing the input data to a code block
 We can pass a table of data as shown in ref:somedata to the =C++= code block.
 
 #+name: somedata
@@ -356,12 +381,12 @@ We can pass a table of data as shown in ref:somedata to the =C++= code block.
 | three |   9 |  9.05 |
 | four  |  16 | 16.55 |
 
-This table will be converted to a variable in the script.
+This table can then be converted to a variable in the script as shown in ref:c-table.
 
 #+name: c-table
 #+header: :results pp
 #+header: :var somedata=somedata
-#+begin_src C++ :results verbatim :main no :flags -std=c++17 :cache yes
+#+begin_src C++ :results verbatim :main no :flags -std=c++17 :cache yes :exports both
 #include "stdlib.h"
 #include "stdio.h"
 
@@ -378,12 +403,14 @@ int main() {
 }
 #+end_src
 
-#+RESULTS[bdaa030d3e285477d713d83884f350e3eff489bb]: c-table
+#+RESULTS[4f7092ed0f9e435f3630a4ff0a2d407c71297c76]: c-table
 : 0     0     0  0.23   230
 : 1     1  1000  1.31  1310
 : 2     4  4000  4.61  4610
 : 3     9  9000  9.05  9050
 : 4    16 16000 16.55 16550
+
+\FloatBarrier
 
 
 #+HEADER: :includes (list "<iostream>" "<iomanip>" "<cmath>" "<string>")
@@ -411,11 +438,12 @@ for(int i = -4; i < 10; i++){
 |  7.0 | 1.946 |
 |  8.0 | 2.079 |
 |  9.0 | 2.197 |
+\FloatBarrier
 
 ** Special CPP Code blocks
 Some of the code blocks might need special libraries like for example the =OpenCV=
 code block listed in here. It needs the compiled libraries for recognising the
-open cv libraries as shown below and compiling and linking the same.
+_OpenCV_ libraries as shown below and compiling and linking the same.
 
 #+name: opencv-libs
 #+begin_src sh :results raw :cache yes
@@ -427,9 +455,13 @@ a =header-args= property for block.
 
 Now the drawer contains a large amount of text, but how much exactly?
 
-#+begin_src sh :var input=opencv-libs
+#+begin_src sh :var input=opencv-libs :exports both
 echo $input
 #+end_src
+
+#+RESULTS:
+: -L/usr/local/lib -lopencv_gapi -lopencv_stitching -lopencv_alphamat -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn_objdetect -lopencv_dnn_superres -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_hfs -lopencv_img_hash -lopencv_intensity_transform -lopencv_line_descriptor -lopencv_mcc -lopencv_quality -lopencv_rapid -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_highgui -lopencv_datasets -lopencv_text -lopencv_plot -lopencv_videostab -lopencv_videoio -lopencv_wechat_qrcode -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_video -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_imgcodecs -lopencv_features2d -lopencv_dnn -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core
+\FloatBarrier
 
 ** OpenCV
 :PROPERTIES:
@@ -437,7 +469,7 @@ echo $input
 :END:
 
 
-#+begin_src C++ :noweb yes :flags -std=c++17 -rpath /usr/local/lib :results output pp
+#+begin_src C++ :noweb yes :flags -std=c++17 -rpath /usr/local/lib :results output pp :exports both
 #include "opencv2/core/version.hpp"
 #include <opencv2/core.hpp>
 #include <iostream>
@@ -446,45 +478,55 @@ using namespace cv;
 using namespace std;
 
 int main() {
-    cout << "OpenCV Version: " << CV_VERSION << endl;
-    cout << "OpenCV version: " << CV_VERSION << endl;
-    cout << "Major version: " << CV_MAJOR_VERSION << endl;
-    cout << "Minor version: " << CV_MINOR_VERSION << endl;
-    cout << "Subminor version: " << CV_SUBMINOR_VERSION << endl;
+    cout << "--- OpenCV Version Information ---" << endl;
+    cout << "    OpenCV Version: " << CV_VERSION << endl;
+    cout << "    OpenCV version: " << CV_VERSION << endl;
+    cout << "    Major version: " << CV_MAJOR_VERSION << endl;
+    cout << "    Minor version: " << CV_MINOR_VERSION << endl;
+    cout << "    Subminor version: " << CV_SUBMINOR_VERSION << endl;
 }
 #+end_src
 
-#+RESULTS[b10f8e61c9b111a1c6192dac808f55af59f4cdbf]:
-: OpenCV Version: 4.8.1
-: OpenCV version: 4.8.1
-: Major version: 4
-: Minor version: 8
-: Subminor version: 1
+#+RESULTS[30cf8b93ce1e54ea72542e986cf7a1956c285963]:
+: --- OpenCV Version Information ---
+:     OpenCV Version: 4.8.1
+:     OpenCV version: 4.8.1
+:     Major version: 4
+:     Minor version: 8
+:     Subminor version: 1
 
+\FloatBarrier
+
+* Other C/C++ code blocks
 
 Passing multiple =includes= requires defining them within a list as shown for the
 next =C++= code block
 
 #+header: :includes '(<vector> <iostream>)
-#+begin_src C++ :results verbatim :main no :flags -std=c++17
+#+begin_src C++ :results verbatim :main no :flags -std=c++17 :exports both
 using namespace std;
 
 int main() {
-    vector<string> str_vec = {"bit",    "nibble",     "byte",      "char",
-                             "int",    "long",       "long long", "float",
-                             "double", "long double"};
+    vector<string> str_vec = {
+        "bit", "nibble", "byte",
+        "char", "int", "long",
+        "long long", "float",
+        "double", "long double"
+    };
 
+    cout << "--- start ---" << endl;
     for (auto item : str_vec) {
         cout << item << endl;
     }
-    cout << endl;
+    cout << "--- done ---" << endl;
 
     return EXIT_SUCCESS;
 }
 #+end_src
 
-#+RESULTS[99c7753fb3f70f6379d4a377b79a64b836345bc5]:
+#+RESULTS[81874ff2f80f29d86e7703e41cdc9a4c73641128]:
 #+BEGIN_EXAMPLE
+--- start ---
 bit
 nibble
 byte
@@ -495,9 +537,10 @@ long long
 float
 double
 long double
-
+--- done ---
 #+END_EXAMPLE
 
+\FloatBarrier
 
 index:org-babel!c-cpp!lambdas
 *** Examples using lambdas
@@ -522,10 +565,15 @@ int main()
   };
 
   // Search for two consecutive months that start with the same letter.
-  const auto sameLetter{ std::adjacent_find(months.begin(), months.end(),
-                                      [](const auto& a, const auto& b) {
+  const auto sameLetter{
+      std::adjacent_find(months.begin(),
+                         months.end(),
+                         [](const auto& a,
+                            const auto& b)
+                         {
                                         return a[0] == b[0];
-                                      }) };
+                         })
+  };
 
   // Make sure that two months were found.
   if (sameLetter != months.end())
@@ -539,7 +587,7 @@ int main()
 }
 #+end_src
 
-#+RESULTS[48b8e6f7c28d725d99e197e5ad84a57559e47912]:
+#+RESULTS[87810ecd74fa75404accc2bc186f14d3278463fb]:
 : June and July start with the same letter
 
 
@@ -568,7 +616,7 @@ int main(int argc,char **argv) {
 Now we define a block that includes the earlier 2 code blocks (which requires
 the ~:noweb~ yes option). We could tangle this block, but we can also execute it directly.
 
-  #+BEGIN_SRC C :results raw :noweb yes
+  #+BEGIN_SRC C :results raw :noweb yes :exports both
   #include "stdlib.h"
   #include "stdio.h"
 
@@ -591,7 +639,7 @@ fmt.Println("Current Time:", time.Now())
 #+end_src
 
 #+RESULTS:
-: Current Time: 2023-12-05 01:51:36.342882 +0530 IST m=+0.000508084
+: Current Time: 2023-12-12 01:08:48.32306 +0530 IST m=+0.000517834
 
 index:org-babel!python
 ** Python code
@@ -604,35 +652,15 @@ from os import listdir
 
 #+RESULTS:
 #+begin_EXAMPLE
-sampath-blx.bib
-configured.txt
-tmp-mount-LqLbug
-Sublime Text.4cff18d2bab96a93366319a9e0fa060d.2e4cf9cca27a5f387b813a14542b4513.sock
-ticket-SZvgnd
-com.google.Keystone
-list.txt
-powerlog
 basic.bib
 references.bib
 fig.png
-sample.html
-com.citrix.ctxworkspaceupdater.err
-sampath.pdf
 sample.org
-msu-target-sbRBV3Z5
 obipy-resources
-clear.sh
-sample.pdf
-tmp-mount-RdHg0p
-example.org
-com.apple.launchd.pKm8IiPShI
-basic.org
+output.png
 ltximg
-JavaScriptCheatSheet
-workflow.png
 .auctex-auto
-ticket-cVpnkF
-basic.pdf
+example.png
 #+end_EXAMPLE
 \FloatBarrier
 
@@ -731,7 +759,7 @@ index:org-babel!python!matplotlib
 interactive visualizations in Python. ~Matplotlib~ makes easy things easy and hard
 things possible.
 
-#+begin_src ipython :results drawer :async t :session py2session :eval no
+#+begin_src ipython :results drawer :async t :session py2session :exports both :eval no
 %matplotlib inline
 import numpy as np
 import matplotlib.pyplot as plt
@@ -746,7 +774,7 @@ plt.hist(np.random.randn(500000), bins=100)
 :end:
 \FloatBarrier
 
-#+begin_src ipython :session hello :results raw drawer :async t :eval no
+#+begin_src ipython :session hello :results raw drawer :async t :exports both :eval no
 %matplotlib inline
 %config InlineBackend.figure_format = 'svg'
 import matplotlib.pyplot as plt
@@ -771,7 +799,7 @@ This means that the data to create the image is taken from =stdout= instead of t
 value returned directly by _python_. Because of this we can employ
 ~plt.savefig(sys.stdout.buffer)~ to output the image as shown here:
 
-#+BEGIN_SRC python :results output file :file example.png :output-dir /tmp :eval no
+#+BEGIN_SRC python :results output file :file example.png :output-dir /tmp :eval yes
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
@@ -789,7 +817,7 @@ plt.savefig(sys.stdout.buffer)
 index:org-babel!javascript
 ** Javascript literate code
 
-#+begin_src js :results raw :wrap json
+#+begin_src js :results raw :wrap json :exports both
 fetch('https://jsonplaceholder.typicode.com/todos/5')
     .then(x => x.json())
     .then(x => console.log(x));
@@ -809,7 +837,7 @@ index:org-babel!restclient
 ** Restclient
 
 #+name: restclient
-#+begin_src restclient :results raw
+#+begin_src restclient :results raw :exports both
 GET https://jsonplaceholder.typicode.com/todos/10
 User-Agent: Emacs Restclient
 #+end_src
@@ -863,20 +891,21 @@ Accept: application/json
 
 Now the drawer contains a large amount of text, but how much exactly?
 
-#+begin_src sh :stdin pokemon-cached :results output
+#+begin_src sh :stdin pokemon-cached :results output :exports both
 wc
 #+end_src
 
 #+RESULTS:
 :     1963    4772   62018
 
-This last command should have executed instantly, as it’s working off a cached response from the REST call.
+This last command should have executed instantly, as it’s working off a cached
+response from the REST call.
 
 With large responses like this one, it can be hard to get what the overall
 structure is like, at a glance. Let’s use ~jq~ to create a few summaries of the
 document.
 
-#+begin_src sh :stdin pokemon-cached :wrap src json
+#+begin_src sh :stdin pokemon-cached :wrap src json :exports both
 jq 'keys'
 #+end_src
 
@@ -912,11 +941,11 @@ jq 'keys'
   "varieties"
 ]
 #+end_src
+\FloatBarrier
 
 Now let’s look at the first item in the =names= array.
 
-
-#+begin_src sh :stdin pokemon-cached :wrap src json
+#+begin_src sh :stdin pokemon-cached :wrap src json :exports both
 jq '.names[10]'
 #+end_src
 
@@ -934,7 +963,7 @@ jq '.names[10]'
 We can get a results table by passing the results stream through the @csv
 filter:
 
-#+begin_src sh :stdin pokemon-cached :wrap src csv
+#+begin_src sh :stdin pokemon-cached :wrap src csv :exports both
 jq -r '.names[] | [.name, (.language | .name, .url)] | @csv'
 #+end_src
 
@@ -952,9 +981,10 @@ jq -r '.names[] | [.name, (.language | .name, .url)] | @csv'
 "ピカチュウ","ja","https://pokeapi.co/api/v2/language/11/"
 "皮卡丘","zh-Hans","https://pokeapi.co/api/v2/language/12/"
 #+end_src
+\FloatBarrier
 
 #+name: basicauth
-#+begin_src shell :results raw
+#+begin_src shell :results raw :exports both
 curl -u "someapplication:password" \
      -X GET "http://httpbin.org/basic-auth/someapplication/password" \
      -H "accept: application/json"
@@ -969,7 +999,7 @@ curl -u "someapplication:password" \
 Now, assuming we received the token back we can use the same next
 
 #+name: token
-#+begin_src sh :stdin basicauth
+#+begin_src sh :stdin basicauth :exports both
 jq '.user' | base64
 #+end_src
 
