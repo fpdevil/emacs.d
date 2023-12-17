@@ -112,7 +112,7 @@ global-visual-line-mode.
 ;; diminish from modeline
 ;; (diminish 'visual-line-mode)
 ;; keep Visual line as default in editor
-(global-visual-line-mode 1)
+;; (global-visual-line-mode 1)
 #+end_src
 
 ** Display line numbers
