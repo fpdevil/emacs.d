@@ -57,6 +57,8 @@
 - [[#some-additional-useful-packages-and-stuff][Some additional useful packages and stuff]]
   - [[#command-log-mode][command-log-mode]]
   - [[#highlight-numbers-in-source-code][Highlight numbers in source code]]
+  - [[#tabs-and-ribbons-for-the-mode-line][Tabs and ribbons for the mode line]]
+  - [[#minions---a-minor-mode-menu-for-the-mode-line][Minions - A minor-mode menu for the mode line]]
 - [[#cursor-shape-and-type][Cursor shape and type]]
 - [[#plz---an-http-library-for-emacs][plz - An HTTP library for Emacs]]
 - [[#elisp-based-addons][elisp based addons]]
@@ -744,6 +746,37 @@ source code.
   ((prog-mode conf-mode) . highlight-numbers-mode)
   :config
   (setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
+#+end_src
+
+** Tabs and ribbons for the mode line
+The package ~moody~ provides utilities for displaying elements of the mode line as
+tabs and ribbons. It also provides replacements for a few built-in elements.
+#+begin_src emacs-lisp :lexical no
+;; moody - Tabs and ribbons for the mode line
+(use-package moody
+  :straight
+  (moody type git :host github :repo "tarsius/moody")
+  :config
+  (setq x-underline-at-descent-line t)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode)
+  (moody-replace-eldoc-minibuffer-message-function))
+#+end_src
+
+** Minions - A minor-mode menu for the mode line
+=minions= package implements a nested menu that gives access to all known minor
+modes (i.e., those listed in minor-mode-list). It can be used to toggle local
+and global minor modes, to access mode-specific menus, and to display
+information about modes.
+#+begin_src emacs-lisp :lexical no
+;; minions mode for menu and mode line
+(use-package minions
+  :straight
+  (minions :type git :host github :repo "tarsius/minions")
+  :config
+  (setq minions-mode-line-lighter ""
+		minions-mode-line-delimiters '("" . ""))
+  (minions-mode 1))
 #+end_src
 
 * Cursor shape and type
