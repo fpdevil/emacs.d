@@ -43,17 +43,18 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
   ;; (diminish 'lsp-mode "LSP")
 
   :hook
-  ((js-mode             . lsp-deferred)
-   (css-mode            . lsp-deferred)
-   (rust-mode           . lsp-deferred)
-   (go-mode             . lsp-deferred)
-   (xml-mode            . lsp-deferred)
-   (nxml-mode           . lsp-deferred)
-   (c++-mode            . lsp-deferred)
-   (c-mode              . lsp-deferred)
-   (c-or-c++-mode       . lsp-deferred)
-   (python-mode         . lsp-deferred)
-   (lsp-mode            . efs/lsp-mode-setup))
+  ((js-mode        . lsp-deferred)
+   (css-mode       . lsp-deferred)
+   (html-mode      . lsp-deferred)
+   (rust-mode      . lsp-deferred)
+   (go-mode        . lsp-deferred)
+   (xml-mode       . lsp-deferred)
+   (nxml-mode      . lsp-deferred)
+   (c++-mode       . lsp-deferred)
+   (c-mode         . lsp-deferred)
+   (c-or-c++-mode  . lsp-deferred)
+   (python-mode    . lsp-deferred)
+   (lsp-mode       . efs/lsp-mode-setup))
 
   :bind
   (:map company-active-map
@@ -201,7 +202,7 @@ between symbols using ~M-., M-, and M-?~ keys.
            (lsp-ui-sideline-ignore-duplicate    t)
            (lsp-ui-sideline-show-diagnostics    t)
            (lsp-ui-sideline-show-code-actions   nil)
-           (lsp-ui-sideline-update-mode         'line)
+           (lsp-ui-sideline-update-mode         'point)
            (lsp-ui-peek-enable                  t)
            (lsp-ui-peek-always-show             t)
            (lsp-ui-doc-enable                   t)
@@ -209,10 +210,11 @@ between symbols using ~M-., M-, and M-?~ keys.
            (lsp-ui-doc-show-with-cursor         t)
            (lsp-ui-doc-include-signature        t)
            (lsp-ui-doc-use-childframe           nil)
-           (lsp-ui-doc-position                 (quote at-point))
+           (lsp-ui-doc-position                 'at-point)
            (lsp-ui-doc-delay                    0.3 "higher than eldoc delay")
            (lsp-ui-doc-max-width                100)
            (lsp-ui-doc-max-height               30)
+           (lsp-ui-doc-border                   (face-foreground 'default))
            (lsp-ui-sideline-code-actions-prefix ""))
 
   :config (progn
