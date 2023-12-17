@@ -36,8 +36,8 @@
     - [[#humanoid-theme-for-emacs][Humanoid theme for Emacs]]
     - [[#tangonov-dark-and-light-theme][Tangonov Dark and Light theme]]
     - [[#catppuccin-soothing-theme][Catppuccin Soothing theme]]
-  - [[#shanty-emacs-theme][Shanty Emacs Theme]]
-  - [[#set-a-theme][Set a Theme]]
+    - [[#shanty-emacs-theme][Shanty Emacs Theme]]
+- [[#set-a-colour-theme][Set a colour theme]]
 - [[#switch-themes-using-hydra][Switch themes using Hydra]]
 - [[#custom-utilities][Custom Utilities]]
   - [[#list-of-available-themes][List of available themes]]
@@ -468,7 +468,7 @@ and enable whichever we want as per our choice.
   )
 #+end_src
 
-** Shanty Emacs Theme
+*** Shanty Emacs Theme
 The shanty emacs theme is meant for us, you and me - the workers - who may not
 get dirty hands very often but love to code and tinker while looking at a screen
 full of pleasant colours.
@@ -479,12 +479,13 @@ full of pleasant colours.
   (shanty-themes :fetcher github :repo "qhga/shanty-themes"))
 #+end_src
 
-** Set a Theme
+* Set a colour theme
 
 Now set the required theme for Emacs using the custom function defined.
 
 #+begin_src emacs-lisp
-(aqua/toggle-theme 'shanty-themes-dark)
+(aqua/toggle-theme 'doom-tomorrow-night)
+;; (aqua/toggle-theme 'shanty-themes-dark)
 ;; (load-theme 'modus-operandi-tritanopia t)
 ;; (load-theme 'catppuccin t)
 #+end_src
