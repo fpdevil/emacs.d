@@ -119,7 +119,8 @@ is been under under very active development.
   (setq
    ;; eglot seems to be the best option right now.
    ;; default package is lsp-mode
-   ;; rustic-lsp-client 'eglot
+   ;; set eglot as default client
+   ;; (setq rustic-lsp-client 'eglot))
    rustic-format-on-save nil
    ;; prevent automatic syntax checking, which was causing lags and stutters.
    eglot-send-changes-idle-time (* 60 60))
