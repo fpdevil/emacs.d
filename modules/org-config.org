@@ -359,10 +359,10 @@ the taste. But right now it is disabled.
 #+begin_src emacs-lisp :lexical no
 ;; variable fonts
 (let* ((variable-tuple
-        (cond ((x-list-fonts "AppleMyungjo")         '(:font "AppleMyungjo"))
+        (cond ((x-list-fonts "AppleMyungjo")    '(:font "AppleMyungjo"))
               ((x-list-fonts "Source Code Pro") '(:font "Source Code Pro"))
               ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-              ((x-list-fonts "Monaco")         '(:font "Monaco"))
+              ((x-list-fonts "Monaco")          '(:font "Monaco"))
               ((x-family-fonts "Microsoft Sans Serif")    '(:family "Microsoft Sans Serif"))
               (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
        (base-font-color     (face-foreground 'default nil 'default))
