@@ -29,6 +29,10 @@ modules/code/ltximg
 # ignore the below transient items
 smex-items
 tramp
+transient
+
+# ignore xenops as it caches the latex preview files generated
+xenops
 
 # ignore eshell commands and history
 eshell
