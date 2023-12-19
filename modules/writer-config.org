@@ -142,7 +142,9 @@ Detailed information for customisation is available at [[https://leanpub.com/mar
   (setq auto-mode-alist (cons '("\\.markdown" . markdown-mode) auto-mode-alist))
 
   :hook
-  (gfm-mode . visual-line-mode)
+  (gfm-mode      . visual-line-mode)
+  (markdown-mode . visual-line-mode)
+  (markdown-mode . variable-pitch-mode)
 
   :config
   ;; `multimarkdown' is necessary for `highlight.js' and `mermaid.js'
