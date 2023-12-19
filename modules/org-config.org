@@ -63,6 +63,7 @@
   - [[#enable-shift-selection-with-cua-mode][Enable shift selection with *cua-mode*]]
   - [[#orgmode-custom-settings][Orgmode custom settings]]
     - [[#prettifying-and-fortifying][Prettifying and fortifying]]
+      - [[#handling-tag][Handling Tag]]
     - [[#variable-fonts][Variable fonts]]
     - [[#prettifying-the-checkboxes][Prettifying the checkboxes]]
     - [[#for-exporting-to-open-office-and-ms-word][For exporting to Open Office and MS Word]]
@@ -340,8 +341,7 @@ control how the headings look or rendered with the stars in the =org-mode=.
 
 ;; control the alignment of org tags and also set the
 ;; org-tags-column value to 0
-(setq org-auto-align-tags nil
-      org-tags-column     0)
+(setq org-auto-align-tags nil)
 #+end_src
 
 For toggling the image display option in the org-mode buffer use the key
@@ -353,6 +353,19 @@ calling the function ~org-toggle-inline-images~.
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 (setq org-display-inline-images t)
 #+end_src
+
+**** Handling Tag
+We can just  add a ~:tag₁:⋯:tagₙ:~ after  a heading. If a space  is pressed before
+the tags, then they are automatically  indented flushright to column 77; ~postive~
+numbers do not flushright but use exact column number.
+#+begin_src emacs-lisp
+ (setq org-tags-column -77) ;; the default
+#+end_src
+
+In order  to set tags  for an  item, Use ~C-c  C-q~ or ~org-set-tags-command~,  on a
+heading or just  the speed key ~:~  on the asterisks of  a heading. Unfortunatley,
+this only supports having one tag; for more, we can add them in manually.
+
 
 *** Variable fonts
 We can configure fonts in such a way that each section can be rendered by a
