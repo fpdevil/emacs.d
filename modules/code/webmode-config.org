@@ -180,7 +180,17 @@ We will not use the below configuration, so setting the =tang;e= option to _no_.
     (add-hook 'css-mode-hook  'emmet-mode)
     (add-hook 'rjsx-mode-hook 'emmet-mode)
     (add-hook 'js-mode-hook   'emmet-mode)
-    (add-hook 'web-mode-hook  'emmet-mode)))
+    (add-hook 'web-mode-hook  'emmet-mode))
+
+  ;; Display an HTML expansion preview as I type
+  ;; Press C-j then start typing; e.g., C-j #q.x.y>p>b RET
+  (setq emmet-preview-default t)
+
+  ;; After expanding, positioned the cursor between first empty quotes.
+  ;; The preview can help with tricky CSS precedence rules; e.g., C-j
+  ;; gives the same thing for: a>b+c>d   ==  a>(b+(c>d))
+  ;; E.g., C-j #q[name] RET
+  (setq emmet-move-cursor-between-quotes t))
 #+end_src
 
 ** Indenting HTML
