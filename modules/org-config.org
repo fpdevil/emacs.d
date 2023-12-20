@@ -1125,10 +1125,10 @@ chào bạn : Bạn có thể edit và run code trực tiếp!
 
 *** PlantUML
 
-PlantUML is a handy tool for drawing simple diagrams. It is part of Org-mode
-since 2010 and is a wrapper to dot, allowing higher-level definitions.
-Install the ~plantuml-mode~ for better editing experience and a cool previews.
-The babel support for plantuml is available via ~ob-plantuml~.
+PlantUML is  a handy tool  for drawing simple diagrams.  It is part  of ~org-mode~
+since 2010 and  is a wrapper to dot, allowing  higher-level definitions. Install
+the ~plantuml-mode~ for  better editing experience and a cool  previews. The babel
+support for plantuml is available via ~ob-plantuml~.
 
 Find the location of the ~Homebrew~ installed version of ~plantuml~ binary and use
 the result of the same across.
