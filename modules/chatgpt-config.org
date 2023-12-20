@@ -45,7 +45,8 @@ on MELPA but seems to run into issues if installed using =straight= or =quelpa=.
   (:fetcher github :repo "xenodium/chatgpt-shell")
   :config
   (setq chatgpt-shell-openai-key
-      (auth-source-pick-first-password :host "api.openai.com")))
+        (auth-source-pick-first-password :host "api.openai.com")
+        chatgpt-shell-history-path (expand-file-name "chatgpt/" user-cache-directory)))
 #+end_src
 
 ** Dall-E
