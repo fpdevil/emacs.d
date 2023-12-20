@@ -125,35 +125,78 @@ Detailed information for customisation is available at [[https://leanpub.com/mar
 (use-package markdown-mode
   :defer 3
 
-  :ensure t
-
   :quelpa
   (:fetcher github :repo "jrblevin/markdown-mode")
 
   :commands
   (markdown-mode gfm-mode)
 
-  :mode
-  ("\\.mdwn" "\\.md" "\\.markdown")
-
-  :init
-  (setq auto-mode-alist (cons '("\\.mdwn"     . markdown-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.md"       . markdown-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.markdown" . markdown-mode) auto-mode-alist))
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.markdown"    . gfm-mode)
+         ("\\.mdwn"        . gfm-mode))
 
   :hook
   (gfm-mode      . visual-line-mode)
   (markdown-mode . visual-line-mode)
   (markdown-mode . variable-pitch-mode)
 
+  :init
+  (setq markdown-enable-wiki-links t
+        markdown-italic-underscore t
+        markdown-asymmetric-header t
+        markdown-make-gfm-checkboxes-buttons t
+        markdown-gfm-uppercase-checkbox t
+        markdown-fontify-code-blocks-natively t
+
+        markdown-content-type "application/xhtml+xml"
+        markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"
+                             "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/github.min.css")
+        markdown-xhtml-header-content "
+<meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+<style>
+body {
+  box-sizing: border-box;
+  max-width: 740px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 10px;
+}
+</style>
+
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/default.min.css'>
+<script src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/highlight.min.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('markdown-body');
+  document.querySelectorAll('pre code').forEach((code) => {
+    if (code.className != 'mermaid') {
+      hljs.highlightBlock(code);
+    }
+  });
+});
+</script>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.6.3/mermaid.min.js'></script>
+<script>
+mermaid.initialize({
+  theme: 'default',  // default, forest, dark, neutral
+  startOnLoad: true
+});
+</script>
+"
+        markdown-gfm-additional-languages "Mermaid")
+
   :config
   ;; `multimarkdown' is necessary for `highlight.js' and `mermaid.js'
-  (setq markdown-command "/opt/homebrew/bin/multimarkdown")
+  (when (executable-find "multimarkdown")
+    (setq markdown-command "multimarkdown"))
+
+  ;; Support for `mermaid'
+  (add-to-list 'markdown-code-lang-modes '("mermaid" . mermaid-mode))
 
   (add-hook 'markdown-mode-hook 'turn-on-auto-fill)
   (add-hook 'markdown-mode-hook 'flycheck-mode)
   (add-hook 'markdown-mode-hook (lambda () (setq imenu-generic-expression markdown-imenu-generic-expression)))
-
   (setq markdown-imenu-generic-expression
         '(("title"  "^\\(.*\\)[\n]=+$" 1)
           ("h2-"    "^\\(.*\\)[\n]-+$" 1)
@@ -164,37 +207,7 @@ Detailed information for customisation is available at [[https://leanpub.com/mar
           ("h5"     "^##### \\(.*\\)$" 1)
           ("h6"     "^###### \\(.*\\)$" 1)
           ("fn"     "^\\[\\^\\(.*\\)\\]" 1)))
-  (progn
-    (setq markdown-enable-wiki-links            t
-          markdown-italic-underscore            t
-          markdown-asymmetric-header            t
-          markdown-fontify-code-blocks-natively t
-          markdown-enable-highlighting-syntax   t
-          markdown-enable-math                  t
-          markdown-list-indent-width            2
-          markdown-list-item-bullets            '("◎" "●" "◇" "○" "◆" "►" "•")
-          markdown-make-gfm-checkboxes-buttons  t
-          markdown-gfm-uppercase-checkbox       t
-          markdown-gfm-additional-languages     "Mermaid"
-          markdown-content-type                 "application/xhtml+xml"
-          markdown-css-paths                    '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css")
-          markdown-xhtml-header-content "
-        <style>
-        body {
-          box-sizing: border-box;
-          max-width: 740px;
-          width: 100%;
-          margin: 40px auto;
-          padding: 0 10px;
-        }
-        </style>
-        <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          document.body.classList.add('markdown-body');
-        });
-        </script>
-        "
-    ))
+
   :custom-face
   (markdown-header-face   ((t (:inherit font-lock-function-name-face :weight bold :family "variable-pitch"))))
   (markdown-header-face-1 ((t (:inherit markdown-header-face :foreground "violet" :height 1.8))))
