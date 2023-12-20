@@ -129,7 +129,7 @@ to all the other commands, too.
    ("C-h f"   . counsel-describe-function)
    ("C-h v"   . counsel-describe-variable)
    ("C-h k"   . counsel-descbinds)))
-   #+end_src
+  #+end_src
 
 To produce a buffer of list of options while within the ivy, press ~C-c C-o~ which
 brings a buffer with all the options from the ivy using ~ivy-occur~.
