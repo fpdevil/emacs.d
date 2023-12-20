@@ -166,6 +166,54 @@ uname -a
 : Darwin Sampaths-MacBook-Pro.local 23.1.0 Darwin Kernel Version 23.1.0: Mon Oct  9 21:27:24 PDT 2023; root:xnu-10002.41.9~6/RELEASE_ARM64_T6000 arm64
 \FloatBarrier
 
+* Plantuml Diagrams
+PlantUML is a Java component for creating Unified Modeling Language (UML)
+diagrams and several non-UML diagrams with a simple language. Diagram images can
+be generated in PNG, SVG, and LaTeX formats.
+
+#+begin_src plantuml :file hello-uml.png
+!theme vibrant
+
+Bob -> Alice : Hello World!
+#+end_src
+
+#+RESULTS:
+[[file:hello-uml.png]]
+
+A simple sequence diagram here:
+#+begin_src plantuml :results file :file sequence.png :exports results
+@startuml
+!theme toy
+
+hide footbox
+hide unlinked
+
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+Alice -> Bob: Another authentication Request
+Alice <-- Bob: Another authentication Response
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:sequence.png]]
+
+Here is an example of ASCII output inserted directly into the buffer.
+The PlantUML code block in the Org buffer:
+
+#+begin_src plantuml :results verbatim
+Bob -> Alice : Hello World!
+#+end_src
+
+#+RESULTS:
+:      ,---.          ,-----.
+:      |Bob|          |Alice|
+:      `-+-'          `--+--'
+:        | Hello World!  |
+:        |-------------->|
+:      ,-+-.          ,--+--.
+:      |Bob|          |Alice|
+:      `---'          `-----'
 
 * Tables <<tables-section>>
 Tables with lots of text in LaTeX often lead to tables that do not fit on a
@@ -178,14 +226,14 @@ index:label!temperature-table
 #+name: temprature-day
 #+caption: Temperature, Day & Place
 #+attr_latex: :environment tabular :width \textwidth :align { | l | l | l | p{5cm} |}
-|-----------+----------+----------+---------------------------------------------------------------------------------------------------------------------------------------------|
-| Day       | Min Temp | Max Temp | Summary                                                                                                                                     |
-|           |          |          | <40>                                                                                                                                        |
-|-----------+----------+----------+---------------------------------------------------------------------------------------------------------------------------------------------|
-| Monday    | 11C      | 22C      | A clear day with lots of sunshine. However, the strong breeze will bring down the temperatures                                              |
+|-----------+----------+----------+--------------------------------------------------------------------------------------------------------------------|
+| Day       | Min Temp | Max Temp | Summary                                                                                                            |
+|           |          |          | <40>                                                                                                               |
+|-----------+----------+----------+--------------------------------------------------------------------------------------------------------------------|
+| Monday    | 11C      | 22C      | A clear day with lots of sunshine. However, the strong breeze will bring down the temperatures                     |
 | Tuesday   | 9C       | 19C      | Cloudy with rain, across many northern regions. Clear spells across most of Scotland and Northern Ireland, but rain reaching the far northwest. |
-| Wednesday | 10C      | 21C      | Rain will still linger for the morning. Conditions will improve by early afternoon and continue throughout the evening.                     |
-|-----------+----------+----------+---------------------------------------------------------------------------------------------------------------------------------------------|
+| Wednesday | 10C      | 21C      | Rain will still linger for the morning. Conditions will improve by early afternoon and continue throughout the evening. |
+|-----------+----------+----------+--------------------------------------------------------------------------------------------------------------------|
 \FloatBarrier
 
 ** Latex Fonts
@@ -287,6 +335,29 @@ Get the version information using =elisp= as below:
 Emacs version: GNU Emacs 29.1 (build 1, aarch64-apple-darwin23.0.0, NS appkit-2487.00 Version 14.0 (Build 23A344))
  of 2023-10-21
 org version: 9.6.6
+
+Get the installed ~pdflatex~ version:
+#+begin_src emacs-lisp :lexical no
+(princ (format "PdfLaTeX version: %s\n"
+               (eshell-command-result "pdflatex --version") "\n"))
+#+end_src
+
+#+RESULTS:
+#+BEGIN_EXAMPLE
+PdfLaTeX version: pdfTeX 3.141592653-2.6-1.40.25 (TeX Live 2023)
+kpathsea version 6.3.5
+Copyright 2023 Han The Thanh (pdfTeX) et al.
+There is NO warranty.  Redistribution of this software is
+covered by the terms of both the pdfTeX copyright and
+the Lesser GNU General Public License.
+For more information about these matters, see the file
+named COPYING and the pdfTeX source.
+Primary author of pdfTeX: Han The Thanh (pdfTeX) et al.
+Compiled with libpng 1.6.39; using libpng 1.6.39
+Compiled with zlib 1.2.13; using zlib 1.2.13
+Compiled with xpdf version 4.04
+
+#+END_EXAMPLE
 
 #+name: fibonacci-seq
 #+begin_src emacs-lisp :var fib-inputs=fib-inputs :exports both

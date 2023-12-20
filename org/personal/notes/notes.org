@@ -1,0 +1,12 @@
+* Good reads
+
+* TeX Articles
+- https://github.com/rougier/CNCC-2020
+- https://github.com/rougier/TYRC-apple
+
+* Python
+- https://github.com/rougier/numpy-tutorial
+
+
+* CPP
+- https://github.com/rougier/CPP-Crash-Course
