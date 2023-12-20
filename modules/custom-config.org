@@ -38,6 +38,11 @@
     - [[#toggle-eshell][Toggle Eshell]]
   - [[#for-faster-font-locking][For faster font locking]]
 - [[#for-handling-errors-and-warnings][For handling errors and warnings]]
+- [[#custom-location-settings-for-packages][Custom location settings for packages]]
+  - [[#url][url]]
+  - [[#request][request]]
+  - [[#transient][transient]]
+  - [[#tramp][tramp]]
 
 * Emacs custom configurations
 This contains all custom functions and configurations along with certain
@@ -798,4 +803,61 @@ got redefined~ we can follow the below:
 #+begin_src emacs-lisp :lexical no
 ;; Suppress warnings about functions being redefined
 (setq ad-redefinition-action 'accept)
+#+end_src
+
+* Custom location settings for packages
+Some of the packages need caching locations and temporary locations to stage
+some files especially while working on network transactions. The default values
+for these would almost always will be the root directory of ~Emacs~.
+
+Let us update those so that the setup would be clean.
+
+** url
+~url~ is a default builtin package in ~Emacs~ that uses
+~url-configuration-directory~ as a location to stage cookies, history etc. We can
+configure it under the cache directory.
+
+#+begin_src emacs-lisp :lexical no
+;; update url-configuration-directory of url package
+(use-package url
+  :config
+  (setq url-configuration-directory (expand-file-name "url" user-cache-directory))
+  (setq url-automatic-caching t))
+#+end_src
+
+** request
+~request~ is a package for making ~URL~ requests using *curl* and it is a dependency
+for many packages. It uses ~request-storage-directory~ as a location to store data
+related to the url requests made. Let us customise the same.
+#+begin_src emacs-lisp :lexical no
+;; customise location of request-storage-directory for request package
+(use-package request
+  :config
+  (setq request-storage-directory (expand-file-name "request" user-cache-directory)))
+#+end_src
+
+** transient
+~Transient~ is a builtin ~Emacs~ library for implementing the keyboard driven menus
+in ~Magit~. It has a variable ~transient-levels-file~ that stores levels of
+transients and their suffixes to a file ~~/.emacs.d/transient/levels.el~.
+Similarly, the ~transient-history-file~ stores history of transients to ~~/.emacs.d/transient/history.el~.
+Let's change these to put inside the ~user-cache-directory~.
+#+begin_src emacs-lisp :lexical no
+;; customise caching locations of files for transient library
+(use-package transient
+  :config
+  (setq transient-levels-file (expand-file-name "transient/levels.el" user-cache-directory)
+        transient-history-file (expand-file-name "transient/history.el" user-cache-directory)))
+#+end_src
+
+** tramp
+~tramp~ is a builtin package that provides remote file editing capabilities for
+Emacs. It maintains the connection history of Tramp connections to
+~~/.emacs.d/tramp~. Let us move it to the cache location.
+#+begin_src emacs-lisp :lexical no
+;; update tramp-persistency-file-name of tramp package to write
+;; tramp connection details to cache location
+(use-package tramp
+  :config
+  (setq tramp-persistency-file-name (expand-file-name "tramp" user-cache-directory)))
 #+end_src
