@@ -1,6 +1,14 @@
 #+TITLE: Emacs completion configuration using CORFU from corfu-config.org
 #+AUTHOR: Sampath Singamsetty
 
+* Emacs completion configuration with Corfu                           :TOC_4:
+- [[#corfu][Corfu]]
+- [[#introduction][Introduction]]
+  - [[#installation][Installation]]
+- [[#capf-for-org][Capf For Org]]
+- [[#cape][CAPE]]
+- [[#colorful-icon-completion-in-emacs][Colorful icon completion in Emacs]]
+
 * Corfu
 =corfu.el= is defined as =COmpletion in Region FUnction=
 
@@ -59,6 +67,24 @@ We have the choice between =company-mode= and =corfu= when it comes for auto com
                 (bound-and-true-p vertico--input))
       (setq-local corfu-auto nil)       ; Ensure auto completion is disabled
       (corfu-mode 1))))
+#+end_src
+
+* Capf For Org
+~org-block-capf~ is a package for providing  the completion of org blocks. It is
+similar to ~company-org-block~, but for  users of the built-in ~completion-at-point~
+completion or its extensions like  *corfu*, who want similar functionality without
+the company dependency. ~org-block-capf~ is  still compatible with ~company~ via its
+~company-capf~ backend.
+
+#+begin_src emacs-lisp :lexical no
+;; completion at a point for org blocks
+(use-package org-block-capf
+  :quelpa
+  (org-block-capf :fetcher github :repo "xenodium/org-block-capf")
+  :init
+  (require 'org-block-capf)
+  :config
+  (add-hook 'org-mode-hook #'org-block-capf-add-to-completion-at-point-functions))
 #+end_src
 
 * CAPE
