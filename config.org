@@ -35,6 +35,7 @@
   - [[#personal-information][Personal information]]
   - [[#set-custom-directories][Set custom directories]]
     - [[#vendor-dir][vendor-dir]]
+    - [[#user-cache-directory][user-cache-directory]]
     - [[#aqua-savefile-dir][aqua-savefile-dir]]
   - [[#setting-of-customised-variables][Setting of customised variables]]
   - [[#optional-settings][Optional settings]]
@@ -213,7 +214,17 @@ link is part of Emacs.
 The =vendor-dir= is for storing any custom packages not available through package management
 #+begin_src emacs-lisp :lexical no
 (defcustom vendor-dir (expand-file-name "vendor" user-emacs-directory)
-  "Packages not yet available in ELPA.")
+  "Packages not yet available in ELPA."
+  :type 'directory)
+#+end_src
+
+*** user-cache-directory
+Define a custom directory called ~user-cache-directory~ for staging any caching
+information.
+#+begin_src emacs-lisp :lexical no
+(defcustom user-cache-directory (expand-file-name ".cache" user-emacs-directory)
+  "Base Directory for cache files and directories."
+  :type 'directory)
 #+end_src
 
 *** aqua-savefile-dir
@@ -263,14 +274,16 @@ list of all the visited URLs.
 #+end_src
 
 *** Tweaks
+
 The variable =file-name-handler-alist= is consulted on every =load=, =require= and various =path/io= functions. We will get a minor performance boost by tweaking this.
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
+(message "inside the Tweaks section")
 (defvar startup/file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 #+end_src
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 ;; minor performance optimization
 (defun startup/revert-file-name-handler-alist ()
   "Reset or Restore the file-name-handler-alist variable."
