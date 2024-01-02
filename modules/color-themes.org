@@ -42,6 +42,8 @@
 - [[#custom-utilities][Custom Utilities]]
   - [[#list-of-available-themes][List of available themes]]
   - [[#switch-colour-themes-from-emacs][Switch colour themes from Emacs]]
+- [[#profiling][Profiling]]
+  - [[#final-report][Final report]]
 
 ** Treat all themes as safe; no query before use.
 #+begin_src emacs-lisp :lexical no
@@ -484,7 +486,8 @@ full of pleasant colours.
 Now set the required theme for Emacs using the custom function defined.
 
 #+begin_src emacs-lisp
-(aqua/toggle-theme 'atom-one-dark)
+(aqua/toggle-theme 'doom-oceanic-next)
+;; (aqua/toggle-theme 'doom-tomorrow-day)
 ;; (load-theme 'catppuccin t)
 #+end_src
 
@@ -716,3 +719,11 @@ Allow for switching the colour themes directly from ~Emacs~ by clicking on the n
 - [[elisp:(switch-to-theme 'wheatgrass)][Switch wheatgrass]]
 - [[elisp:(switch-to-theme 'whiteboard)][Switch whiteboard]]
 - [[elisp:(switch-to-theme 'wombat)][Switch wombat]]
+
+
+* Profiling
+
+** Final report
+#+begin_src emacs-lisp
+(aqua/report-time "color-themes")
+#+end_src
