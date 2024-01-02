@@ -34,16 +34,16 @@
 =ElDoc box= package displays ElDoc documentations in a childframe.
 
 #+begin_src emacs-lisp :lexical no
-;; eldoc box
+;; eldoc box to display eldoc in a childframe box.
 (use-package eldoc-box
-  :defer t
   :quelpa
   (:fetcher github :repo "casouri/eldoc-box")
-  :config
-  '(progn
-     (eldoc-box-hover-mode)
-     ;; (eldoc-box-hover-at-point-mode)
-     (with-eval-after-load "eglot-mode"
-       (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
-       (add-to-list 'eglot-ignored-server-capabilites :hoverProvider))))
+  :diminish eldoc-box-hover-mode
+  :config '(progn
+             (eldoc-box-hover-mode)
+             (eldoc-box-offset '(10 40 10))
+             ;; (eldoc-box-hover-at-point-mode)
+             (with-eval-after-load "eglot-mode"
+               (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
+               (add-to-list 'eglot-ignored-server-capabilites :hoverProvider))))
 #+end_src
