@@ -1,0 +1,24 @@
+#+TITLE: Learning ORG
+#+AUTHOR: Sampath Singamsetty
+
+* ORG Mode shortcuts
+
+Within any section of a large org file with multiple sections pressing ~C-x n s~
+will invoke ~org-narrow-to-subtree~ and once the work is done we can come back to
+the original buffer by pressing ~C-x n w~ which invokes ~widen~. The same is a part
+of the section ref:transitioning.
+
+* Transitioning between the sections <<transitioning>>
+   With all the existing standard Emacs movement keybindings below are helpful:
+
+   - =C-c C-n= :: To move to the next section header (or =C-M-n=)
+   - =C-c C-p= :: To move to the previous section header (=C-M-p=)
+   - =C-c C-f= :: To move to header at the same level (on
+                top-level? go to the next top-level)
+   - =C-c C-b= :: To move to previous header at same level
+   - =C-c C-^= :: To move to the parent header (yeah, odd binding)
+
+   Nice features to focus on a section:
+
+   - =C-x n s= :: To narrow to the org-mode section
+   - =C-x n w= :: To widen back to the full text
