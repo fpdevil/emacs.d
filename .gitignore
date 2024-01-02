@@ -41,3 +41,4 @@ eshell
 # ignore LSP workspace locations and org id locations
 .lsp-session-v1
 .org-id-locations
+/vimish-fold/
