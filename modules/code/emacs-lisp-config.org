@@ -84,6 +84,12 @@ contextual information.
 #+begin_src emacs-lisp :lexical no
 ;; A better *Help* buffer in Emacs
 (use-package helpful
+  :commands (helpful-callable
+	         helpful-variable
+	         helpful-key
+	         helpful-macro
+	         helpful-function
+	         helpful-command)
   :bind (([remap describe-function] . helpful-callable)
          ([remap describe-command]  . helpful-command)
          ([remap describe-variable] . helpful-variable)
@@ -95,7 +101,8 @@ contextual information.
          ("C-c C-d"                 . helpful-at-point)
          :map helpful-mode-map
          ("r"                       . remove-hook-at-point))
-  :hook (helpful-mode . cursor-sensor-mode) ; for remove-advice button
+  :hook ((helpful-mode . cursor-sensor-mode) ; for remove-advice button
+         (helpful-mode . visual-line-mode))
   :init
   (with-no-warnings
     (with-eval-after-load 'apropos
