@@ -536,11 +536,11 @@ Multiple cursors for Emacs is a pretty crazy functionality.
   :init
   (defhydra hydra-mc (:color blue :hint nil)
                           "
-   Up^^             Down^^           Miscellaneous           % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
+   Up^^             Down^^          Miscellaneous    % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
   ------------------------------------------------------------------
-   [_p_]   Next     [_n_]   Next     [_l_] Edit lines  [_0_] Insert numbers
-   [_P_]   Skip     [_N_]   Skip     [_a_] Mark all    [_A_] Insert letters
-   [_M-p_] Unmark   [_M-n_] Unmark   [_s_] Search
+   [_p_]   Next     [_n_]   Next    [_l_] Edit lines [_0_] Insert numbers
+   [_P_]   Skip     [_N_]   Skip    [_a_] Mark all   [_A_] Insert letters
+   [_M-p_] Unmark   [_M-n_] Unmark  [_s_] Search
    [Click] Cursor at point       [_q_] Quit"
                           ("l" mc/edit-lines :exit t)
                           ("a" mc/mark-all-like-this :exit t)
@@ -773,10 +773,11 @@ information about modes.
 (use-package minions
   :straight
   (minions :type git :host github :repo "tarsius/minions")
+  :ensure t
   :config
-  (setq minions-mode-line-lighter ""
+  (setq minions-mode-line-lighter "…"
 		minions-mode-line-delimiters '("" . ""))
-  (minions-mode 1))
+  (minions-mode +1))
 #+end_src
 
 * Cursor shape and type
@@ -790,29 +791,24 @@ or “a bar with faster blinking" and set them on demand.
 ;; cursory - cursor shape control
 (use-package cursory
   :ensure t
+
   :init
   (setq cursory-presets
-        '((box
-           :blink-cursor-interval 0.8)
-          (box-no-blink
-           :blink-cursor-mode -1)
-          (bar
-           :cursor-type (bar . 2)
-           :blink-cursor-interval 0.5)
-          (bar-no-other-window
-           :inherit bar
-           :cursor-in-non-selected-windows nil)
-          (underscore
-           :cursor-type (hbar . 3)
-           :blink-cursor-blinks 50)
-          (underscore-thin-other-window
-           :inherit underscore
-           :cursor-in-non-selected-windows (hbar . 1))
-          (underscore-thick
-           :cursor-type (hbar . 8)
-           :blink-cursor-interval 0.3
-           :blink-cursor-blinks 50
-           :cursor-in-non-selected-windows (hbar . 3))
+        '((bar . ( :cursor-type (bar . 2)
+                   :cursor-in-non-selected-windows hollow
+                   :blink-cursor-blinks 10
+                   :blink-cursor-interval 0.5
+                   :blink-cursor-delay 0.2))
+          (box  . ( :cursor-type box
+                    :cursor-in-non-selected-windows hollow
+                    :blink-cursor-blinks 10
+                    :blink-cursor-interval 0.5
+                    :blink-cursor-delay 0.2))
+          (underscore . ( :cursor-type (hbar . 3)
+                          :cursor-in-non-selected-windows hollow
+                          :blink-cursor-blinks 50
+                          :blink-cursor-interval 0.2
+                          :blink-cursor-delay 0.2))
           (t ; the default values
            :cursor-type box
            :cursor-in-non-selected-windows hollow
@@ -820,15 +816,18 @@ or “a bar with faster blinking" and set them on demand.
            :blink-cursor-blinks 10
            :blink-cursor-interval 0.2
            :blink-cursor-delay 0.2)))
+
   :config
   ;; check `cursory-presets' for how to set your own preset styles.
   (setq cursory-latest-state-file (locate-user-emacs-file "cursory-latest-state"))
-  ;; (cursory-restore-latest-preset)
+  (cursory-restore-latest-preset)
 
   ;; Set `cursory-recovered-preset' or fall back to desired style from
   ;; `cursory-presets'.
   ;; Set last preset or fall back to desired style from `cursory-presets'.
-  (cursory-set-preset (or (cursory-restore-latest-preset) bar))
+  (if cursory-recovered-preset
+      (cursory-set-preset cursory-recovered-preset)
+    (cursory-set-preset 'bar))
 
   ;; The other side of `cursory-restore-latest-preset'.
   (add-hook 'kill-emacs-hook #'cursory-store-latest-preset)
