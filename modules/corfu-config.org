@@ -36,7 +36,8 @@ We have the choice between =company-mode= and =corfu= when it comes for auto com
         corfu-preselect 'prompt              ;; Preselect the prompt
         corfu-on-exact-match 'quit           ;; Configure handling of exact matches
         corfu-scroll-margin 5                ;; Use scroll margin
-        corfu-popup-delay 0.5)
+        corfu-popup-delay 0.5
+        corfu-popupinfo-delay '(1.0 . 0.5))
 
   ;; Optional customizations
   ;; :custom
@@ -54,6 +55,7 @@ We have the choice between =company-mode= and =corfu= when it comes for auto com
   ;;        (eshell-mode . corfu-mode))
 
   :hook ((org-mode        . corfu-mode)
+         (html-mode       . corfu-mode)
          (emacs-lisp-mode . corfu-mode)
          (ielm-mode       . corfu-mode)
          (eshell-mode     . corfu-mode))
@@ -102,6 +104,7 @@ by completion-at-point are so called completion-at-point-functions (Capfs).
   (:fetcher github :repo "minad/cape")
 
   :init
+  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-history)
