@@ -185,6 +185,7 @@ We will not use the below configuration, so setting the =tang;e= option to _no_.
   ;; Display an HTML expansion preview as I type
   ;; Press C-j then start typing; e.g., C-j #q.x.y>p>b RET
   (setq emmet-preview-default t)
+  (setq emmet-self-closing-tag-style " /") ; default being just "/"
 
   ;; After expanding, positioned the cursor between first empty quotes.
   ;; The preview can help with tricky CSS precedence rules; e.g., C-j
