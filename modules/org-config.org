@@ -62,13 +62,19 @@
   - [[#native-settings-for-org-mode][Native settings for org mode]]
   - [[#enable-shift-selection-with-cua-mode][Enable shift selection with *cua-mode*]]
   - [[#orgmode-custom-settings][Orgmode custom settings]]
+    - [[#specify-colours-based-on-priority][Specify colours based on priority]]
     - [[#prettifying-and-fortifying][Prettifying and fortifying]]
       - [[#handling-tag][Handling Tag]]
     - [[#variable-fonts][Variable fonts]]
     - [[#prettifying-the-checkboxes][Prettifying the checkboxes]]
+    - [[#for-toggling-the-inline-images][For Toggling the inline images]]
     - [[#for-exporting-to-open-office-and-ms-word][For exporting to Open Office and MS Word]]
     - [[#for-coloured-src-code-blocks][For coloured src code blocks]]
     - [[#for-python-jupyter-error][For python jupyter error]]
+    - [[#snippet-export-translation][Snippet export translation]]
+  - [[#orgmode-custom-components][Orgmode custom components]]
+    - [[#for-macros][For Macros]]
+    - [[#rewriting-certain-settings][Rewriting certain settings]]
   - [[#footnotes][Footnotes]]
   - [[#fontification][Fontification]]
     - [[#variable-pitch-support-for-org-mode][Variable-pitch support for org-mode]]
@@ -286,6 +292,17 @@ text.
 (setq org-hide-emphasis-markers t)
 #+end_src
 
+*** Specify colours based on priority
+In =org= mode we can change the colours of  the items based on their priorities
+(#A, #B and #C).
+#+begin_src emacs-lisp :lexical no
+;; Specify faces for specific Priorities (#A, #B and #C).
+(setq org-priority-faces
+      '((?A . (:foreground "#CC0000" :background "#FFE3E3"))
+        (?B . (:foreground "#64992C" :background "#EBF4DD"))
+        (?C . (:foreground "#64992C" :background "#FFFFFF"))))
+#+end_src
+
 *** Prettifying and fortifying
 
 Additional settings for aesthetics and prettifying the font as well as to
@@ -308,15 +325,15 @@ control how the headings look or rendered with the stars in the =org-mode=.
 (setq org-hide-leading-stars nil)
 
 ;;^ For Improving the org mode looks
+(setq org-use-sub-superscripts "{}")      ;  interpret "_" and "^" for export
 (setq org-pretty-entities      t          ; show entities as UTF8 characters.
-      ;; org-use-sub-superscripts "{}"    ; interpret "_" and "^" for export
       org-image-actual-width   '(300))
 
 ;; option for org mode outline
 (setq org-ellipsis "…")
 
-;; no extra indentation in the source blocks
-(setq org-src-preserve-indentation nil)
+;; nil sets no extra indentation in the source blocks
+(setq org-src-preserve-indentation t)
 
 ;; This is useful when setting a background color for the org-level-* faces.
 (setq org-fontify-whole-heading-line t)
@@ -324,8 +341,10 @@ control how the headings look or rendered with the stars in the =org-mode=.
 ;; Give quote and verse blocks a nice look.
 (setq org-fontify-quote-and-verse-blocks t)
 
-;; highlight LaTeX related syntax in the buffer
-(setq org-highlight-latex-and-related '(latex))
+;; Font-lock
+;; Latex fragments for highlighting latex related syntax in buffer
+(setq org-highlight-latex-and-related '(latex script entities))
+(set-face-foreground 'org-latex-and-related "blue")
 
 ;; modifying behaviour of C-a/<home> & C-e/<end>
 (setq org-special-ctrl-a/e t)
@@ -342,16 +361,6 @@ control how the headings look or rendered with the stars in the =org-mode=.
 ;; control the alignment of org tags and also set the
 ;; org-tags-column value to 0
 (setq org-auto-align-tags nil)
-#+end_src
-
-For toggling the image display option in the org-mode buffer use the key
-combination ~C-c C-x C-v~. The same may also be invoked by pressing ~M-x~ and
-calling the function ~org-toggle-inline-images~.
-
-#+begin_src emacs-lisp :lexical no
-;; display images inline
-(add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-(setq org-display-inline-images t)
 #+end_src
 
 **** Handling Tag
@@ -411,6 +420,17 @@ The below piece of ~elisp~ code would prettify the org checkboxes.
   "Face for the text part of a checked org-mode checkbox.")
 #+end_src
 
+*** For Toggling the inline images
+For toggling the image display option in the org-mode buffer use the key
+combination ~C-c C-x C-v~. The same may also be invoked by pressing ~M-x~ and
+calling the function ~org-toggle-inline-images~.
+
+#+begin_src emacs-lisp :lexical no
+;; display images inline
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+(setq org-display-inline-images t)
+#+end_src
+
 *** For exporting to Open Office and MS Word
 The export function in Org Mode can export to the Open Office ODT format, which
 is compatible with MS Word. If you have Open Office installed, you can also
@@ -424,7 +444,6 @@ config:
 #+end_src
 
 *** For coloured src code blocks
-
 Enable the below for adding a list of faces to be used for source code blocks.
 
 #+begin_src emacs-lisp :lexical no :tangle no
@@ -437,7 +456,6 @@ Enable the below for adding a list of faces to be used for source code blocks.
 #+end_src
 
 *** For python jupyter error
-
 To disable the below warnings, we have to set ~PYDEVD_DISABLE_FILE_VALIDATION = 1~
 #+begin_quote
 0.01s - Debugger warning: It seems that frozen modules are being used, which may
@@ -450,6 +468,39 @@ In .profile set export PYDEVD_DISABLE_FILE_VALIDATION=1
 
 #+begin_src emacs-lisp
 (setenv "PYDEVD_DISABLE_FILE_VALIDATION" "1")
+#+end_src
+
+** Orgmode custom components
+In this section we will define certain components like functions and utilities
+which might be handy during the literate document creation.
+
+*** For Macros
+Define a simple function for creating and setting a simple =macro= definition.
+#+begin_src emacs-lisp :lexical no
+;; function for macro setup
+(defun aqua/org-macro-insert ()
+  "XXX"
+  (interactive)
+  (let* ((macros (org-macro--collect-macros))
+         (macro (completing-read "Insert macro: " (mapcar 'car macros)))
+         (args (string-match "$[[:digit:]]" (cdr (assoc macro macros))))
+         pos)
+    (insert (format  "{{{%s" macro))
+    (when args (insert "(") (setq pos (point)) (insert ")"))
+    (insert "}}}")
+    (when pos (goto-char pos))))
+#+end_src
+
+*** Rewriting certain settings
+We can change certain configuration items affecting =LaTeX= and =org=; such items
+can be mentioned here:
+#+begin_src emacs-lisp :lexical no
+;; custom configuration settings of variables
+;; Specify the default width for images.
+(setq org-latex-image-default-width ".75\\linewidth")
+
+;; Format string for links with unknown path type.
+(setq org-latex-link-with-unknown-path-format "\\colorbox{red}{%s}")
 #+end_src
 
 ** Footnotes
@@ -839,9 +890,30 @@ into multiple different formats.
 (use-package ox-html
   :ensure nil
   :defer 3
-  :after org
-  :custom
-  (org-html-checkbox-type 'unicode))
+  :init
+    (setq org-html-postamble nil)
+    (setq org-export-with-section-numbers nil)
+    (setq org-export-with-toc nil)
+    (setq org-html-head-extra "
+     <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+     <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700' rel='stylesheet' type='text/css'>
+     <style type='text/css'>
+        body {
+           font-family: 'Source Sans Pro', sans-serif;
+        }
+        pre, code {
+           font-family: 'Source Code Pro', monospace;
+        }
+     </style>")
+  :config
+  ;; type of checkbox for HTML export
+  (setq org-html-checkbox-type 'unicode)
+  ;; Output type to be used by htmlize when formatting code snippets
+  (setq org-html-htmlize-output-type 'css)
+  ;; coding system for HTML export
+  (setq org-html-coding-system 'utf-8)
+  ;; disable HTML link validation
+  (setq org-html-validation-link nil))
 #+end_src
 
 *** Exporting to Markdown format
@@ -1184,7 +1256,9 @@ Now for the literate plantuml configuration exported via =ob-plantuml=
   :ensure nil
   :after org
   :custom
-  (org-plantuml-jar-path homebrew-plantuml-jar-path))
+  (org-plantuml-jar-path homebrew-plantuml-jar-path)
+  ;; while editing plantuml blocks with (C-c ') use fundamental mode for plantuml
+  (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental))))
 #+end_src
 
 For actual plantuml diagram generation, the following mappings are available:
@@ -1626,6 +1700,8 @@ available from the ~pip~.
 
 For generating ~pdf~ from ~LaTeX~ and opening use ~C-c C-v~ key combo and for just
 compiling use ~C-c C-c~.
+
+=LaTeX= quick reference document is available at [[https://latexref.xyz/][latexref]].
 
 #+begin_src emacs-lisp :tangle no
 ;; for the src code syntax highlighting during the export use pygments
@@ -2089,7 +2165,7 @@ Pre-export settings useful for adding and configuring the packages.
 (setq org-latex-default-packages-alist
       '(("AUTO" "inputenc" t)       ; translates various standard and other input encodings
         (""     "lmodern" nil)      ; Latin Modern Roman - this is for having good fonts
-        ("T1" "fontenc" t)          ; This is for handling accented characters
+        ("T1"   "fontenc" t)        ; This is for handling accented characters
 
         ;; for standard margins to be placed
         ("top=1in, bottom=1.in, left=1in, right=1in" "geometry" nil)
@@ -2154,11 +2230,6 @@ citecolor=magenta,filecolor=green,urlcolor=cyan" "hyperref" nil)
 ;; format for displaying numbers in scientific notation
 (setq org-latex-table-scientific-notation "%s × 10\\(^\\text{%s}\\)")
 
-;; Font-lock
-;; Latex fragments for highlighting latex related syntax in buffer
-(setq org-highlight-latex-and-related '(native script entities))
-(set-face-foreground 'org-latex-and-related "blue")
-
 ;; to circumvent reliance on Apache config, solution by Seb:
 ;; http://thread.gmane.org/gmane.emacs.orgmode/53856/focus=53875
 (setq org-html-xml-declaration
@@ -2176,7 +2247,7 @@ An example configuration for ~hyperref~ setup
  pdfcreator={%c},
  pdflang={%L},
  colorlinks, linkcolor={red!50!black}, citecolor={blue!50!black}, urlcolor={blue!80!black}
-}")
+}"
 #+end_example
 
 Here, we set the compilation command for org to latex to pdf.
@@ -2209,6 +2280,8 @@ Here, we set the compilation command for org to latex to pdf.
 ;; nonstopmode' -pdf -bibtex -f -output-directory=%o %f"))
 
 (setq org-latex-pdf-process '("LC_ALL=en_US.UTF-8 latexmk -f -pdf -%latex -shell-escape -interaction=nonstopmode -output-directory=%o %f"))
+
+(message "[LaTeX export command: %s]" org-latex-pdf-process)
 #+end_src
 
 
