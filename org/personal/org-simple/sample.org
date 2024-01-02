@@ -166,6 +166,23 @@ uname -a
 : Darwin Sampaths-MacBook-Pro.local 23.1.0 Darwin Kernel Version 23.1.0: Mon Oct  9 21:27:24 PDT 2023; root:xnu-10002.41.9~6/RELEASE_ARM64_T6000 arm64
 \FloatBarrier
 
+
+* Mathematical equations
+
+Here is an inline math $\mathcal{F}(a) = \frac{1}{2\pi i}\oint_\gamma \frac{f(z)}{z - a}\,dz$. And it can also look like equation but without equation number.
+
+$$ \int_D (\nabla\cdot \mathcal{F})\,dV =\int_{\partial D}\mathcal{F}\cdot n\, dS $$
+
+** Another Math equation
+
+The follows are equations with number label.
+
+\begin{align}
+\mathcal{F}(a) &= \frac{1}{2\pi i}\oint_\gamma \frac{f(z)}{z - a}\,dz\\
+\int_D (\nabla\cdot \mathcal{F})\,dV &=\int_{\partial D}\mathcal{F}\cdot n\, dS
+\end{align}
+
+
 * Plantuml Diagrams
 PlantUML is a Java component for creating Unified Modeling Language (UML)
 diagrams and several non-UML diagrams with a simple language. Diagram images can
@@ -226,14 +243,14 @@ index:label!temperature-table
 #+name: temprature-day
 #+caption: Temperature, Day & Place
 #+attr_latex: :environment tabular :width \textwidth :align { | l | l | l | p{5cm} |}
-|-----------+----------+----------+--------------------------------------------------------------------------------------------------------------------|
-| Day       | Min Temp | Max Temp | Summary                                                                                                            |
-|           |          |          | <40>                                                                                                               |
-|-----------+----------+----------+--------------------------------------------------------------------------------------------------------------------|
-| Monday    | 11C      | 22C      | A clear day with lots of sunshine. However, the strong breeze will bring down the temperatures                     |
+|-----------+----------+----------+-------------------------------------------------------------------------------------------------------------|
+| Day       | Min Temp | Max Temp | Summary                                                                                                     |
+|           |          |          | <40>                                                                                                        |
+|-----------+----------+----------+-------------------------------------------------------------------------------------------------------------|
+| Monday    | 11C      | 22C      | A clear day with lots of sunshine. However, the strong breeze will bring down the temperatures              |
 | Tuesday   | 9C       | 19C      | Cloudy with rain, across many northern regions. Clear spells across most of Scotland and Northern Ireland, but rain reaching the far northwest. |
 | Wednesday | 10C      | 21C      | Rain will still linger for the morning. Conditions will improve by early afternoon and continue throughout the evening. |
-|-----------+----------+----------+--------------------------------------------------------------------------------------------------------------------|
+|-----------+----------+----------+-------------------------------------------------------------------------------------------------------------|
 \FloatBarrier
 
 ** Latex Fonts
