@@ -25,6 +25,7 @@ modules/code/*.el
 # do not push the latex image cache
 modules/ltximg
 modules/code/ltximg
+**/ltximg
 
 # ignore the below transient items
 smex-items
