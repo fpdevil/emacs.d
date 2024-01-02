@@ -32,6 +32,7 @@
   - [[#sveltejs][SvelteJS]]
 - [[#jsx-support-for-react][JSX Support for React]]
   - [[#react-snippets][React Snippets]]
+  - [[#react--redux-snippets][React & Redux snippets]]
 - [[#linting-configuration][Linting configuration]]
   - [[#eslint][ESLint]]
 
@@ -267,6 +268,15 @@ React snippets made available through =yasnippet=.
   :defer t)
 #+end_src
 
+** React & Redux snippets
+Snippets for =javascript=, =react= and =redux= are available from the package
+~js-react-redux-yasnippets~.
+#+begin_src emacs-lisp :lexical no
+;; snippets from js-react-redux-yasnippets
+(use-package js-react-redux-yasnippets
+  :straight
+  (js-react-redux-yasnippets :type git :host github :repo "sooqua/js-react-redux-yasnippets"))
+#+end_src
 
 * Linting configuration
 
