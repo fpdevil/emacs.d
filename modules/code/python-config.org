@@ -84,38 +84,41 @@ in Emacs Lisp as well as Python.
 #+begin_src emacs-lisp :lexical no
 ;; ELPY module for Python
 (use-package elpy
-  :after python
-
+  :ensure t
   :hook (python-mode . elpy-enable)
-
   :commands (elpy-enable)
-
   :custom ((elpy-rpc-python-command      "python3")
            (elpy-rpc-ignored-buffer-size 5000000))
-
   :init
-  (elpy-enable)
+  (with-eval-after-load 'python (elpy-enable))
   ;; (advice-add 'python-mode :before 'elpy-enable)
+  :config
+    (setq elpy-rpc-backend "jedi"
+          elpy-rpc-python-command "python3"
+          elpy-shell-echo-input nil
+          elpy-modules (dolist (elem
+                                '(elpy-module-sane-defaults
+                                  elpy-module-company
+                                  elpy-module-eldoc
+                                  elpy-module-highlight-indentation
+                                  elpy-module-pyvenv
+                                  elpy-module-yasnippet))))
 
-  :config (progn
-            (add-hook 'python-mode-hook 'eldoc-mode)
-            (add-to-list 'company-backends 'elpy-company-backend)
-            (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))
-            (setq elpy-rpc-python-command "python3"
-	              elpy-shell-echo-output nil
-	              elpy-rpc-backend "jedi")
-            (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-            (with-eval-after-load 'python
-              (defun python-shell-completion-native-try ()
-	            "Return non-nil if can trigger native completion."
-	            (let ((python-shell-completion-native-enable nil)
-	                  (python-indent-offset 4)
-	                  (python-indent 4)
-	                  (python-shell-completion-native-output-timeout
-	                   python-shell-completion-native-try-output-timeout))
-	              (python-shell-completion-native-get-completions
-	               (get-buffer-process (current-buffer))
-	               nil "_"))))))
+    (add-hook 'python-mode-hook 'eldoc-mode)
+    ;; (add-to-list 'company-backends 'elpy-company-backend)
+    (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))
+
+    (with-eval-after-load 'python
+      (defun python-shell-completion-native-try ()
+        "Return non-nil if can trigger native completion."
+        (let ((python-shell-completion-native-enable t)
+              (python-indent-offset 4)
+	          (python-indent 4)
+              (python-shell-completion-native-output-timeout
+               python-shell-completion-native-try-output-timeout))
+          (python-shell-completion-native-get-completions
+           (get-buffer-process (current-buffer))
+           nil "_")))))
 #+end_src
 
 ** JEDI Support
@@ -128,10 +131,7 @@ about Python objects, such as docstring, function arguments and code location.
 ;; preferred way is to install only company-jedi, so disabling this
 (use-package jedi
   :after (python)
-
-  :init
-  (add-hook 'python-mode-hook 'jedi:setup)
-
+  :init (add-hook 'python-mode-hook 'jedi:setup)
   :config
   (progn
     (setcar jedi:install-server--command "pip3")
@@ -145,15 +145,16 @@ Install the preferred company backend for Python jedi
 ;; Company backend for Python jedi
 (use-package company-jedi
   :quelpa (company-jedi :fetcher github :repo "emacsorphanage/company-jedi")
-
+  :ensure t
   :commands (company-jedi)
-
   :hook
   (python-mode . (lambda ()
                    (setq-local company-backends
                                (append (list 'company-jedi) company-backends))))
-
   :config
+  (setq jedi:environment-virtualenv
+        (append python-environment-virtualenv
+                '("--no-site-packages" "--python" "/opt/homebrew/bin/python3")))
   (unless (file-exists-p
            (expand-file-name
             ".python-environments" user-emacs-directory))
@@ -161,8 +162,6 @@ Install the preferred company backend for Python jedi
     (jedi:install-server-block)
     (message "Finished Installing JEDI Server..."))
   (add-hook 'python-mode-hook 'jedi:setup)
-  ;; (setq jedi:environment-virtualenv
-  ;;       (list (expand-file-name ".python-environments" user-emacs-directory)))
 
   (setq jedi:complete-on-dot t
         jedi:use-shortcuts t))
