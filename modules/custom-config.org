@@ -38,7 +38,9 @@
   - [[#reformatting-an-org-buffer][Reformatting an org buffer]]
   - [[#function-to-remove-the-trailing-newline-for-shell-command][Function to remove the trailing newline for shell command]]
   - [[#improving-the-eshell][Improving the eshell]]
+    - [[#syntax-highlighting-for-eshell][Syntax highlighting for Eshell]]
     - [[#toggle-eshell][Toggle Eshell]]
+    - [[#eshell-information-banner][Eshell information banner]]
   - [[#for-faster-font-locking][For faster font locking]]
 - [[#for-handling-errors-and-warnings][For handling errors and warnings]]
 - [[#custom-location-settings-for-packages][Custom location settings for packages]]
@@ -810,6 +812,7 @@ functions for easier use.
           (lambda () (global-hl-line-mode 0)))
 #+end_src
 
+*** Syntax highlighting for Eshell
 Install =eshell-syntax-highlighting= package which helps to provide syntax
 highlighting for ~Eshell~.
 
@@ -826,7 +829,6 @@ highlighting for ~Eshell~.
 #+end_src
 
 *** Toggle Eshell
-
 The package =eshell-toggle= provides a simple functionality to show/hide
 eshell/ansi-term (or almost any other buffer) at the bottom of active window
 with directory of its buffer.
@@ -843,6 +845,21 @@ with directory of its buffer.
   (eshell-toggle :repo "4DA/eshell-toggle" :fetcher github :version original)
   :bind
   ("C-M-`" . eshell-toggle))
+#+end_src
+
+*** Eshell information banner
+~eshell-info-banner.el~ is a utility for creating an informative banner, akin to
+~fish_greeting~ but for _Eshell_. It displays system information when launching the
+_Eshell_ terminal within *Emacs*.
+
+#+begin_src emacs-lisp :lexical no
+;; Display some system information when launching Eshell
+(use-package eshell-info-banner
+  :ensure t
+  :defer t
+  :quelpa
+  (eshell-info-banner :repo "Phundrak/eshell-info-banner.el" :fetcher github :version original)
+  :hook (eshell-banner-load . eshell-info-banner-update-banner))
 #+end_src
 
 ** For faster font locking
