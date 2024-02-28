@@ -97,12 +97,15 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
             (add-to-list 'eglot-server-programs
                          '(python-mode "pylsp"))
             (setq! eglot-workspace-configuration
-                   '((:pylsp . (:configurationSources
-                                ["flake8"]
-                                :plugins (:pycodestyle (:enabled nil)
-                                                       :black (:enabled nil)
-                                                       :mccabe (:enabled nil)
-                                                       :flake8 (:enabled t))))))
+                   '((:pylsp . (:configurationSources ["flake8"]
+                                :plugins (
+                                          :pycodestyle (:enabled :json-false)
+                                          :black       (:enabled nil)
+                                          :mccabe      (:enabled nil)
+                                          :flake8      (:enabled t)
+                                          :pydocstyle  (:enabled t :convention "numpy")
+                                          :yapf        (:enabled :json-false)
+                                          :autopep8    (:enabled :json-false))))))
 
             ;; For JavaScript and TypeScript...
             (add-to-list 'eglot-server-programs
