@@ -54,9 +54,6 @@ etc., we will depend on libraries like =elpy=, =jedi=, =flycheck= etc.,
 
   :mode ("\\.py\\'" . python-mode)
 
-  ;;:hook (python-mode . lsp-deferred)
-  :interpreter ("ptipython" . python-mode)
-
   :init
   (setq indent-tabs-mode nil
 	    python-indent-guess-indent-offset nil
@@ -64,10 +61,12 @@ etc., we will depend on libraries like =elpy=, =jedi=, =flycheck= etc.,
         python-shell-completion-native-enable nil)
 
   :config
-  (when (and (executable-find "python3")
-             (string= python-shell-interpreter "python"))
-    (setq python-shell-interpreter "python3"))
-  (setq python-shell-interpreter-args "-i")
+  ;; (when (and (executable-find "python3")
+  ;;            (string= python-shell-interpreter "python"))
+  ;;   (setq python-shell-interpreter "python3"))
+  ;; (setq python-shell-interpreter-args "-i")
+  (setq python-shell-interpreter "ipython"
+        python-shell-interpreter-args "-i --simple-prompt")
 
   ;; there is a message about the interpreter not using readline
   ;; and the below should be able to handle the same
@@ -85,40 +84,44 @@ in Emacs Lisp as well as Python.
 ;; ELPY module for Python
 (use-package elpy
   :ensure t
-  :hook (python-mode . elpy-enable)
-  :commands (elpy-enable)
-  :custom ((elpy-rpc-python-command      "python3")
-           (elpy-rpc-ignored-buffer-size 5000000))
   :init
-  (with-eval-after-load 'python (elpy-enable))
+  (elpy-enable)
   ;; (advice-add 'python-mode :before 'elpy-enable)
+  (setenv "WORKON_HOME" "~/.virtualenv")
+  (setq pyvenv-workon "~/.virtualenv"  ; Default venv
+        pyvenv-activate "~/.virtualenv/")
+
   :config
-    (setq elpy-rpc-backend "jedi"
-          elpy-rpc-python-command "python3"
-          elpy-shell-echo-input nil
-          elpy-modules (dolist (elem
-                                '(elpy-module-sane-defaults
-                                  elpy-module-company
-                                  elpy-module-eldoc
-                                  elpy-module-highlight-indentation
-                                  elpy-module-pyvenv
-                                  elpy-module-yasnippet))))
+  (setq elpy-rpc-backend "jedi"
+        elpy-rpc-virtualenv-path 'default           ; earlier current
+        ;; elpy-rpc-python-command "python3"
+        ;; elpy-rpc-python-command "~/.virtualenv/bin/python3"
+        elpy-rpc-ignored-buffer-size 5000000
+        elpy-shell-echo-input nil
+        elpy-modules (dolist (elem
+                              '(elpy-module-sane-defaults
+                                elpy-module-company
+                                elpy-module-eldoc
+                                elpy-module-highlight-indentation
+                                elpy-module-pyvenv
+                                elpy-module-yasnippet
+                                (delq 'elpy-module-flymake elpy-modules)))))
 
-    (add-hook 'python-mode-hook 'eldoc-mode)
-    ;; (add-to-list 'company-backends 'elpy-company-backend)
-    (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))
+  (add-hook 'python-mode-hook 'eldoc-mode)
+  ;; (add-to-list 'company-backends 'elpy-company-backend)
+  (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))
 
-    (with-eval-after-load 'python
-      (defun python-shell-completion-native-try ()
-        "Return non-nil if can trigger native completion."
-        (let ((python-shell-completion-native-enable t)
-              (python-indent-offset 4)
-	          (python-indent 4)
-              (python-shell-completion-native-output-timeout
-               python-shell-completion-native-try-output-timeout))
-          (python-shell-completion-native-get-completions
-           (get-buffer-process (current-buffer))
-           nil "_")))))
+  (with-eval-after-load 'python
+    (defun python-shell-completion-native-try ()
+      "Return non-nil if can trigger native completion."
+      (let ((python-shell-completion-native-enable t)
+            (python-indent-offset 4)
+	        (python-indent 4)
+            (python-shell-completion-native-output-timeout
+             python-shell-completion-native-try-output-timeout))
+        (python-shell-completion-native-get-completions
+         (get-buffer-process (current-buffer))
+         nil "_")))))
 #+end_src
 
 ** JEDI Support
@@ -141,41 +144,62 @@ about Python objects, such as docstring, function arguments and code location.
 
 Install the preferred company backend for Python jedi
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 ;; Company backend for Python jedi
 (use-package company-jedi
-  :quelpa (company-jedi :fetcher github :repo "emacsorphanage/company-jedi")
   :ensure t
-  :commands (company-jedi)
+  :quelpa (company-jedi :fetcher github :repo "emacsorphanage/company-jedi")
   :hook
-  (python-mode . (lambda ()
-                   (setq-local company-backends
-                               (append (list 'company-jedi) company-backends))))
+  (python-mode . aqua/enable-jedi-if-found)
   :config
+  (setq jedi:server-args
+        '("--log" "/tmp/jediepcserver.log"
+          "--log-level" "DEBUG"))
+  (setq jedi:environment-root "jedi")  ; name of the virtualenv
   (setq jedi:environment-virtualenv
         (append python-environment-virtualenv
-                '("--no-site-packages" "--python" "/opt/homebrew/bin/python3")))
-  (unless (file-exists-p
-           (expand-file-name
-            ".python-environments" user-emacs-directory))
-    (message "Installing JEDI Server...")
+                '("--python" "/opt/homebrew/bin/python3")))
+
+  ;; check for python-environment-directory ~/.emacs.d/.python-environments
+  (unless (file-exists-p python-environment-directory)
+    (message "Installing JEDI VirtualEnv Server...")
     (jedi:install-server-block)
-    (message "Finished Installing JEDI Server..."))
-  (add-hook 'python-mode-hook 'jedi:setup)
+    (message "Finished installing JEDI VirtualEnv Server..."))
+
+  ;; (unless (file-exists-p
+  ;;          (expand-file-name
+  ;;           ".python-environments" user-emacs-directory))
+  ;;   (message "Installing JEDI Server...")
+  ;;   (jedi:install-server-block)
+  ;;   (message "Finished Installing JEDI Server..."))
+
+  ;; set jedi-setup
+  ;; (add-hook 'python-mode-hook 'jedi:setup)
 
   (setq jedi:complete-on-dot t
-        jedi:use-shortcuts t))
+        jedi:use-shortcuts t)
+
+  :init
+  (defun aqua/enable-jedi-if-found ()
+    "Format the current buffer using the jedi program, if available."
+    (interactive)
+    (if (zerop (shell-command "python3 -c 'import jedi'"))
+        (jedi:setup))
+    (setq-local company-backends
+                               (append (list 'company-jedi) company-backends))))
 #+end_src
 
 ** Virtualenv support
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; virtualenv support
 (use-package pyvenv
-  :after (python-mode)
-  :config
-  (defalias 'workon 'pyvenv-workon)
+  :ensure t
   :init
-  (setenv "WORKON_HOME" "/opt/homebrew/Caskroom/miniforge/base/envs")
+  ;; Default virtualenv directory for python
+  ;; (setenv "WORKON_HOME" "/opt/homebrew/Caskroom/miniforge/base/envs")
+  (setenv "WORKON_HOME" "~/.virtualenv")
+  (setq pyvenv-workon "~/.virtualenv")  ; Default venv
+  (setq pyvenv-activate "~/.virtualenv/")
   (pyvenv-mode 1))
 #+end_src
 
@@ -210,6 +234,8 @@ Using =flycheck= for handling syntactic errors in the code.
   (setq-default flycheck-disabled-checkers '(python-pylint)))
 
 (use-package py-autopep8
+  :ensure t
+  :defer 3
   :hook ((python-mode . py-autopep8-mode)))
 #+end_src
 
@@ -247,9 +273,9 @@ Setting =LSP= for python completion
   (with-eval-after-load "lsp-mode"
     (add-to-list 'lsp-disabled-clients 'pyls)
     (add-to-list 'lsp-enabled-clients 'jedi))
-  (add-hook 'python-mode-hook
-	        (lambda ()
-		      (lsp-deferred))))
+
+  (setq lsp-jedi-workspace-extra-paths
+        (vconcat lsp-jedi-workspace-extra-paths ["~/.virtualenv/lib/python3.12/site-packages"])))
 #+end_src
 
 *** Using pyright lsp client
@@ -261,9 +287,8 @@ as a ~node~ dependency or as a ~pip~ dependency.
 ;; pyright lsp
 ;; $ npm -g install pyright
 (use-package lsp-pyright
-  :after (lsp)
-
-  :if (executable-find "pyright")
+  :hook
+  (python-mode . lsp-pyright/python-mode-hook)
 
   :init
   (setq lsp-pyright-multi-root nil
@@ -274,15 +299,13 @@ as a ~node~ dependency or as a ~pip~ dependency.
   (when (executable-find "python3")
     (setq lsp-pyright-python-executable-cmd "python3"))
 
-  :hook
-  (python-mode . lsp-pyright/python-mode-hook)
-
   :config (setq lsp-pyright-log-level "trace")
 
   :preface
   (defun lsp-pyright/python-mode-hook ()
     ;; lsp-pyright
     (require 'lsp-pyright)
+    ;; (lsp-deferred)
     (when (fboundp 'flycheck-mode)
       ;; we will use flake8 or pyright
       (setq flycheck-disabled-checkers '(python-mypy)))))
