@@ -4,3 +4,5 @@
 C-u 70 M-q
 
 (Ctrl-u 70 Alt-q)
+
+2. openssl enc -aes-256-cbc -k secret -P -md sha256
