@@ -38,6 +38,9 @@ xenops
 # ignore eshell commands and history
 eshell
 
+# do not track cursory style local file
+./cursory-latest-style
+
 # ignore LSP workspace locations and org id locations
 .lsp-session-v1
 .org-id-locations
