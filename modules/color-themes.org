@@ -486,9 +486,10 @@ full of pleasant colours.
 Now set the required theme for Emacs using the custom function defined.
 
 #+begin_src emacs-lisp
-(aqua/toggle-theme 'doom-oceanic-next)
-;; (aqua/toggle-theme 'doom-tomorrow-day)
-;; (load-theme 'catppuccin t)
+;; (aqua/toggle-theme 'doom-oceanic-next)
+;; (aqua/toggle-theme 'doom-one-light)
+;; (aqua/toggle-theme 'kaolin-breeze)
+(load-theme 'shanty-themes-light t)
 #+end_src
 
 * Switch themes using Hydra
