@@ -56,11 +56,11 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
    (python-mode    . lsp-deferred)
    (lsp-mode       . efs/lsp-mode-setup))
 
-  :bind
-  (:map company-active-map
-    ("<tab>" . company-complete-selection))
-  (:map lsp-mode-map
-    ("<tab>" . company-indent-or-complete-common))
+  ;; :bind
+  ;; (:map company-active-map
+  ;;   ("<tab>" . company-complete-selection))
+  ;; (:map lsp-mode-map
+  ;;   ("<tab>" . company-indent-or-complete-common))
 
   :commands
   (lsp lsp-deferred)
