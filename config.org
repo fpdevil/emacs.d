@@ -278,7 +278,7 @@ list of all the visited URLs.
 The variable =file-name-handler-alist= is consulted on every =load=, =require= and various =path/io= functions. We will get a minor performance boost by tweaking this.
 
 #+begin_src emacs-lisp
-(message "inside the Tweaks section")
+;; (message "inside the Tweaks section")
 (defvar startup/file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 #+end_src
