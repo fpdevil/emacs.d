@@ -49,6 +49,14 @@
 ;;
 ;; elisp code for org mode configuration support and handling
 ;;
+;; Tectonic: https://tectonic-typesetting.github.io/en-US/
+;; If Tectonic Typesetting system is used, we can set the pdf generation as
+;;      (setq org-latex-pdf-process
+;;         '("tectonic -Z shell-escape --synctex --outdir=%o %f"))
+;;
+;; TODO
+;; Include edraw: https://misohena.jp/blog/2021-09-21-emacs-easy-draw.html
+;;
 ;;; Code:
 ;;;
 #+end_src
@@ -57,11 +65,12 @@
 #+AUTHOR: Sampath Singamsetty
 #+STARTUP: indent
 
-* Org mode configuration                                                :TOC_4:
+* Emacs org-mode configuration setup                                  :TOC_4:
+- [[#org-mode-configuration][Org mode configuration]]
   - [[#knowledge-and-notes][Knowledge and notes]]
   - [[#native-settings-for-org-mode][Native settings for org mode]]
   - [[#enable-shift-selection-with-cua-mode][Enable shift selection with *cua-mode*]]
-  - [[#orgmode-custom-settings][Orgmode custom settings]]
+  - [[#core-org-mode-custom-settings][Core org mode custom settings]]
     - [[#specify-colours-based-on-priority][Specify colours based on priority]]
     - [[#prettifying-and-fortifying][Prettifying and fortifying]]
       - [[#handling-tag][Handling Tag]]
@@ -70,101 +79,107 @@
     - [[#for-toggling-the-inline-images][For Toggling the inline images]]
     - [[#for-exporting-to-open-office-and-ms-word][For exporting to Open Office and MS Word]]
     - [[#for-coloured-src-code-blocks][For coloured src code blocks]]
-    - [[#for-python-jupyter-error][For python jupyter error]]
   - [[#orgmode-custom-components][Orgmode custom components]]
-    - [[#for-macros][For Macros]]
+    - [[#for-creating-macros-on-the-fly][For creating Macros on the fly]]
     - [[#rewriting-certain-settings][Rewriting certain settings]]
-  - [[#footnotes][Footnotes]]
-  - [[#fontification][Fontification]]
+  - [[#footnotes-creation][Footnotes creation]]
+  - [[#beautify-and-fontify][Beautify and Fontify]]
     - [[#variable-pitch-support-for-org-mode][Variable-pitch support for org-mode]]
-  - [[#org-appear-to-display-hidden-elements-with-mouse-over][Org Appear to display hidden elements with mouse over]]
-  - [[#orgmode-workflow-states][Orgmode Workflow States]]
-    - [[#org-tag-faces][Org TAG faces]]
-  - [[#for-task-tracking][For task tracking]]
-  - [[#selection-of-tags][Selection of tags]]
-  - [[#further-beautification-of-org-heading-symbol][Further beautification of org heading symbol]]
-  - [[#using-org-modern-for-beautification][Using org-modern for beautification]]
-  - [[#using-org-bullets][Using Org bullets]]
-  - [[#ascii-export-customisation-for-the-new-exporter][ASCII export customisation for the new exporter]]
-  - [[#org-sticky-headers][Org sticky headers]]
+    - [[#make-the-stars-more-super][Make the stars more super]]
+    - [[#a-modern-org-style-using-org-modern][A modern org style using org-modern]]
+    - [[#modern-block-styling-with-org-indent][Modern block styling with org-indent]]
+    - [[#org-bullets][org-bullets]]
+    - [[#org-outline-tree][Org Outline Tree]]
+    - [[#org-bars][Org Bars]]
+  - [[#sticky-headers][Sticky Headers]]
   - [[#indentation][Indentation]]
-  - [[#export-to-other-formats][Export to other formats]]
-    - [[#exporting-to-html-format][Exporting to HTML format]]
-    - [[#exporting-to-markdown-format][Exporting to Markdown format]]
-  - [[#personal-journal-with-org-journal][Personal Journal with org-journal]]
-  - [[#automatically-generate-table-of-contents][Automatically generate Table of Contents]]
+  - [[#make-invisible-parts-of-org-elements-appear-visible-using-org-appear][Make invisible parts of Org elements appear visible using org-appear]]
+  - [[#toc-generation][TOC generation]]
+    - [[#automatically-generate-table-of-contents][Automatically generate Table of Contents]]
     - [[#usage-of-toc-org][Usage of toc-org]]
-  - [[#org-asynchronous-code-execution][Org asynchronous code execution]]
-  - [[#org-mode-literate-programming][ORG mode Literate programming]]
-    - [[#rest-client-for-org][Rest client for org]]
-      - [[#company-restclient][company-restclient]]
-    - [[#http-calls][HTTP calls]]
-    - [[#organize-and-send-http-requests-from-emacs][Organize and send HTTP requests from Emacs]]
-    - [[#markdown-for-org-mode][Markdown for org mode]]
-    - [[#go-for-orgmode-babel][GO for orgmode babel]]
-    - [[#rust-for-orgmode-babel][Rust for orgmode babel]]
-    - [[#plantuml][PlantUML]]
-    - [[#ditaa-diagrams-through-ascii-art][DITAA DIagrams Through Ascii Art]]
-    - [[#dot-language][DOT language]]
-    - [[#python-babel-support][Python babel support]]
-    - [[#emacs-jupyter][Emacs Jupyter]]
-    - [[#chatgpt-shell-support-in-babel][ChatGPT Shell support in Babel]]
+  - [[#orgmode-workflow][Orgmode Workflow]]
+    - [[#org-tag-faces][Org TAG faces]]
+    - [[#tracking-the-tasks][Tracking the Tasks]]
+    - [[#selection-of-tags][Selection of TAGS]]
+    - [[#personal-journal-with-org-journal][Personal Journal with org-journal]]
+- [[#exporting-to-other-formats][Exporting to other formats]]
+  - [[#exporting-to-html][Exporting to HTML]]
+  - [[#exporting-to-markdown][Exporting to Markdown]]
+  - [[#exporting-to-markdown-using-ox-gfm][Exporting to Markdown using ox-gfm]]
+- [[#org-mode-literate-programming][ORG mode Literate programming]]
+  - [[#asynchronous-execution][Asynchronous execution]]
+  - [[#rest-client-for-org][Rest client for org]]
+    - [[#company-restclient][company-restclient]]
+  - [[#making-http-calls][Making HTTP calls]]
+  - [[#organize-and-send-http-requests-from-emacs][Organize and send HTTP requests from Emacs]]
+  - [[#evaluating-go-code][Evaluating GO code]]
+    - [[#usage][Usage]]
+  - [[#evaluating-rust-code][Evaluating Rust code]]
+    - [[#usage-1][Usage]]
+  - [[#evaluating-python-code][Evaluating Python code]]
+  - [[#handling-jupyter-error-in-python-code][Handling Jupyter error in python code]]
+  - [[#jupyter-notebook-in-emacs][Jupyter notebook in Emacs]]
+  - [[#using-jupyter-code-blocks][Using jupyter code blocks]]
+    - [[#issue-135-for-ob-ipython][Issue 135 for ob-ipython]]
+- [[#diagram-and-figure-generation][Diagram and figure generation]]
+  - [[#plantuml][PlantUML]]
+  - [[#ditaa-diagrams-through-ascii-art][DITAA DIagrams Through Ascii Art]]
+  - [[#graphviz-dot-mode][graphviz-dot-mode]]
+- [[#ai-integration][AI Integration]]
   - [[#org-ai][Org AI]]
+  - [[#chatgpt-shell-support-in-babel][ChatGPT Shell support in Babel]]
   - [[#babel-extension-for-chat-assistant][BABEL extension for Chat Assistant]]
-  - [[#babel-settings][BABEL settings]]
-    - [[#register-languages-for-babel][Register languages for babel]]
-    - [[#specify-compiler-and-header-options-for-languages-supported][Specify compiler and header options for languages supported]]
-      - [[#ob-c][ob-C]]
-      - [[#c-src-code-headers][C++ src code headers]]
-      - [[#bash-src-code-headers][Bash src code headers]]
-      - [[#using-jupyter-code-blocks][Using jupyter code blocks]]
-      - [[#issue-135-for-ob-ipython][Issue 135 for ob-ipython]]
-  - [[#tables-and-borders][Tables and Borders]]
-    - [[#for-vertically-alignment-of-tables][For vertically alignment of tables]]
-  - [[#latex-export-settings][LaTeX Export settings]]
-    - [[#some-custom-settings-for-latex-export][Some custom settings for latex export]]
-    - [[#smart-quotes][Smart quotes]]
-    - [[#latex-options-for-default-exported-packages][LaTeX options for default exported packages]]
-      - [[#a-quick-example][A quick example.]]
-      - [[#enable-pdf-and-eps-images-in-org-mode][Enable pdf and eps images in org mode]]
-  -  [[#this-is-a-latex-experiment][This is a latex experiment]]
+- [[#babel-configuration-and-customisation][BABEL configuration and customisation]]
+  - [[#register-languages-for-babel][Register languages for babel]]
+  - [[#compiler-and-header-options][Compiler and Header options]]
+    - [[#ob-c][ob-C]]
+    - [[#c-src-code-headers][C++ src code headers]]
+    - [[#bash-src-code-headers][Bash src code headers]]
+- [[#tables-and-borders][Tables and Borders]]
+  - [[#for-vertical-alignment-of-tables][For vertical alignment of tables]]
+- [[#latex-export-settings][LaTeX export settings]]
+  - [[#customisation-for-exporting-using-latex][Customisation for exporting using LaTeX]]
+  - [[#smart-quotes][Smart quotes]]
+  - [[#latex-options-for-default-exported-packages][LaTeX options for default exported packages]]
+    - [[#enable-pdf-and-eps-images-in-org-mode][Enable pdf and eps images in org mode]]
+  - [[#this-is-a-latex-experiment][This is a latex experiment]]
   - [[#some-text-and-latex][Some text and latex]]
-    - [[#latex-previewing][Latex previewing]]
-      - [[#additional-options-for-latex-previewing][Additional options for latex previewing]]
+    - [[#additional-options-for-latex-previewing][Additional options for latex previewing]]
     - [[#toggle-latex-preview-on-mouse-enter-with-addon-org-fragtog][Toggle latex preview on mouse enter with addon org-fragtog]]
+    - [[#latex-preview-pane][Latex Preview Pane]]
+  - [[#latex-math-preview][Latex Math Preview]]
+    - [[#latex-preview-with-org-auctex][LaTeX preview with org-auctex]]
     - [[#general-latex-completion-with-cdlatex-and-company-math][General LaTeX completion with cdlatex and company-math]]
     - [[#company-math-symbol-handling][Company math symbol handling]]
   - [[#xenops-latex-editing-environment-for-mathematical-documents][Xenops: LaTeX editing environment for mathematical documents]]
   - [[#pdf-export-of-org-documents][Pdf export of org documents]]
-  - [[#latex-export-with-additional-classes][LaTeX export with additional classes]]
+  - [[#additional-classes-for-latex-export][Additional classes for LaTeX export]]
     - [[#all-custom-latex-classes][All custom latex classes]]
-  - [[#latex-configurations-and-addons][Latex configurations and addons]]
+  - [[#additional-settings-and-addons-for-latex][Additional settings and Addons for LaTeX]]
     - [[#compiling][Compiling]]
     - [[#auctex][Auctex]]
-      - [[#from-doom-emacs-configuration][From Doom Emacs configuration:]]
-      - [[#settings-for-tex-mode][Settings for tex-mode]]
-      - [[#adding-latexmk-support][Adding LatexMk support]]
-      - [[#auto-completion-for-auctex][Auto completion for Auctex]]
-    - [[#latex-configuration-settings][Latex configuration settings]]
-    - [[#ox-latex-export-settings][ox-latex export settings]]
-    - [[#latex-preview-pane][Latex Preview Pane]]
-    - [[#latex-math-preview][Latex Math Preview]]
-    - [[#texpdf-options-and-auto-fill-for-latex][TexPdf options and auto-fill for latex]]
-    - [[#generate-tex-file-with-a-hook][Generate TeX file with a hook]]
-  - [[#bibliography-and-citations][Bibliography and Citations]]
-      - [[#some-terminology-for-reference][Some terminology for reference]]
-    - [[#biblatex][Biblatex]]
-    - [[#using-org-ref-for-bibliographies-and-citations][Using org-ref for Bibliographies and Citations]]
-    - [[#using-ivy-for-org-ref][Using ivy for org-ref]]
-    - [[#using-ivy-bibtex-for-managing-bibliographies][Using ivy bibtex for managing bibliographies]]
-    - [[#literate--annotated-bibliography][Literate & annotated bibliography]]
-      - [[#pdf-drop-mode][pdf-drop-mode]]
-      - [[#org-imenu][org-imenu]]
-    - [[#prettify-org-ref-citation-links][Prettify org-ref citation links]]
+    - [[#auto-completion-for-auctex][Auto completion for Auctex]]
+    - [[#from-doom-emacs-configuration][From Doom Emacs configuration:]]
+    - [[#settings-for-tex-mode][Settings for tex-mode]]
+    - [[#adding-latexmk-support][Adding LatexMk support]]
+    - [[#additional-settings-for-latex][Additional settings for LaTeX]]
+  - [[#ox-latex-export-settings][ox-latex export settings]]
+  - [[#texpdf-options-and-auto-fill-for-latex][TexPdf options and auto-fill for latex]]
+  - [[#generate-tex-file-with-a-hook][Generate TeX file with a hook]]
+- [[#bibliography-and-citations][Bibliography and Citations]]
+  - [[#some-terminology-for-reference][Some terminology for reference]]
+  - [[#biblatex][Biblatex]]
+  - [[#using-org-ref-for-bibliographies-and-citations][Using org-ref for Bibliographies and Citations]]
+  - [[#using-ivy-for-org-ref][Using ivy for org-ref]]
+  - [[#using-ivy-bibtex-for-managing-bibliographies][Using ivy bibtex for managing bibliographies]]
+  - [[#literate--annotated-bibliography][Literate & annotated bibliography]]
+    - [[#pdf-drop-mode][pdf-drop-mode]]
+    - [[#org-imenu][org-imenu]]
+  - [[#prettify-org-ref-citation-links][Prettify org-ref citation links]]
     - [[#org-ref-exports][org-ref exports]]
     - [[#org-glossary][org-glossary]]
   - [[#file-opening-and-associations][File opening and associations]]
-  - [[#use-org-download-for-easier-image-insertion-into-the-org-notes][Use ~org-download~ for easier image insertion into the org notes.]]
+  - [[#org-download][org-download]]
 - [[#lsp-integration-for-latex][LSP integration for LaTeX]]
 - [[#latex-font-locking-with-engrave-faces][LaTeX font locking with Engrave Faces]]
 - [[#org-mode-extras-from-org-contrib][org mode extras from org-contrib]]
@@ -175,9 +190,12 @@
   - [[#for-handling-c-code][For handling C++ code]]
     - [[#opencv][OpenCV]]
   - [[#latex-import-sty-files][LaTeX import *.sty files]]
+- [[#embedded-drawing-tool-for-emacs][Embedded drawing tool for Emacs]]
 - [[#for-exploring-further][For exploring further]]
 - [[#finally-profiling][Finally profiling]]
 
+* Org mode configuration
+This org document has all the necessary custom configurations to beef up the =org-mode=.
 ** Knowledge and notes
 =org mode= is GNU Emacs major mode for keeping notes, authoring documents,
 computational notebooks, literate programming, maintaining to-do lists,
@@ -187,18 +205,18 @@ The platform has no limitations and can be explored without any bounds. There
 are numerous blogs and sites explaining the customised plugins and features
 worth exploring.
 
-Some of the blogs which I found pretty interesting are:
-
+Some of the blogs that are pretty interesting and providing some good
+information are:
 | Site                     | Remarks                      |
 |--------------------------+------------------------------|
 | [[https://alhassy.github.io/org-special-block-extras/][org-special-block-extras]] | org mode special blocks      |
 | [[http://mooz.github.io/org-js/][org-js]]                   | Render org docs online       |
 | [[https://orgmode.org/worg/org-contrib/babel/languages/][babel ref]]                | org src blocks               |
 | [[https://github.com/grettke/help][org help]]                 | Literate programming samples |
-|                          |                              |
 
 ** Native settings for org mode
-Specify any global settings like locations here.
+Specify any global settings applicable to the =org-mode= in general like
+location of packages, files etc., here.
 #+begin_src emacs-lisp
   ;; set the native org directory
   (setq org-directory (expand-file-name "org" user-emacs-directory))
@@ -209,8 +227,10 @@ Specify any global settings like locations here.
   ;;  :ensure org-plus-contrib
   ;;  :defer t)
 #+end_src
-
 ** Enable shift selection with *cua-mode*
+Cua-mode is part of GnuEmacs versions 22.1.1 and later and it allows one to use
+‘C-v’, ‘C-c’, and ‘C-x’ to paste, copy, and cut the region. We shall enable
+selection with shift while in =org-mode=.
 #+begin_src emacs-lisp
   ;; enable cua mode (enabled in custom-config.org)
   ;; (cua-mode 1)
@@ -228,25 +248,28 @@ Specify any global settings like locations here.
                        (not (use-region-p)))
                   (cua-set-mark)))))))
 #+end_src
-
-** Orgmode custom settings
+** Core org mode custom settings
 Here are some custom settings for org-mode which are loaded globally.
 
 Emphasise the characters and faces to display more aesthetically pleasing text,
 especially while displaying the bold, italic, underlined and strike through
 text.
 
+*Disabled the below*
+#+begin_src emacs-lisp :tangle no
+  ;; beautifying the orgmode
+  ;; default settings for org-emphasis-alist
+  (setq org-emphasis-alist
+        '(("*" bold)
+          ("/" italic)
+          ("_" underline)
+          ("=" org-verbatim verbatim)
+          ("~" org-code verbatim)
+          ("+" (:strike-through t))))
+#+end_src
+
 #+begin_src emacs-lisp :lexical no
 ;; beautifying the orgmode
-;; default settings for org-emphasis-alist
-;; (setq org-emphasis-alist
-;;       '(("*" bold)
-;;         ("/" italic)
-;;         ("_" underline)
-;;         ("=" org-verbatim verbatim)
-;;         ("~" org-code verbatim)
-;;         ("+" (:strike-through t))))
-
 ;; beefed up settings for emphasis
 (setq org-emphasis-alist
       '(("*" aqua/org-emphasis-bold)
@@ -293,7 +316,7 @@ text.
 #+end_src
 
 *** Specify colours based on priority
-In =org= mode we can change the colours of  the items based on their priorities
+In =org= mode we can change the colours of the items based on their priorities
 (#A, #B and #C).
 #+begin_src emacs-lisp :lexical no
 ;; Specify faces for specific Priorities (#A, #B and #C).
@@ -302,11 +325,10 @@ In =org= mode we can change the colours of  the items based on their priorities
         (?B . (:foreground "#64992C" :background "#EBF4DD"))
         (?C . (:foreground "#64992C" :background "#FFFFFF"))))
 #+end_src
-
 *** Prettifying and fortifying
-
-Additional settings for aesthetics and prettifying the font as well as to
-control how the headings look or rendered with the stars in the =org-mode=.
+Additional settings for aesthetics and prettifying the font as well as
+controlling how the headings would look or render with the leading stars in the
+=org-mode= are all placed here.
 
 #+begin_src emacs-lisp
 ;; handle editing the invisible regions smartly
@@ -362,11 +384,10 @@ control how the headings look or rendered with the stars in the =org-mode=.
 ;; org-tags-column value to 0
 (setq org-auto-align-tags nil)
 #+end_src
-
 **** Handling Tag
 We can just  add a ~:tag₁:⋯:tagₙ:~ after  a heading. If a space  is pressed before
-the tags, then they are automatically  indented flushright to column 77; ~postive~
-numbers do not flushright but use exact column number.
+the tags, then they are automatically  indented flushright to column =77=; ~postive~
+numbers do not flushright but use the exact column number.
 #+begin_src emacs-lisp
  (setq org-tags-column -77) ;; the default
 #+end_src
@@ -374,12 +395,10 @@ numbers do not flushright but use exact column number.
 In order  to set tags  for an  item, Use ~C-c  C-q~ or ~org-set-tags-command~,  on a
 heading or just  the speed key ~:~  on the asterisks of  a heading. Unfortunatley,
 this only supports having one tag; for more, we can add them in manually.
-
-
 *** Variable fonts
-We can configure fonts in such a way that each section can be rendered by a
-different font. The below settings are experimental and may be enabled as per
-the taste. But right now it is disabled.
+For further enhancing the readability and aesthetics, we can configure fonts in
+such a way that each section can be rendered using a different font. The below
+settings are experimental and may be enabled as per the taste.
 #+begin_src emacs-lisp :lexical no
 ;; variable fonts
 (let* ((variable-tuple
@@ -404,22 +423,23 @@ the taste. But right now it is disabled.
    `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.5))))
    `(org-document-title ((t (,@headline ,@variable-tuple :height 1.6 :underline nil))))))
 #+end_src
-
 *** Prettifying the checkboxes
-The below piece of ~elisp~ code would prettify the org checkboxes.
+The below piece of ~elisp~ code would prettify the org checkboxes rendering the
+content in a more pleasing manner.
 
-#+begin_src emacs-lisp
+Disabling this for now
+#+begin_src emacs-lisp :tangle no
+;; disabling this for now as org-modern provides these
 (add-hook 'org-mode-hook (lambda ()
-			               "Beautify Org Checkbox Symbol"
-			               (push '("[ ]" . "☐" ) prettify-symbols-alist)
-			               (push '("[X]" . "☑" ) prettify-symbols-alist)
-			               (push '("[-]" . "❍" ) prettify-symbols-alist)
-			               (prettify-symbols-mode)))
+                     "Beautify Org Checkbox Symbol"
+                     (push '("[ ]" . "☐" ) prettify-symbols-alist)
+                     (push '("[X]" . "☑" ) prettify-symbols-alist)
+                     (push '("[-]" . "❍" ) prettify-symbols-alist)
+                     (prettify-symbols-mode)))
 (defface org-checkbox-done-text
   '((t (:foreground "#71696A")))
   "Face for the text part of a checked org-mode checkbox.")
 #+end_src
-
 *** For Toggling the inline images
 For toggling the image display option in the org-mode buffer use the key
 combination ~C-c C-x C-v~. The same may also be invoked by pressing ~M-x~ and
@@ -430,22 +450,23 @@ calling the function ~org-toggle-inline-images~.
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 (setq org-display-inline-images t)
 #+end_src
-
 *** For exporting to Open Office and MS Word
 The export function in Org Mode can export to the Open Office ODT format, which
 is compatible with MS Word. If you have Open Office installed, you can also
 create a DOC file to make it easier for MS Word users. Add this line to your
-config:
+config to achieve the required result:
 
 #+begin_src emacs-lisp :lexical no
 ;; Export to MS-Word
 ;; Need to have LibreOffice on your computer
 (setq org-odt-preferred-output-format "doc")
 #+end_src
-
 *** For coloured src code blocks
-Enable the below for adding a list of faces to be used for source code blocks.
+Enable the below code for adding a list of faces to be used for source code
+blocks. It is again for aesthetic purpose and does not add any code or
+processing value.
 
+*Disabled for now*
 #+begin_src emacs-lisp :lexical no :tangle no
 ;; color src blocks
 (setq  org-src-block-faces '(("emacs-lisp"     (:background "LightCyan1"    :extend t))
@@ -454,28 +475,13 @@ Enable the below for adding a list of faces to be used for source code blocks.
                              ("ipython"        (:background "thistle1"      :extend t))
                              ("jupyter-python" (:background "thistle1"      :extend t))))
 #+end_src
-
-*** For python jupyter error
-To disable the below warnings, we have to set ~PYDEVD_DISABLE_FILE_VALIDATION = 1~
-#+begin_quote
-0.01s - Debugger warning: It seems that frozen modules are being used, which may
-0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
-0.00s - to python to disable frozen modules.
-0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
-
-In .profile set export PYDEVD_DISABLE_FILE_VALIDATION=1
-#+end_quote
-
-#+begin_src emacs-lisp
-(setenv "PYDEVD_DISABLE_FILE_VALIDATION" "1")
-#+end_src
-
 ** Orgmode custom components
-In this section we will define certain components like functions and utilities
-which might be handy during the literate document creation.
-
-*** For Macros
-Define a simple function for creating and setting a simple =macro= definition.
+Org mode is a super tool for literate documentation and there are wide
+possibilities for customisation. In this section we will define custom
+components like functions and utilities which might be handy during the literate
+document creation.
+*** For creating Macros on the fly
+Define a simple function for creating and setting a simple =macro= definition quickly.
 #+begin_src emacs-lisp :lexical no
 ;; function for macro setup
 (defun aqua/org-macro-insert ()
@@ -490,10 +496,11 @@ Define a simple function for creating and setting a simple =macro= definition.
     (insert "}}}")
     (when pos (goto-char pos))))
 #+end_src
-
 *** Rewriting certain settings
 We can change certain configuration items affecting =LaTeX= and =org=; such items
 can be mentioned here:
+Here, we defined settings for controlling the image width and for rendering the
+links consisting of unknown path types.
 #+begin_src emacs-lisp :lexical no
 ;; custom configuration settings of variables
 ;; Specify the default width for images.
@@ -502,8 +509,7 @@ can be mentioned here:
 ;; Format string for links with unknown path type.
 (setq org-latex-link-with-unknown-path-format "\\colorbox{red}{%s}")
 #+end_src
-
-** Footnotes
+** Footnotes creation
 A footnote is started by a footnote marker in square brackets in column 0, no indentation allowed.  It ends at the next footnote definition, headline, or after two consecutive empty lines. The footnote reference is simply the marker in square brackets, inside text. Markers always start with ‘fn:’. For example:
 
 #+begin_example
@@ -524,20 +530,22 @@ The Org homepage[fn:1] now looks a lot better than it used to.
   C-u C-c C-x f S
   #+end_example
 
-** Fontification
-The following snippets  displays the contents of the  ~code~ blocks in ~org-mode~ files using  the ~major-mode~ of the code.  It also changes the behavior of *TAB*  to as if it were used  in the appropriate major mode.
+The org mode documentation provides good information at the official [[https://orgmode.org/manual/Creating-Footnotes.html][link]].
+
+** Beautify and Fontify
+The following snippets  displays the contents of the  ~code~ blocks in ~org-mode~ files using  the ~major-mode~ of the source code. It also changes the behavior of the *TAB* key to as if it were used in the corresponding major mode of code.
 
 #+begin_src emacs-lisp
-;; use syntax highlighting in org-file code blocks
-(setq org-src-fontify-natively t             ; Fontify code in code blocks
-      org-src-tab-acts-natively t            ; Tab acts as in source editing
+;; use syntax highlighting in org-mode code blocks
+(setq org-src-fontify-natively         t     ; Fontify code in code blocks
+      org-src-tab-acts-natively        t     ; Tab acts as in source editing
       org-edit-src-content-indentation 0)    ; No relative indentation for code blocks
 #+end_src
 
-While writing, it is common to use =+,-,*= to enumerate unordered lists especially while in org-mode wherein they denote structured text. Let's render them visually as Unicode bullets.
+While writing, it is common to use =+,- & *= to enumerate the unordered lists especially while in ~org-mode~ wherein they denote structured text. Let's render them visually as Unicode bullets.
 
 #+begin_src emacs-lisp :lexical no
-;; pretty unordered lists
+;; prettify the unordered lists
 ;; (x y z) ≈ (existing-item replacement-item positivity-of-preceding-spaces)
 (cl-loop for (x y z) in '(("+" "◦" *)
                           ("-" "•" *)
@@ -548,7 +556,7 @@ While writing, it is common to use =+,-,*= to enumerate unordered lists especial
                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) ,y)))))))
 #+end_src
 
-A progress indicator for code blocks in org-mode courtesy of [[https://lists.gnu.org/archive/html/emacs-orgmode/2014-08/msg01000.html][John Kitchin]]
+A progress indicator for the code blocks in ~org-mode~ courtesy of [[https://lists.gnu.org/archive/html/emacs-orgmode/2014-08/msg01000.html][John Kitchin]]
 #+begin_src emacs-lisp :lexical no
 (defadvice org-babel-execute-src-block (around progress nil activate)
   ;; (set-face-attribute
@@ -558,22 +566,146 @@ A progress indicator for code blocks in org-mode courtesy of [[https://lists.gnu
   ;; (set-face-attribute 'org-block-background nil :background "gray")
   (message "Done with code block"))
 #+end_src
-
 *** Variable-pitch support for org-mode
-~org-variable-pitch~ is a minor mode that enables variable pitch mode in the
-current Org-mode buffer, and sets some particular faces up so that they are
-rendered in fixed-width font.  Also, indentation, list bullets and checkboxes
-are displayed in monospace, in order to keep the shape of the outline.
+~org-variable-pitch~ is a minor mode that enables variable pitch mode in the current ~org-mode~ buffer, and sets some particular faces up so that they are rendered in fixed-width font.  Also, indentation, list bullets and checkboxes are displayed in monospace, in order to keep the shape of the outline.
+*** Make the stars more super
+~org-superstar~ hides the leading star in the headings to present the org content in a beautiful way by prettifying headings and plain lists in Org mode.
 
-** Org Appear to display hidden elements with mouse over
-Toggle visibility of hidden Org mode element parts upon entering and leaving an
-element. Org mode  provides a way to toggle visibility  of hidden elements such
-as  emphasis markers,  links,  etc. by  customising  specific variables,  e.g.,
-org-hide-emphasis-markers. However,  it is  currently not  possible to  do this
-interactively and  on an  element-by-element basis.  This package,  inspired by
-=org-fragtog=,  enables   automatic  visibility  toggling  depending   on  cursor
-position. Hidden  element parts appear  when the  cursor enters an  element and
-disappear when it leaves.
+#+begin_src emacs-lisp
+;; beautify the org mode headings with nice bullets
+;; Make org-mode stars a little more super
+(use-package org-superstar
+  ;;:after (org)
+  :quelpa
+  (org-superstar :fetcher github :repo "integral-dw/org-superstar-mode")
+  :hook (org-mode . org-superstar-mode)
+  :config
+  ;; Make leading stars truly invisible, by rendering them as spaces!
+  (setq org-superstar-leading-bullet ?\s
+        org-superstar-leading-fallback ?\s
+        org-hide-leading-stars nil
+        org-superstar-special-todo-items t
+        ;; performance issues
+        inhibit-compacting-font-caches t))
+#+end_src
+
+Detailed information about this can be found at the [[https://github.com/integral-dw/org-superstar-mode][org-superstar]] repository.
+*** A modern org style using org-modern
+The package ~org-modern~ implements a modern style for the Org buffers using font locking and text properties. It styles headlines, keywords, tables and source blocks also allowing customisation of the styling.
+
+Some detailed notes on the feature are available at the [[https://github.com/minad/org-modern][org-modern]] repository.
+
+#+begin_src emacs-lisp :lexical no
+;; Modernising the org mode
+(use-package org-modern
+  :ensure t
+  :quelpa (org-modern
+           :fetcher github
+           :repo "minad/org-modern")
+  :hook ((org-mode            . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda))
+  :custom (progn
+            (org-modern-hide-stars nil)   ; adds extra indentation
+            (org-modern-table nil)
+            (org-modern-list
+             '((?* . "•")
+               (?+ . "‣"))))
+  :config (progn
+            ;; (global-org-modern-mode) ;; enable globally
+            ;; add frame borders and window dividers
+            (modify-all-frames-parameters
+             '((right-divider-width   . 40)
+               (internal-border-width . 40)))
+            (dolist (face '(window-divider
+                            window-divider-first-pixel
+                            window-divider-last-pixel))
+              (face-spec-reset-face face)
+              (set-face-foreground face (face-attribute 'default :background)))
+            (set-face-background 'fringe (face-attribute 'default :background))))
+#+end_src
+
+*** Modern block styling with org-indent
+[[https://github.com/jdtsmith/org-modern-indent][org-modern]] provides a clean and efficient org style. The blocks (e.g. source, example) are particularly nicely decorated. But when ~org-indent~ is enabled, the block "bracket", which uses the fringe area, is disabled.
+
+This package approximately reproduces the block styling of org-modern while using ~org-indent~. It can be used with or without ~org-modern~. Recent versions support "bulk-indented" blocks nested within lists:
+
+#+begin_src emacs-lisp :lexical no
+;; Modern block styling with org-indent
+(use-package org-modern-indent
+  :quelpa (org-modern-indent
+           :fetcher github
+           :repo "jdtsmith/org-modern-indent")
+  :config ; add late to hook
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+#+end_src
+*** org-bullets
+[[https://github.com/sabof/org-bullets][org-bullets]] allows utf-8 bullets for org-mode by masking the leading stars.
+We are disabling this in favour or ~org-modern~ and ~org-superstar~.
+
+#+begin_src emacs-lisp :tangle no
+  ;; org-bullets for customized display of the headings
+  (use-package org-bullets
+    :ensure t
+    :init
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+*** Org Outline Tree
+This package offers an Org mode outline window that does not use indirect buffers. The package can display all headlines as an outline tree on the right side of the frame.
+
+#+begin_src emacs-lisp :tangle no
+;; org outline tree
+(use-package org-ol-tree
+  :after (org avy)
+  :defer t
+  :straight (org-ol-tree :build t
+                         :host github
+                         :type git
+                         :repo "Townk/org-ol-tree"))
+#+end_src
+*** Org Bars
+=org-bars-mode= is a minor mode for =org-mode=, which adds bars to the virtual indentation provided by the built-in package =org-indent=.
+
+#+begin_src emacs-lisp
+(use-package org-bars
+  :quelpa
+  (org-bars :fetcher github :repo "tonyaldon/org-bars" :upgrade t)
+  :if (display-graphic-p)
+  :hook
+  (org-mode . org-bars-mode))
+#+end_src
+
+** Sticky Headers
+[[https://github.com/alphapapa/org-sticky-header][org-sticky-header]] displays in the header-line the Org heading for the node that’s at the top of the window. This way, if the heading for the text at the top of the window is beyond the top of the window, you don’t forget which heading the text belongs to. The display can be customized to show just the heading, the full outline path, or the full outline path in reverse.
+
+#+begin_src emacs-lisp :lexical no
+;; org sticky headers
+(use-package org-sticky-header
+  :hook (org-mode . org-sticky-header-mode)
+  :config
+  (setq-default
+   org-sticky-header-full-path 'full
+   ;; Child and parent headings are seperated by a /.
+   org-sticky-header-outline-path-separator " / "))
+#+end_src
+** Indentation
+~org-indent~ indents the org content according to the outline structure. When enabled, ~org-indent~ by default produces an indicator "Ind" in the modeline and the same may be diminished there by removing the modeline clutter. The indentation may be increased a bit to make the levels more visible.
+
+#+begin_src emacs-lisp
+;;  org-indent by default produces an indicator "Ind" in the modeline.
+;;  The same may be diminished to remove the modeline clutter and also
+;;  the indentation may be increased a bit to make the levels more
+;;  visible
+(use-package org-indent
+  :ensure nil
+  :diminish
+  :custom
+  (org-indent-indentation-per-level 4))
+#+end_src
+
+** Make invisible parts of Org elements appear visible using org-appear
+~org-appear~ displays the emphasis marker only when needed, which means when the cursor is at or over the emphasised content. Hence, the problem of finding the markers or editing the content at the beginning or end of the emphasised section becomes easy.
+
+It allows to toggle the visibility of hidden Org mode element parts upon entering and leaving an element. Org mode  provides a way to toggle visibility  of hidden elements such as  emphasis markers,  links,  etc. by  customising  specific variables,  e.g., org-hide-emphasis-markers. However,  it is  currently not  possible to  do this interactively and  on an  element-by-element basis.  This package,  inspired by =org-fragtog=,  enables   automatic  toggling visibility  depending  on  cursor position. Hidden  element parts appear  when the  cursor enters an  element and disappear when it leaves.
 
 #+begin_src emacs-lisp :lexical no
 ;; Toggle visibility of hidden org mode element parts
@@ -585,14 +717,43 @@ disappear when it leaves.
   :hook (org-mode . org-appear-mode)
   :config
   (setq org-appear-autoemphasis   t
+        org-hide-emphasis-markers t
         org-appear-autolinks      t
-        org-appear-autosubmarkers t))
+        org-appear-autoentities   t
+        org-appear-autosubmarkers t)
+  (run-at-time nil nil #'org-appear--set-elements))
 #+end_src
 
-** Orgmode Workflow States
-The workflow state of ‘X/Y’ indicates to do action ‘X’ while entering a state
-and ‘Y’ when leaving it, with ‘!’ denoting a timestamp should be generated and
-‘@’ denoting a user note should be made.
+** TOC generation
+For the org content consisting of multiple headings, sections and paragraph, we can have /Table Of Contents/ generated to browse through the content more easily and efficiently.
+*** Automatically generate Table of Contents
+The ~toc-org~ package  allows us to insert a table of contents in headings marked with ~:TOC:~. This is useful for org files that are to be viewed directly on ~github~, which renders org files correctly, but does not generate a table of contents at the top.
+
+The package exists on github [[https://github.com/snosov1/toc-org][here]].
+
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :after (org)
+    :hook
+    (org-mode . toc-org-enable))
+#+end_src
+*** Usage of toc-org
+Using the =toc-org= we can Create a top heading *'Table Of Contents'*
+Press =C-c C-q= and create a tag *:TOC:* and save.
+The elements under *TOC* will be created automatically.
+
+In addition to the simple *:TOC:* tag, you can also use the following tag
+formats:
+
+   * =:TOC_2=: - sets the max depth of the headlines in the table of contents to
+     2 (the default).
+   * =:TOC_2_gh=: - sets the max depth as in above and also uses the GitHub-style
+     hrefs in the table of contents (this style is default). The other
+     supported href style is ‘org’, which is the default org style.
+
+ One can also use =@= as separator, instead of just  =_=.
+** Orgmode Workflow
+The workflow state of ‘X/Y’ indicates to do action ‘X’ while entering a state and ‘Y’ when leaving it, with ‘!’ denoting a timestamp should be generated and ‘@’ denoting a user note should be made.
 
 #+begin_src emacs-lisp
 ;; @ - time stamp with note
@@ -607,15 +768,9 @@ and ‘Y’ when leaving it, with ‘!’ denoting a timestamp should be generat
 (setq org-log-done 'time)
 #+end_src
 
-In particular, we transition from =TODO= to =STARTED= once 15 minutes or a
-reasonable amount of work has transpired. Since all but one state are marked for
-logging, we could use the ~lognotestate~ logging facility of org-mode, which
-prompts for a note every time a task’s state is changed.
+In particular, we transition from =TODO= to =STARTED= once 15 minutes or a reasonable amount of work has transpired. Since all but one state are marked for logging, we could use the ~lognotestate~ logging facility of org-mode, which prompts for a note every time a task’s state is changed.
 
-
-Entering a comment about what I’ve done, even if it’s very little, feels like
-I’m getting something done. It’s an explicit marker of progress and motivates me
-to want to change my task’s states more often until I see it marked ~DONE~.
+Entering a comment about what I’ve done, even if it’s very little, feels like I’m getting something done. It’s an explicit marker of progress and motivates me to want to change my task’s states more often until I see it marked ~DONE~.
 
 Here are the way the workflow items have been coloured.
 
@@ -630,16 +785,20 @@ Here are the way the workflow items have been coloured.
         ("CANCELLED" :foreground "OrangeRed"    :weight bold)))
 #+end_src
 
-Press *C-c C-t* for the letter shortcut to actually make the state of an org
-heading.
+Press *C-c C-t* for the letter shortcut to actually make the state of an org heading.
 
 #+begin_src emacs-lisp
 (setq org-use-fast-todo-selection t)
 #+end_src
 
 The =states= may also be changed using _Shift-Left_, or _Shift-Right_ keys.
-
 *** Org TAG faces
+Tags can simply be typed into the buffer at the end of a headline. After a colon, ~M-TAB~ offers completion on tags. There is also a special command for inserting tags:
+
+~C-c C-q (org-set-tags-command)~
+This allows to enter new TAG for current headline
+
+The faces of the TAGS set may be made to look pleasant by providing additional options.
 
 #+begin_src emacs-lisp
 ;; tags for the items
@@ -681,8 +840,9 @@ The =states= may also be changed using _Shift-Left_, or _Shift-Right_ keys.
         ("noexport" . (:foreground "LimeGreen"  :weight bold))))
 #+end_src
 
-** For task tracking
+*** Tracking the Tasks
 ~Org-Agenda~ is the root for all item tracking like todo, journal etc.
+
 #+begin_src emacs-lisp
 ;; Org-Agenda is the umbrella for all todo, journal, calendar
 ;; and other views. setting up C-c a to call up agenda mode.
@@ -712,8 +872,8 @@ The =states= may also be changed using _Shift-Left_, or _Shift-Right_ keys.
 
   ;; Agenda items with deadline and scheduled timestamps
   (setq org-agenda-time-grid '((daily today)
-			                   "----------------"
-			                   (800 1000 1200 1400 1600 1800 2000)))
+                         "----------------"
+                         (800 1000 1200 1400 1600 1800 2000)))
 
   ;; generic options for agenda
   (setq org-agenda-breadcrumbs-separator "->"
@@ -754,146 +914,53 @@ The =states= may also be changed using _Shift-Left_, or _Shift-Right_ keys.
   ;; start on Monday
   (org-agenda-start-on-weekday 1))
 #+end_src
+*** Selection of TAGS
+Fast selection of TAGS may be achieved using the below snippet.
 
-** Selection of tags
 #+begin_src emacs-lisp
   ;; selections of tags
   (setq org-fast-tag-selection-single-key t
         org-use-fast-todo-selection t)
 #+end_src
+*** Personal Journal with org-journal
+~org-jpurnal~ is a nice utility for maintaining personal journal and it works pretty well with ~wc-mode~ to keep a count of the number of words used in the journal.
 
-** Further beautification of org heading symbol
+For encrypting the journal entries, we need to use the following mechanisms:
 
-Using =org-superstar= for beautifying the org mode.
+- org-journal-encrypt-journal
+  If set to ~t~ it has the effect of transparently encrypting/decrypting the journal files as they are written to disk.
 
-#+begin_src emacs-lisp
-;; beautify the org mode headings with nice bullets
-;; Make org-mode stars a little more super
-(use-package org-superstar
-  :after (org)
-  :quelpa
-  (org-superstar :fetcher github :repo "integral-dw/org-superstar-mode")
-  :hook (org-mode . org-superstar-mode)
-  :config
-  ;; Make leading stars truly invisible, by rendering them as spaces!
-  (setq org-superstar-leading-bullet ?\s
-        org-superstar-leading-fallback ?\s
-        org-hide-leading-stars nil
-        org-superstar-special-todo-items t
-        ;; performance issues
-        inhibit-compacting-font-caches t))
-#+end_src
-
-** Using org-modern for beautification
-
-Using the =org-modern= that implements a "modern" style for Org buffers using
-font locking and text properties.
-
-#+begin_src emacs-lisp :lexical no
-;; Modernising the org mode
-(use-package org-modern
-  :ensure t
-  :quelpa (org-modern
-           :fetcher github
-           :repo "minad/org-modern")
-  :hook ((org-mode            . org-modern-mode)
-         (org-agenda-finalize . org-modern-agenda))
-  :custom (progn
-            (org-modern-hide-stars nil)		; adds extra indentation
-            (org-modern-table nil)
-            (org-modern-list
-             '((?* . "•")
-               (?+ . "‣"))))
-  :config (progn
-            ;; add frame borders and window dividers
-            (modify-all-frames-parameters
-             '((right-divider-width   . 40)
-               (internal-border-width . 40)))
-            (dolist (face '(window-divider
-                            window-divider-first-pixel
-                            window-divider-last-pixel))
-              (face-spec-reset-face face)
-              (set-face-foreground face (face-attribute 'default :background)))
-            (set-face-background 'fringe (face-attribute 'default :background))))
-#+end_src
-
-Provide modern block styling with ~org-indent~.
-
-#+begin_src emacs-lisp :lexical no
-;; Modern block styling with org-indent
-(use-package org-modern-indent
-  :quelpa (org-modern-indent
-           :fetcher github
-           :repo "jdtsmith/org-modern-indent")
-  :config ; add late to hook
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
-#+end_src
-
-** Using Org bullets
-For custom display of the org headings
-#+begin_src emacs-lisp :tangle no
-  ;; org-bullets for customized display of the headings
-  (use-package org-bullets
-    :ensure t
-    :init
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-#+end_src
-
-** ASCII export customisation for the new exporter
-#+begin_src emacs-lisp :lexical no
-;; ASCII export customisation for the new exporter
-;; the markers for Latin is nicer, use for UTF-8 too
-;; (setcdr (assoc 'utf-8 org-ascii-bullets) '(?§ ?¶))
-#+end_src
-
-** Org sticky headers
-The package allows to show off-screen Org heading at top of window and displays
-in the header-line the Org heading for the node that’s at the top of the
-window. This way, if the heading for the text at the top of the window is
-beyond the top of the window, we don’t forget which heading the text belongs
-to. The display can be customized to show just the heading, the full outline
-path, or the full outline path in reverse.
-#+begin_src emacs-lisp :lexical no
-;; org sticky headers
-(use-package org-sticky-header
-  :hook (org-mode . org-sticky-header-mode)
-  :config
-  (setq-default
-   org-sticky-header-full-path 'full
-   ;; Child and parent headings are seperated by a /.
-   org-sticky-header-outline-path-separator " / "))
-#+end_src
-
-** Indentation
-~org-indent~ by default produces an indicator "Ind" in the modeline. The same may
-be diminished to remove the modeline clutter and also the indentation may be
-increased a bit to make the levels more visible.
+- org-journal-enable-encryption
+  If set to ~t~ enables integration with ~org-crypt~ and hence automatically adds a ~:crypt:~ tag for new journal entries. This has the effect of automatically encrypting those entries upon save, replacing them with a blob of gpg-encrypted text which has to be further decrypted with ~org-decrypt-entry~ in order to read or edit them again. This is disabled for now to make it more transparent to work with the journal entries while editing them.
 
 #+begin_src emacs-lisp
-;;  org-indent by default produces an indicator "Ind" in the modeline.
-;;  The same may be diminished to remove the modeline clutter and also
-;;  the indentation may be increased a bit to make the levels more
-;;  visible
-(use-package org-indent
-  :ensure nil
-  :diminish
+(use-package org-journal
+  :after org
   :custom
-  (org-indent-indentation-per-level 4))
+  (org-journal-dir (concat (file-name-as-directory org-directory) "journal"))
+  (org-journal-file-format "%Y/%m/%Y%m%d")
+  (org-journal-date-format "%A, %Y-%m-%d")
+  (org-journal-encrypt-journal t)
+  (org-journal-enable-encryption nil)
+  (org-journal-enable-agenda-integration t)
+  :bind
+  ("C-c j" . org-journal-new-entry))
 #+end_src
+* Exporting to other formats
+One of the biggest strengths of ~org-mode~ is the ability to export a document into multiple different formats. org-mode exporters and packages are available to help in such transformations.
+More information about this can be found at [[https://orgmode.org/worg/exporters/ox-overview.html][org exporters]].
+** Exporting to HTML
+[[https://orgmode.org/manual/HTML-Export.html#HTML-export][ox-html]] is an HTML exporter with extensive HTML formatting compatible with XHTML 1.0 strict standard.
 
-** Export to other formats
-One of the biggest strengths of ~org-mode~ is the ability to export a document
-into multiple different formats.
-
-*** Exporting to HTML format
-#+begin_src emacs-lisp
+/Disabled this section as it was causing issue in TOC creation of exported pdf files/
+#+begin_src emacs-lisp :tangle no
 (use-package ox-html
   :ensure nil
   :defer 3
   :init
     (setq org-html-postamble nil)
     (setq org-export-with-section-numbers nil)
-    (setq org-export-with-toc nil)
+    (setq org-export-with-toc t)
     (setq org-html-head-extra "
      <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
      <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700' rel='stylesheet' type='text/css'>
@@ -915,101 +982,33 @@ into multiple different formats.
   ;; disable HTML link validation
   (setq org-html-validation-link nil))
 #+end_src
+** Exporting to Markdown
+The exporter ~ox-md~ allows for exporting the org content into ~markdown~ format. It needs the [[https://daringfireball.net/projects/markdown/][markdown]] package to be installed.
 
-*** Exporting to Markdown format
 #+begin_src emacs-lisp
+;; markdown exporter for org mode
 (use-package ox-md
   :ensure nil
   :defer 3
   :after org)
 #+end_src
+** Exporting to Markdown using ox-gfm
+[[https://github.com/larstvei/ox-gfm][ox-gfm]] is a small exporter based on the Markdown exporter already existing in Org mode. It should support the features listed [[https://docs.github.com/en/get-started/writing-on-github][here]].
 
-** Personal Journal with org-journal
-~org-jpurnal~ is a nice utility for maintaining personal journal and it works
-pretty well with ~wc-mode~ to keep a count of the number of words used in the
-journal.
-
-For encrypting the journal entries, we need to use the following mechanisms:
-
-- org-journal-encrypt-journal
-  If set to ~t~ it has the effect of transparently encrypting/decrypting the
-  journal files as they are written to disk.
-
-- org-journal-enable-encryption
-  If set to ~t~ enables integration with ~org-crypt~ and hence automatically adds a
-  ~:crypt:~ tag for new journal entries. This has the effect of automatically
-  encrypting those entries upon save, replacing them with a blob of
-  gpg-encrypted text which has to be further decrypted with ~org-decrypt-entry~
-  in order to read or edit them again. This is disabled for now to make it more
-  transparent to work with the journal entries while editing them.
-
-  #+begin_src emacs-lisp
-  (use-package org-journal
-    :after org
-    :custom
-    (org-journal-dir (concat (file-name-as-directory org-directory) "journal"))
-    (org-journal-file-format "%Y/%m/%Y%m%d")
-    (org-journal-date-format "%A, %Y-%m-%d")
-    (org-journal-encrypt-journal t)
-    (org-journal-enable-encryption nil)
-    (org-journal-enable-agenda-integration t)
-    :bind
-    ("C-c j" . org-journal-new-entry))
-  #+end_src
-
-** Automatically generate Table of Contents
-The ~toc-org~ package  allows us to insert a table of contents in headings marked
-with ~:TOC:~. This is useful for org files that are to be viewed directly on
-~github~, which renders org files correctly, but does not generate a table of
-contents at the top.
-
-The package exists on github [[https://github.com/snosov1/toc-org][here]].
+The package adds an Org mode export backend for GitHub Flavored Markdown. Exporting to Github Flavored Markdown is available through Org mode's export dispatcher once ~ox-gfm~ is loaded. Alternatively, exporting can be triggered by calling the (autoloaded) function ~M-x org-gfm-export-to-markdown~.
 
 #+begin_src emacs-lisp
-  (use-package toc-org
-    :after (org)
-    :hook
-    (org-mode . toc-org-enable))
+;; Github Flavored Markdown exporter for Org Mode
+(use-package ox-gfm
+  :quelpa
+  (:fetcher github :repo "https://github.com/larstvei/ox-gfm")
+  :hook
+  (org-mode . aqua/ox-gfm-setup)
+  :preface
+  (defun aqua/ox-gfm-setup ()
+    (require 'ox-gfm)))
 #+end_src
-
-*** Usage of toc-org
-
-Using the =toc-org= we can Create a top heading 'Table Of Contents'
-
-Press =C-c C-q= and create a tag *:TOC:* and save.
-The elements under *TOC* will be created automatically.
-
-In addition to the simple *:TOC:* tag, you can also use the following tag
-formats:
-
-   * =:TOC_2=: - sets the max depth of the headlines in the table of contents to
-     2 (the default).
-   * =:TOC_2_gh=: - sets the max depth as in above and also uses the GitHub-style
-     hrefs in the table of contents (this style is default). The other
-     supported href style is ‘org’, which is the default org style.
-
-
-One can also use =@= as separator, instead of =_=.
-
-** Org asynchronous code execution
-The code within the ~src~ code blocks may be executed asynchronously.
-#+begin_src emacs-lisp
-;; asynchronous code execution
-(use-package ob-async
-  :after (org)
-  :config
-  (add-to-list 'org-ctrl-c-ctrl-c-hook #'ob-async-org-babel-execute-src-block))
-#+end_src
-
-The org babel language =ob-python= defines its own ~:async~ keyword that can
-conflict with =ob-async=.
-
-#+begin_src emacs-lisp :lexical no
-;; add ob-ipython to blacklist so that it does not conflict with async
-(setq ob-async-no-async-languages-alist '("ipython" "jupyter-python"))
-#+end_src
-
-** ORG mode Literate programming
+* ORG mode Literate programming
 Org-mode is  a literate programming  tool which  is very practical  and useful,
 easy to edit, execute and document code from within the same tool (Emacs) using
 all of  its existing capabilities  (i.e. each code block  can be edited  in its
@@ -1025,13 +1024,32 @@ Some examples are available at:
 https://joseph8th.github.io/posts/wow-writing-literate-api-documentation-in-emacs-org-mode/
 #+end_example
 
-*** Rest client for org
+** Asynchronous execution
+We can configure org-mode to execute the literate source code blocks execute asynchronously by using a package called ~ob-async~.
+
+[[https://github.com/astahlman/ob-async][ob-async]] enables asynchronous execution of org-babel src blocks and it  isn't tied to src blocks in a specific org-babel language.
+
+We may simply add the keyword ~:async~ to the ~header-args~ of any ~org-babel~ src block and invoke ~ob-async-org-babel-execute-src-block~.
+
+#+begin_src emacs-lisp
+;; asynchronous code execution
+(use-package ob-async
+  :after (org)
+  :config
+  (add-to-list 'org-ctrl-c-ctrl-c-hook #'ob-async-org-babel-execute-src-block)
+  ;; add ob-ipython to blacklist so that it does not conflict with async
+  (setq ob-async-no-async-languages-alist '("ipython" "jupyter-python" "restclient")))
+#+end_src
+
+*Note:* The org babel language =ob-python= defines its own ~:async~ keyword that can conflict with =ob-async= and also emacs-jupyter has async execution of its own; the same are handled in the config section with =ob-async-no-async-languages-alist=.
+
+** Rest client for org
 This is a tool to manually explore and test HTTP REST webservices. Runs queries
 from a plain-text query sheet, displays results as a pretty-printed XML, JSON
 and even images.
 
-The =restclient= is particular handy when it is combined with the Org-mode: see
-use of the ob-restclient.el within the Org-mode headings.
+The [[https://github.com/alf/ob-restclient.el][restclient]] is particular handy when it is combined with the Org-mode: see
+use of the ~ob-restclient.el~ within the Org-mode headings.
 
 #+begin_src emacs-lisp
 ;; rest client
@@ -1045,7 +1063,7 @@ use of the ob-restclient.el within the Org-mode headings.
   :after (org restclient))
 #+end_src
 
-**** company-restclient
+*** company-restclient
 This is a =company-mode= completion backend for ~restclient-mode~. It provides auto-completion for HTTP methods and headers in ~restclient-mode~. Completion source is given by emacs package ~know-your-http-well~.
 
 #+begin_src emacs-lisp
@@ -1058,9 +1076,8 @@ This is a =company-mode= completion backend for ~restclient-mode~. It provides a
   (add-to-list 'company-backends 'company-restclient))
 #+end_src
 
-*** HTTP calls
-
-Make http request within org-mode babel
+** Making HTTP calls
+We can make ~http~ request(s) from within the org-mode babel using the [[https://github.com/zweifisch/ob-http][ob-http]] package. It uses ~curl~ internally to make such calls.
 
 #+begin_src emacs-lisp
 ;; make http request within org-mode babel
@@ -1073,8 +1090,7 @@ Make http request within org-mode babel
   (defun aqua/ob-http-setup ()
     (require 'ob-http)))
 #+end_src
-
-*** Organize and send HTTP requests from Emacs
+** Organize and send HTTP requests from Emacs
 This is an alternate to =ob-http= for making HTTP calls. It introduces a new minor
 mode =Verb mode=, which works as an extension to =Org mode=.
 
@@ -1089,27 +1105,8 @@ Additional details are available at [[https://github.com/federicotdn/verb][Verb 
   :after (org)
   :hook (org-mode . verb-mode))
 #+end_src
-
-*** Markdown for org mode
-
-=ox-gfm= is a github flavoured markdown exporter for org mode.
-
-*** GO for orgmode babel
-
-~ob-go~ is a module that has Org-Babel support for evaluating go code.
-
-#+begin_src emacs-lisp :lexical no
-;; Github Flavored Markdown exporter for Org Mode
-(use-package ox-gfm
-  :defer t
-  :quelpa
-  (:fetcher github :repo "https://github.com/larstvei/ox-gfm")
-  :hook
-  (org-mode . aqua/ox-gfm-setup)
-  :preface
-  (defun aqua/ox-gfm-setup ()
-    (require 'ox-gfm)))
-#+end_src
+** Evaluating GO code
+The package [[https://github.com/pope/ob-go][ob-go]] enables Org-Babel support for evaluating go code. The go code is compiled and run via the ~go run~ command. If a ~main~ function isn’t present, by default the code is wrapped in a simple ~main func~. If ~:package~ option isn’t set and no ~package~ is declared in the code, then the ~main~ package is declared.
 
 #+begin_src emacs-lisp :lexical no
 ;; Org-Babel support for evaluating go code.
@@ -1126,17 +1123,20 @@ Additional details are available at [[https://github.com/federicotdn/verb][Verb 
     (require 'ob-go)))
 #+end_src
 
-Usage:
+*** Usage
+Specify the code snippet and run using ~C-c C-c~.
 #+begin_example
 #+begin_src go :imports "fmt"
   fmt.Println("Hello, ORG")
 #+end_src
 #+end_example
 
-*** Rust for orgmode babel
+#+begin_src go :imports "fmt" :eval no
+fmt.Println("Hello, ORG")
+#+end_src
 
-~ob-rust~ enables ~Org-Babel~ support for evaluating Rust code. It was created
-based on the usage of ~ob-C~ and ~ob-go~.
+** Evaluating Rust code
+[[https://github.com/micanzhang/ob-rust][ob-rust]] enables ~Org-Babel~ support for evaluating Rust code. It was created based on the usage of ~ob-C~ and ~ob-go~.
 
 #+begin_src emacs-lisp :lexical no
 ;; org-babel support for evaluating rust code.
@@ -1151,6 +1151,7 @@ based on the usage of ~ob-C~ and ~ob-go~.
     (require 'ob-rust)))
 #+end_src
 
+*** Usage
 Usage of =ob-rust= for embedding the *Rust* code into =org-mode= documents:
 
 #+begin_src rust :tangle no
@@ -1194,9 +1195,192 @@ Olá : Esse código é editável e executável!
 chào bạn : Bạn có thể edit và run code trực tiếp!
 您好 : 这段代码是可以编辑并且能够运行的！
 #+END_EXAMPLE
+** Evaluating Python code
+Python source code  blocks in Org Mode  can be used to  define functions, filter
+and analyze data, create graphics and figures, and produce reproducible research
+papers. Detailed  information on  using python  source code  blocks that  can be
+executed by org babel is available at [[https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-python.html][ob-doc-python]].
 
-*** PlantUML
+Support for python execution is available through ~ob-python~ and ~ob-ipython~.
 
+#+begin_src emacs-lisp
+;; org-babel integration with Jupyter for evaluation of (Python by default) code blocks
+;; python3 support
+;; set the babel python executable
+;; (setq org-babel-python-command "python3")
+;; (setq org-babel-python-command "ipython3 --no-banner --classic --no-confirm-exit")
+(setq org-babel-python-command (shell-command-to-string "printf %s \"$(which python3)\""))
+
+(use-package ob-ipython
+  :defer 3
+
+  ;;:quelpa (ob-ipython :fetcher github :repo "gregsexton/ob-ipython" :upgrade t)
+
+  :after (ob python)  ;; or maybe `:after org` would be sufficient
+
+  ;; set the jupyter command explicitly
+  :init (setq ob-ipython-command (shell-command-to-string "printf %s \"$(which jupyter)\""))
+
+  :config
+  ;; use the python lexer for ipython blocks, add this setting
+  ;; this is needed for hghlighting the ipython code block
+  ;; (add-to-list 'org-latex-minted-langs '(ipython "python"))
+
+  ;; for now disabling elpy only for ob-ipython minor mode
+  ;; what we should actually do, is just to ensure that
+  ;; ob-ipython's company backend comes before elpy's (TODO)
+  (add-to-list 'company-backends 'company-ob-ipython)
+  (add-hook 'ob-ipython-mode-hookp
+            (lambda ()
+              (elpy-mode 0)
+              (company-mode 1)))
+
+  :hook (org-mode . aqua/ob-ipython-setup)
+
+  :preface
+  (defun aqua/ob-ipython-setup ()
+    (require 'ob-ipython)))
+#+end_src
+
+Using the =scimax= version of =ob-ipython=:
+#+begin_src emacs-lisp :tangle no
+;; using the scimax version of ob-ipython
+(add-to-list 'load-path (expand-file-name "scimax/ipython" user-emacs-directory))
+(require 'ipython)
+(require 'scimax-org-babel-ipython-upstream)
+#+end_src
+
+Configure ~ob-python~ for native org python code support.
+#+begin_src emacs-lisp
+;; ob-python for python babel code
+;; Babel Functions for Python
+(use-package ob-python
+  :ensure nil
+  :after (ob python)
+  :config
+  (setq org-babel-python-command python-shell-interpreter))
+#+end_src
+
+A few examples...
+#+begin_example
+ babel for ipython/python
+ one can use differen versions of the same language in code blocks
+ with python3
+
+ #+begin_src emacs-lisp :results none
+ (setq org-babel-python-command "python3")
+ #+end_src
+
+ #+begin_src python :results output
+ import sys
+ print(sys.version)
+ #+end_src
+
+ #+RESULTS:
+ : >>> >>> >>> >>> 3.9.13 (main, May 24 2022, 21:13:51)
+ : [Clang 13.1.6 (clang-1316.0.21.2)]
+#+end_example
+
+** Handling Jupyter error in python code
+There are chances that the below warnings are thrown sometimes while running python code in org blocks.
+#+begin_quote
+0.01s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+
+In .profile set export PYDEVD_DISABLE_FILE_VALIDATION=1
+#+end_quote
+To fix this, set ~PYDEVD_DISABLE_FILE_VALIDATION = 1~
+
+#+begin_src emacs-lisp
+(setenv "PYDEVD_DISABLE_FILE_VALIDATION" "1")
+#+end_src
+
+** Jupyter notebook in Emacs
+=emacs-jupyter= is an interface to communicate with the =jupyter= kernels. We can use
+it with babel after installation.
+- ref: https://github.com/nnicandro/emacs-jupyter
+
+#+begin_src emacs-lisp :lexical no
+;; An interface to communicate with Jupyter kernels.
+;; jupyter lab
+(use-package jupyter
+  :after (:all org python)
+  :quelpa
+  (jupyter :fetcher github :repo "emacs-jupyter/jupyter" :upgrade t)
+  :commands (jupyter-run-server-repl
+             jupyter-run-repl
+             jupyter-server-list-kernels)
+  :config
+  (setq jupyter-eval-use-overlays t)
+  (setq org-babel-default-header-args:jupyter '((:async   . "yes")
+                                                (:session . "py")
+                                                (:exports . "both")
+                                                (:cache   . "no")
+                                                (:tangle  . "no")
+                                                (:hlines  . "no")
+                                                (:kernel  . "python"))))
+#+end_src
+
+
+** Using jupyter code blocks
+Instead of having to specify ~jupyter-LANG~ as a source block name, you can have
+~LANG~ source blocks use the _jupyter_ machinery. To do so, place a call to
+~org-babel-jupyter-override-src-block~ somewhere in your config (after the call
+to ~org-babel-do-load-languages~).
+- ref: https://github.com/nnicandro/emacs-jupyter
+
+#+begin_example
+;; overriding built-in src-block languages
+(org-babel-jupyter-override-src-block "python")
+
+;; restore the original behavior by calling org-babel-jupyter-restore-src-block.
+(org-babel-jupyter-restore-src-block "python")
+#+end_example
+
+After loading, source code blocks with names like *jupyter-LANG* will be
+available for use. *LANG* can be any one of the kernel languages found on your
+system. See =jupyter-available-kernelspecs=.
+
+An example for python using the jupyter notebook generating mathematical images
+with =sympy= is here:
+#+begin_src jupyter-python :kernel python3 :async t :session mysession :results file :eval no
+from sympy import *
+
+init_printing()
+x, y, z = symbols('x y z')
+
+Integral(sqrt(1 / x), x)
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/be3592f7f58a7c41f0729e82c43f5e2ffa329ba1.png]]
+
+*** Issue 135 for ob-ipython
+To counter the issue reported at [[https://github.com/gregsexton/ob-ipython/issues/135][json readtable error]] use the below code to remove anything around or between top-level JSON objects in the response:
+
+#+begin_src emacs-lisp :lexical no
+;; kill extraneous content in ipython returns between top-level JSON objects
+(advice-add 'ob-ipython--collect-json :before
+            (lambda (&rest args)
+              (let ((start (point)))
+                (set-mark (point))
+                (while (re-search-forward "{" nil t)
+                  (backward-char)
+                  (kill-region (region-beginning) (region-end))
+                  (re-search-forward "}\n" nil t)
+                  (set-mark (point)))
+                (end-of-buffer)
+                (kill-region (region-beginning) (region-end))
+                (goto-char start))))
+#+end_src
+
+* Diagram and figure generation
+Using ~Emacs~ and ~org-mode~ flow  diagrams, architecture diagrams, charts etc., can
+be  created  by integrating  with  external  open  source tools  like  =PlantUML=,
+=Mermaid=, =ditaa= etc.,
+** PlantUML
 PlantUML is  a handy tool  for drawing simple diagrams.  It is part  of ~org-mode~
 since 2010 and  is a wrapper to dot, allowing  higher-level definitions. Install
 the ~plantuml-mode~ for  better editing experience and a cool  previews. The babel
@@ -1209,7 +1393,6 @@ the result of the same across.
 #+begin_src shell :tangle no :noweb-ref plantuml-jar-command :exports both
 brew list plantuml | grep jar
 #+end_src
-
 
 #+begin_src emacs-lisp :noweb yes
 ;; set the location of plantuml jar installed with homebrew
@@ -1274,26 +1457,30 @@ For actual plantuml diagram generation, the following mappings are available:
 #+END_SRC
 #+end_example
 
-*** DITAA DIagrams Through Ascii Art
+** DITAA DIagrams Through Ascii Art
+~ditaa~ is  a small command-line utility  that can convert diagrams  drawn using
+ascii art ('drawings' that contain characters that  resemble lines like | / - ),
+into proper bitmap graphics.
 
-Create ascii diagrams using ~ditaa~ support after installing the ditaa package
-with homebrew.
+We can create  ascii diagrams in Emacs using ~ditaa~  support after installing the
+ditaa package with homebrew.
 
 #+begin_src emacs-lisp
-;; location of the ditaa installed jar
+;; locate the Homebrew installed ditaa jar binary and set to
+;; the binary jar path
 (setq org-ditaa-jar-path
       (expand-file-name
        (string-trim
         (shell-command-to-string "brew list ditaa | grep jar"))))
 
+;; the function assigns the binary to the ditaa command
 (defun aqua/ditaa-generate ()
   (interactive)
   (shell-command
     (concat ditaa-cmd " " buffer-file-name)))
 #+end_src
 
-*** DOT language
-
+** graphviz-dot-mode
 This is an Emacs package for working with Graphviz DOT-format files. The
 features of this package help you to create .dot or .gv files containing syntax
 compatible with Graphviz and use Graphviz to convert these files to diagrams.
@@ -1326,106 +1513,8 @@ The following commands are available for ~viewing~.
 - =C-c C-p= (graphviz-dot-preview)
 
 - =C-c v= (graphviz-dot-view)
-
-*** Python babel support
-
-Provide python support through ~ob-python~ and ~ob-ipython~.
-
-#+begin_src emacs-lisp
-;; python3 support
-(setq org-babel-python-command "python3")
-;; (setq org-babel-python-command "ipython3 --no-banner --classic --no-confirm-exit")
-
-;; ipython support
-(use-package ob-ipython
-  :after org
-  :init
-  ;; for now disabling elpy only for ob-ipython minor mode
-  ;; what we should actually do, is just to ensure that
-  ;; ob-ipython's company backend comes before elpy's (TODO)
-  ;; (add-to-list 'company-backends 'company-ob-ipython)
-  (add-hook 'ob-ipython-mode-hookp
-            (lambda ()
-              (elpy-mode 0)
-              (company-mode 1))))
-
-;; use the python lexer for ipython blocks, add this setting
-;; this is needed for hghlighting the ipython code block
-;; (add-to-list 'org-latex-minted-langs '(ipython "python"))
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-;; ob-python for python babel code
-;; Babel Functions for Python
-(use-package ob-python
-  :ensure nil
-  :after (ob python)
-  :config
-  (setq org-babel-python-command python-shell-interpreter))
-#+end_src
-
-#+begin_example
- babel for ipython/python
- one can use differen versions of the same language in code blocks
- with python3
-
- #+begin_src emacs-lisp :results none
- (setq org-babel-python-command "python3")
- #+end_src
-
- #+begin_src python :results output
- import sys
- print(sys.version)
- #+end_src
-
- #+RESULTS:
- : >>> >>> >>> >>> 3.9.13 (main, May 24 2022, 21:13:51)
- : [Clang 13.1.6 (clang-1316.0.21.2)]
-#+end_example
-
-*** Emacs Jupyter
-=emacs-jupyter= is an interface to communicate with the =jupyer= kernels. We can use
-it with babel after installation.
-- ref: https://github.com/nnicandro/emacs-jupyter
-
-#+begin_src emacs-lisp :lexical no
-;; An interface to communicate with Jupyter kernels.
-;; jupyter lab
-(use-package jupyter
-  :after (:all org python)
-  :quelpa
-  (jupyter :fetcher github :repo "emacs-jupyter/jupyter" :upgrade t)
-  :commands (jupyter-run-server-repl
-             jupyter-run-repl
-             jupyter-server-list-kernels)
-  :config
-  (setq jupyter-eval-use-overlays t)
-  (setq org-babel-default-header-args:jupyter '((:async   . "yes")
-                                                (:session . "py")
-                                                (:exports . "both")
-                                                (:cache   . "no")
-                                                (:tangle  . "no")
-                                                (:hlines  . "no")
-                                                (:kernel  . "python3"))))
-#+end_src
-
-*** ChatGPT Shell support in Babel
-=ChatGPT= can be integrated with =org babel= in order to execute snippets in
-literate documents.
-
-ref: https://github.com/xenodium/chatgpt-shell
-
-#+begin_src emacs-lisp :lexical no
-;; chatgpt-shell integration with org mode babel
-(use-package ob-chatgpt-shell
-  :after (org)
-  :hook
-  (org-mode . aqua/ob-chatgpt-setup)
-  :preface
-  (defun aqua/ob-chatgpt-setup ()
-    (require 'ob-chatgpt-shell)))
-#+end_src
-
+* AI Integration
+Emacs has the flexibility to use machine learning and artificial intelligence tools. Free versions of Generational model based systems like ChatGPT integration is possible.
 
 ** Org AI
 =org-ai= is a minor mode for Emacs org-mode that provides access to generative AI
@@ -1472,12 +1561,29 @@ ref: https://github.com/rksm/org-ai
       (auth-source-pick-first-password :host "api.openai.com")))
 #+end_src
 
+** ChatGPT Shell support in Babel
+=ChatGPT= can be integrated with =org babel= in order to execute snippets in
+literate documents.
+
+ref: https://github.com/xenodium/chatgpt-shell
+
+#+begin_src emacs-lisp :lexical no
+;; chatgpt-shell integration with org mode babel
+(use-package ob-chatgpt-shell
+  :after (org)
+  :hook
+  (org-mode . aqua/ob-chatgpt-setup)
+  :preface
+  (defun aqua/ob-chatgpt-setup ()
+    (require 'ob-chatgpt-shell)))
+#+end_src
+
 ** BABEL extension for Chat Assistant
 =org-assistant= is an Emacs plugin that provides support for accessing chat APIs
 such as *ChatGPT* in the context of an org notebook.
 
-It provides a function named ~org-assistant~ that serves as entrypoint for
-displaying an org assistant buffer. Also, it can be used in any org file by
+It  provides  a function  named  ~org-assistant~  that  serves as  entrypoint  for
+displaying an  org assistant buffer.  Also, it  can be used  in any org  file by
 using a src block like below
 
 #+begin_src org :tangle no
@@ -1499,8 +1605,7 @@ using a src block like below
         (auth-source-pick-first-password :host "api.openai.com")))
 #+end_src
 
-** BABEL settings
-
+* BABEL configuration and customisation
 ~Babel~ is the =org-mode= ability to execute source code from within org documents. It
 is quite powerful and is one of the strongest features of =org= and is the corner
 stone for documents with reproducible research.
@@ -1555,8 +1660,7 @@ language. For details, see the language-specific online documentation at
 ;; (setf (cdr (assoc :noweb org-babel-default-header-args)) "yes")
 #+end_src
 
-*** Register languages for babel
-
+** Register languages for babel
 Enable languages and tools for babel support to handle the literate
 programming.
 
@@ -1577,15 +1681,15 @@ programming.
     plantuml
     ditaa
     restclient     ;; ob-restclient
-    python
-    ipython
-    js
+    js             ;; javascript
     java
     shell
     dot
     go             ;; via ob-go
     rust           ;; via ob-rust
     chatgpt-shell  ;; ob-chatgpt-shell
+    python         ;; python
+    ipython        ;; ipython
     jupyter        ;; load jupyter at the end
     )
   "A list of org-babel languages to load.")
@@ -1596,17 +1700,35 @@ programming.
          do (require (intern (format "ob-%s" lang))))
 
 ;; execute the src code block by pressing C-c C-c on the source-block header
-;;
+;; enable languages for org-babel
 (org-babel-do-load-languages
  'org-babel-load-languages
  (cl-loop for sym in +org-babel-languages
           collect (cons sym t)))
 #+end_src
 
-*** Specify compiler and header options for languages supported
+#+begin_src emacs-lisp :tangle no
+;; we should be able to use source blocks with names like jupyter-LANG,
+;; e.g. jupyter-python. To use just LANG src blocks, call the following
+;; function after org-babel-do-load-languages
+(with-eval-after-load 'ob-jupyter
+  (org-babel-jupyter-override-src-block "python")
+  ;; (org-babel-jupyter-override-src-block "hy")
+  )
+#+end_src
 
-**** ob-C
+This overrides the built-in =python= block with =jupyter-python= as after calling the above function, all =python= source blocks are effectively aliases of =jupyter-python= source blocks and the variable =org-babel-default-header-args:python= will be set to the value of =org-babel-default-header-args:jupyter-python=.
 
+The original behavior may be restored by calling =org-babel-jupyter-restore-src-block=:
+#+begin_src emacs-lisp
+;; restore the original behavior by calling org-babel-jupyter-restore-src-block
+(org-babel-jupyter-restore-src-block "python")
+#+end_src
+
+** Compiler and Header options
+The code blocks to be executed by Babel can be provided with additional custom parameters as well as language specific parameters like headers, compiler options etc., and the org =src= blocks provide ready options for the same.
+
+*** ob-C
 Provide the required =gcc= compilation options for =C= compiler through =babel= interface.
 
 #+begin_src emacs-lisp :lexical no
@@ -1614,8 +1736,7 @@ Provide the required =gcc= compilation options for =C= compiler through =babel= 
 (setq org-babel-C-compiler "gcc -std=c99")
 #+end_src
 
-**** C++ src code headers
-
+*** C++ src code headers
 Enable support of additional header arguments for =C++= buffers.
 
 #+begin_src emacs-lisp :lexical no
@@ -1627,8 +1748,7 @@ Enable support of additional header arguments for =C++= buffers.
         (:cache   . "yes")))
 #+end_src
 
-**** Bash src code headers
-
+*** Bash src code headers
 Support for additional headers for =bash= code fragments.
 
 #+begin_src emacs-lisp :lexical no
@@ -1640,50 +1760,8 @@ Support for additional headers for =bash= code fragments.
       '((:results . "verbatim output replace")))
 #+end_src
 
-**** Using jupyter code blocks
-
-Instead of having to specify ~jupyter-LANG~ as a source block name, you can have
-~LANG~ source blocks use the _jupyter_ machinery. To do so, place a call to
-~org-babel-jupyter-override-src-block~ somewhere in your config (after the call
-to ~org-babel-do-load-languages~).
-- ref: https://github.com/nnicandro/emacs-jupyter
-
-#+begin_example
-;; overriding built-in src-block languages
-(org-babel-jupyter-override-src-block "python")
-
-;; restore the original behavior by calling org-babel-jupyter-restore-src-block.
-(org-babel-jupyter-restore-src-block "python")
-#+end_example
-
-
-After loading, source code blocks with names like *jupyter-LANG* will be
-available for use. *LANG* can be any one of the kernel languages found on your
-system. See =jupyter-available-kernelspecs=.
-
-**** Issue 135 for ob-ipython
-To counter the issue reported at [[https://github.com/gregsexton/ob-ipython/issues/135][json readtable error]] use the below code to
-remove anything around or between top-level JSON objects in the response:
-
-#+begin_src emacs-lisp :lexical no
-;; kill extraneous content in ipython returns between top-level JSON objects
-(advice-add 'ob-ipython--collect-json :before
-            (lambda (&rest args)
-              (let ((start (point)))
-                (set-mark (point))
-                (while (re-search-forward "{" nil t)
-                  (backward-char)
-                  (kill-region (region-beginning) (region-end))
-                  (re-search-forward "}\n" nil t)
-                  (set-mark (point)))
-                (end-of-buffer)
-                (kill-region (region-beginning) (region-end))
-                (goto-char start))))
-#+end_src
-
-** Tables and Borders
-For automatic table alignment, use the below snippet that was borrowed from
-~scimax~.
+* Tables and Borders
+For automatic table alignment, use the below snippet that was borrowed from ~scimax~.
 
 #+begin_src emacs-lisp
 ;; for automatic table alignment (idea picked from scimax)
@@ -1701,14 +1779,13 @@ For automatic table alignment, use the below snippet that was borrowed from
 (add-hook 'org-babel-after-execute-hook 'org-align-result-table)
 #+end_src
 
-
-*** For vertically alignment of tables
-
+** For vertical alignment of tables
 =valign= is a package that assists in pixel-perfect visual alignment for =Org= and
 =Markdown= tables.
 
 #+BEGIN_SRC emacs-lisp
-;; This package provides visual alignment for Org Mode, Markdown and table.el tables on GUI Emacs
+;; This package provides visual alignment for Org Mode,
+;; Markdown and table.el tables on GUI Emacs
 (use-package valign
   :after (org)
   :defer 3
@@ -1716,10 +1793,7 @@ For automatic table alignment, use the below snippet that was borrowed from
   (valign :fetcher github :repo "casouri/valign")
   :hook (org-mode . valign-mode))
 #+END_SRC
-
-
-** LaTeX Export settings
-
+* LaTeX export settings
 For source code highlighting during the export of org documents, we will be
 using the python ~pygments~ package. Ensure that the same is installed and is
 available from the ~pip~.
@@ -1729,6 +1803,7 @@ compiling use ~C-c C-c~.
 
 =LaTeX= quick reference document is available at [[https://latexref.xyz/][latexref]].
 
+*THIS IS NOT USED*
 #+begin_src emacs-lisp :tangle no
 ;; for the src code syntax highlighting during the export use pygments
 ;;    install the python pygments package
@@ -1786,6 +1861,7 @@ compiling use ~C-c C-c~.
      ))
 #+end_src
 
+=Minted= specific options for providing color formatting of code.
 #+begin_src emacs-lisp
 ;; for code syntax highlighting in org exports and during compilation
 ;; latex should be used with -shell-escape after installing pygments
@@ -1797,20 +1873,22 @@ compiling use ~C-c C-c~.
 ;; minted specific options through pygments
 (setq org-latex-minted-options
       '(("frame"         "lines")
-        ;;("fontsize" "\\scriptsize")
-        ;;("bgcolor" "mintedbg")
         ("fontsize"      "\\scriptsize")
-        ("linenos"       "")
-        ("autogobble"    "")
+        ("linenos"       "true")
+        ("autogobble"    "true")
         ("mathescape"    "true")
         ("breaklines"    "true")
         ("breakanywhere" "true")
+        ("tabsize"       "4")
+        ;; ("bgcolor"       "mintedbg")
         ;; ("samepage"      "")
+        ;; ("numbersep"     "0.5cm")
         ;; ("xrightmargin"  "0.5cm")
         ;; ("xleftmargin"   "0.5cm")
         ))
 #+end_src
 
+The below older settings are set not to run by marking ~tangle~ option to =no=.
 #+begin_src emacs-lisp :lexical no :tangle no
 (setq org-latex-packages-alist
       ;; default packages to be inserted in the header
@@ -1829,7 +1907,6 @@ compiling use ~C-c C-c~.
         ("english" "babel")))                              ; Multilingual support for LaTeX
 #+end_src
 
-
 Also, as explained in this [[https://tex.stackexchange.com/questions/2984/frequently-loaded-packages-differences-between-pdflatex-and-xelatex][article]], ~XeTeX~ uses the ~fontspec~ package instead of
 ~inputenc~ or ~fontenc~ so add =("" "fontspec")= to ~org-latex-packages-alist~.
 
@@ -1845,8 +1922,7 @@ Also, as explained in this [[https://tex.stackexchange.com/questions/2984/freque
 
 *Note*: Some good resources for LaTeX are available [[https://steeven9.github.io/USI-LaTeX/html/general_index.html][here]].
 
-*** Some custom settings for latex export
-
+** Customisation for exporting using LaTeX
 We can avoid placing of the ~\maketitle~ right after ~begin{document}~ which allows
 us to place the ~\maketitle~ wherever we want.
 
@@ -1876,8 +1952,7 @@ and in embedded LaTeX code.
 (setq org-latex-prefer-user-labels t)
 #+end_src
 
-*** Smart quotes
-
+** Smart quotes
 The differentiation of single, double and back quotes may comes from the world
 of \TeX of =pre-Unicode= eras trying to ~improve~ the typograph by using
 conventions that no longer hold any more.
@@ -1890,8 +1965,7 @@ globally.
 (setq org-export-with-smart-quotes t)
 #+END_SRC
 
-*** LaTeX options for default exported packages
-
+** LaTeX options for default exported packages
 Here, we consider options for using multilingual support in LaTeX through
 appropriate options.
 
@@ -1906,7 +1980,7 @@ appropriate options.
 
   Here, we added /sanskrit/ as a second language.
 
-**** A quick example.
+  *** A quick example.
 
 #+begin_example
 #+TITLE: Multilingual support in ORG
@@ -1918,7 +1992,7 @@ appropriate options.
 #+LATEX_HEADER: \newfontfamily\devanagarifont[Script=Devanagari]{Adelle Sans Devanagari}
 #+end_example
 
-**** Enable pdf and eps images in org mode
+*** Enable pdf and eps images in org mode
 
 The below configuration enables to use ~pdf~ and ~eps~ images in org mode.
 
@@ -1928,14 +2002,14 @@ The below configuration enables to use ~pdf~ and ~eps~ images in org mode.
 (add-to-list 'image-file-name-extensions "eps")
 
 (add-to-list 'image-type-file-name-regexps '("\\.eps\\'" . imagemagick))
-(add-to-list 'image-file-name-extensions "eps")
+(add-to-list 'image-file-name-extensions   "eps")
 (add-to-list 'image-type-file-name-regexps '("\\.pdf\\'" . imagemagick))
-(add-to-list 'image-file-name-extensions "pdf")
+(add-to-list 'image-file-name-extensions   "pdf")
 
 (setq imagemagick-types-inhibit (remove 'PDF imagemagick-types-inhibit))
 #+end_src
 
-**  This is a latex experiment
+** This is a latex experiment
 
 \begin{sanskrit}
 सर्वधर्मान् परित्यज्य मामेकं शरणं व्र्ज
@@ -1961,7 +2035,7 @@ And this is an equation [[eqn:1]]
 
 + TODO: Explore https://github.com/grettke/org-utf-to-xetex#installation
 
-*** Latex previewing
+  ** Latex previewing
 
 Orgmode is  used mainly  by scientists and  researchers taking  notes. Sometimes
 these notes include  mathematics and scientists almost universally  use LaTeX in
@@ -1994,8 +2068,7 @@ To disable use
 #+STARTUP: nolatexpreview
 #+end_text
 
-**** Additional options for latex previewing
-
+*** Additional options for latex previewing
 Some additional customisation's for latex preview.
 
 #+begin_src emacs-lisp :lexical no
@@ -2008,7 +2081,6 @@ Some additional customisation's for latex preview.
 (setq org-latex-create-formula-image-program 'dvipng) ;; for sharper images
 (setq org-preview-latex-default-process 'dvisvgm)
 #+end_src
-
 
 These are disabled for now
 #+begin_src emacs-lisp :lexical no :tangle no
@@ -2055,7 +2127,6 @@ These are disabled for now
 #+end_src
 
 *** Toggle latex preview on mouse enter with addon org-fragtog
-
 ~org-fragtog~ is package that can automatically toggle Org mode LaTeX fragment
 previews as the cursor enters and exits them.
 
@@ -2078,8 +2149,49 @@ with ~C-c C-x C-l~. org-fragtog automates  this, so fragment previews are disabl
 for editing  when your cursor  steps onto them,  and re-enabled when  the cursor
 leaves.
 
-*** General LaTeX completion with cdlatex and company-math
+*** Latex Preview Pane
+=latex-preview-pane= is a minor mode for Emacs that enables you to preview your LaTeX files directly in Emacs. It supports PDF previews, your choice of pdflatex or xelatex, and it highlights errors in your LaTeX buffer.
 
+#+begin_src emacs-lisp :lexical no
+(use-package latex-preview-pane
+  :quelpa
+  (:fetcher github :repo "https://github.com/jsinglet/latex-preview-pane")
+  :defer t
+  :config
+  (latex-preview-pane-enable))
+#+end_src
+
+** Latex Math Preview
+A package for previewing the latex mathematical expressions.
+
+#+begin_src emacs-lisp :lexical no
+;; latex mathematical expressions preview
+(use-package latex-math-preview
+  :quelpa (:fetcher github :repo "https://github.com/emacsmirror/latex-math-preview")
+  :defer t
+  :config
+  (autoload 'latex-math-preview-expression      "latex-math-preview" nil t)
+  (autoload 'latex-math-preview-insert-symbol   "latex-math-preview" nil t)
+  (autoload 'latex-math-preview-save-image-file "latex-math-preview" nil t)
+  (autoload 'latex-math-preview-beamer-frame    "latex-math-preview" nil t))
+#+end_src
+
+*** LaTeX preview with org-auctex
+=org-auctex= provides better and faster latex previews for org-mode. =org-auctex-preview-dwim= is a drop-in replacement for =org-latex-preview= (including the prefix argument behaviour).
+
+Turning on =org-auctex-mode= in an org buffer will replace your binding for =org-latex-preview= (C-c C-x C-l by default) with =org-auctex-preview-dwim=.
+
+#+begin_src emacs-lisp :lexical no
+;; fast latex previews in org-mode
+(use-package org-auctex
+  :quelpa (org-auctex
+           :fetcher github
+           :repo "karthink/org-auctex")
+  :after (org)
+  :hook (org-mode . org-auctex-mode))
+#+end_src
+
+*** General LaTeX completion with cdlatex and company-math
 =CDLatex= provides a  collection of convenience functions that  speed up editing
 LaTeX documents. It allows fast input methods  to enter LaTeX data and Math. The
 package  =company-math=  provides a  completion  back-ends  for the  math  unicode
@@ -2106,6 +2218,7 @@ automatically adding inline math dollars if necessary:
 ;; CDLatex for faster input of latex
 ;; https://gist.github.com/karthink/7d89df35ee9b7ac0c93d0177b862dadb
 (use-package cdlatex
+  :quelpa (cdlatex :fetcher github :repo "cdominik/cdlatex")
   :ensure t
   :after (:any org-mode tex-mode auctex)
   :hook
@@ -2131,7 +2244,6 @@ automatically adding inline math dollars if necessary:
    (latex-mode . aqua/latex-math-mode-setup)))
 #+end_src
 
-
 *** Company math symbol handling
 Enable math symbol backend only in =TeX-mode= and =org-mode=.
 
@@ -2148,7 +2260,6 @@ Enable math symbol backend only in =TeX-mode= and =org-mode=.
   (add-hook 'TeX-mode-hook 'aqua/company-math-init)
   (add-hook 'org-mode-hook 'aqua/company-math-init))
 #+end_src
-
 
 ** Xenops: LaTeX editing environment for mathematical documents
 
@@ -2212,13 +2323,13 @@ Pre-export settings useful for adding and configuring the packages.
 
         ;; for math symbols support
         ;; the order of below is important to avoid \iint and \iiint errors
-        ("" "amsmath" t)                     ; math formulas support
-        ("" "textcomp" t)                    ; support for Text Companion fonts
-        ("" "marvosym" t)                    ; support for currency symbols
-        ("" "wasysym" t)                     ; support for wasy fonts
-        ("" "amssymb" t)                     ; math symbols support
-        ("" "amsmath" t)                     ; math formulas support
-        ("theorems, skins" "tcolorbox" t)    ; coloured and framed text boxes
+        ("" "amsmath" t)                        ; math formulas support
+        ("" "textcomp" t)                       ; support for Text Companion fonts
+        ("" "marvosym" t)                       ; support for currency symbols
+        ("" "wasysym" t)                        ; support for wasy fonts
+        ("" "amssymb" t)                        ; math symbols support
+        ("" "amsmath" t)                        ; math formulas support
+        ("theorems,skins,many" "tcolorbox" t)   ; coloured and framed text boxes
 
         ;; bibliography styles
         ;; note that natbib and biblatex are incompatible
@@ -2265,14 +2376,25 @@ citecolor=magenta,filecolor=green,urlcolor=cyan" "hyperref" nil)
 An example configuration for ~hyperref~ setup
 #+begin_example
  org-latex-hyperref-template
- "\\hypersetup{
- pdfauthor={%a},
- pdftitle={%t},
- pdfkeywords={%k},
- pdfsubject={%d},
- pdfcreator={%c},
- pdflang={%L},
- colorlinks, linkcolor={red!50!black}, citecolor={blue!50!black}, urlcolor={blue!80!black}
+ "\\providecolor{url}{HTML}{0077bb}
+  \\providecolor{link}{HTML}{882255}
+  \\providecolor{cite}{HTML}{999933}
+  \\hypersetup{
+  pdfauthor={%a},
+  pdftitle={%t},
+  pdfkeywords={%k},
+  pdfsubject={%d},
+  pdfcreator={%c},
+  pdflang={%L},
+  breaklinks=true,
+  colorlinks=true,
+  linkcolor={red!50!black},
+  citecolor={blue!50!black},
+  urlcolor={blue!80!black}
+  \\urlstyle{same}
+  %% hide links styles in toc
+  \\NewCommandCopy{\\oldtoc}{\\tableofcontents}
+  \\renewcommand{\\tableofcontents}{\\begingroup\\hypersetup{hidelinks}\\oldtoc\\endgroup}
 }"
 #+end_example
 
@@ -2283,7 +2405,8 @@ Here, we set the compilation command for org to latex to pdf.
 ;;
 ;; Let the exporter use the -shell-escape option to let latex
 ;; execute external programs.
-
+;; Set the LaTeX compiler to run
+;; the available ones are xelatex, pdflatex and lualatex
 (setq org-latex-compiler "xelatex")
 
 ;;  defines how to generate the pdf file using xelatex + bibtex
@@ -2310,9 +2433,7 @@ Here, we set the compilation command for org to latex to pdf.
 (message "[LaTeX export command: %s]" org-latex-pdf-process)
 #+end_src
 
-
-** LaTeX export with additional classes
-
+** Additional classes for LaTeX export
 Org-mode  includes  a  powerful  export  module for  converting  files  to  many
 formats. Start  the export module  with the ~org-export-dispatch~  function, which
 can be  run with  the ~C-c  C-e~ keyboard  shortcut. The  dispatch will  split the
@@ -2365,8 +2486,7 @@ More complex header configurations may be defined by changing the
 Call this particular class by adding *#+latex_class: taylorfrancis* to your file header.
 
 *** All custom latex classes
-
-Custom latex classes configured are all in this section.
+Custom latex classes for formatted outputs from LaTeX export are configured in this section.
 
 #+begin_src emacs-lisp
 ;; adding additional classes for org-export
@@ -2415,6 +2535,8 @@ Custom latex classes configured are all in this section.
                 \\institute{{{{beamerinstitute}}}}\n
                 \\subject{{{{beamersubject}}}}\n"
                ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\begin{frame}[fragile]\\frametitle{%s}"
                 "\\end{frame}"
                 "\\begin{frame}[fragile]\\frametitle{%s}"
@@ -2456,6 +2578,15 @@ Custom latex classes configured are all in this section.
 (add-to-list 'org-latex-classes
              '("ieee"
                "\\usepackage{IEEEconf,IEEEtran} \\documentclass[12pt,journal]{IEEEtran}"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(add-to-list 'org-latex-classes
+            '("scrartcl"
+               "\\documentclass[letterpaper]{scrartcl}"
                ("\\section{%s}" . "\\section*{%s}")
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
@@ -2527,41 +2658,10 @@ Custom latex classes configured are all in this section.
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-
-;; https://github.com/Tufte-LaTeX/tufte-latex
-;; tufte-book class for writing classy books
-;; Edward Tufte is known for graphical excellence in his famous books. The
-;; below latex class is to handle format matching his work
-;; (add-to-list 'org-export-latex-classes
-;;         '("tufte-book"
-;;         "\\documentclass{tufte-book}\n
-;;         \\usepackage{color}
-;;         \\usepackage{amssymb}
-;;         \\usepackage{gensymb}
-;;         \\usepackage{units}"
-;;         ("\\section{%s}"      . "\\section*{%s}")
-;;         ("\\subsection{%s}"   . "\\subsection*{%s}")
-;;         ("\\paragraph{%s}"    . "\\paragraph*{%s}")
-;;         ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-;; tufte-handout class for writing classy handouts and papers
-;; (add-to-list 'org-export-latex-classes
-;; '("tuftehandout"
-;;         "\\documentclass{tufte-handout}
-;;         \\usepackage{color}
-;;         \\usepackage{amssymb}
-;;         \\usepackage{amsmath}
-;;         \\usepackage{gensymb}
-;;         \\usepackage{nicefrac}
-;;         \\usepackage{units}"
-;;         ("\\section{%s}" . "\\section*{%s}")
-;;         ("\\subsection{%s}" . "\\subsection*{%s}")
-;;         ("\\paragraph{%s}" . "\\paragraph*{%s}")
-;;         ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
-#+begin_src emacs-lisp :lexical no
+The below section is applicable if we use =listings= for code block formatting. But currently we are settled on using =minted= which is more feature rich.
+#+begin_src emacs-lisp :lexical no :tangle no
 (setq org-latex-listings-options '(("breaklines" "true")
                                    ("literate" "{0}{0}{1}%
                                                 {1}{1}{1}%
@@ -2576,11 +2676,9 @@ Custom latex classes configured are all in this section.
                                                 ")))
 #+end_src
 
-** Latex configurations and addons
-
+** Additional settings and Addons for LaTeX
 This section consists of certain configurations and Some additional helper
 packages and functions required for working with ~LaTeX~.
-
 *** Compiling
 With =auctex= we can compile the =TeX= documents into =pdf= files using Emacs mapping
 *C-c C-c* and then followed by typing *mk* and using *LaTeXmk* for compilation.
@@ -2590,7 +2688,6 @@ Also, *C-c C-a* does everything without any prompt.
 *C-c ret* –> add macros such as \item etc…
 
 *** Auctex
-
 =AucTeX=  is  an extensible  package  for  writing  and  formatting Tex  files  in
 Emacs.  It is  the  foundation for  LaTeX  (and ConText)  editing  in Emacs.  It
 provides commands and  minor-modes for all the aspects of  document creation. It
@@ -2608,16 +2705,14 @@ general, always available options for text input are:
     prompting you for arguments.
   * Insert a section header with LaTeX-section (C-c C-s).
 
-#+begin_src emacs-lisp :noweb yes
+#+begin_src emacs-lisp :noweb yes :tangle no
 ;; auctex
-;; (use-package tex
-;;   :defer t
-;;   :ensure auctex)
 (use-package tex
-  :defer t
-  :ensure auctex
+  :straight auctex
+  :defer 3
   :init
   (progn
+    (load "auctex.el" nil t t)
     ;; set the default command for tex command
     (setq TeX-command-default   (if (executable-find "latexmk") "LatexMk" "LaTeX")
           ;; set the LaTeX Engine
@@ -2629,9 +2724,9 @@ general, always available options for text input are:
           TeX-style-local                   ".auctex-style"
           ;; Synctex is a nice add-on that synchronizes the editing tool
           ;; (Emacs/MacTeX/AucTeX) with a PDF viewing tool
-          TeX-source-correlate-mode         t
           TeX-source-correlate-method       'synctex
-          TeX-source-correlate-start-server nil
+          TeX-source-correlate-start-server t
+          TeX-source-correlate-mode         t
           TeX-electric-sub-and-superscript  t
           TeX-fill-break-at-separators      nil
           TeX-save-query                    t
@@ -2653,14 +2748,41 @@ general, always available options for text input are:
   (add-hook 'TeX-mode-hook (lambda ()
                              (setq ispell-parser          'tex
                                    fill-nobreak-predicate (cons #'texmathp fill-nobreak-predicate))))
+
+
   (add-hook 'TeX-mode-hook #'visual-line-mode)
   (add-hook 'TeX-update-style-hook #'rainbow-delimiters-mode)
+  (add-hook 'LaTeX-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'LaTeX-mode-hook #'smartparens-mode)
+  (add-hook 'LaTeX-mode-hook #'prettify-symbols-mode)
+
+
+  ;; Scale preview for my DPI
+  (setq-default font-latex-fontify-sectioning 1.3)
+  (setq-default preview-scale-function 1.4)
+  (when (boundp 'tex--prettify-symbols-alist)
+    (assoc-delete-all "--" tex--prettify-symbols-alist)
+    (assoc-delete-all "---" tex--prettify-symbols-alist))
+
+
+  ;; REFTEX Settings
+  (require 'reftex)
   (add-hook 'TeX-mode-hook #'turn-on-reftex)
+  (setq reftex-plug-into-AUCTeX t)
+  (setq reftex-enable-partial-scans t)
+  (setq reftex-save-parse-info t)
+  (setq reftex-use-multiple-selection-buffers t)
+  (setq reftex-toc-split-windows-horizontally t)                       ; *toc*buffer on left。
+  (setq reftex-toc-split-windows-fraction 0.2)                         ; *toc*buffer ratio。
+  (autoload 'reftex-mode "reftex" "RefTeX Minor Mode" t)
+  (autoload 'turn-on-reftex "reftex" "RefTeX Minor Mode" nil)
+  (autoload 'reftex-citation "reftex-cite" "Make citation" nil)
+  (autoload 'reftex-index-phrase-mode "reftex-index" "Phrase mode" t)
+
   '(add-to-list 'TeX-expand-list '("%q" skim-make-url)))
 #+end_src
 
 *Notes*
-
 Open a =.tex= file and give it a try. Once you finish editing the source file,
 you can compile the project with =C-c C-c= and =C-c C-c= again to view the PDF in
 Skim. Forward search can be called by =C-c C-v= and inverse search can be
@@ -2700,9 +2822,22 @@ called by /shift + cmd + (left click)/.
 ;; (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
 #+end_src
 
+*** Auto completion for Auctex
+=company-auctex= provide autocompletion for auctex.
+#+begin_src emacs-lisp :tangle no
+(use-package company-auctex
+  :after (:all company tex)
+  :demand t
+  :quelpa (:fetcher github :repo "alexeyr/company-auctex")
+  :init
+  (add-hook 'TeX-mode-hook
+            (lambda ()
+              (make-local-variable 'company-backends)
+              (company-auctex-init))))
+#+end_src
 
-**** From Doom Emacs configuration:
-
+*** From Doom Emacs configuration:
+The below settings are all borrowed from =doom= emacs configuration.
 #+name: latex-fontification
 #+begin_src emacs-lisp :tangle no
 (setq font-latex-match-reference-keywords
@@ -2763,8 +2898,7 @@ called by /shift + cmd + (left click)/.
         ("crefname" "{")))
 #+end_src
 
-**** Settings for tex-mode
-
+*** Settings for tex-mode
 =tex-mode= is a built-in package which we configure as per our requirement in this
 section.
 
@@ -2781,8 +2915,7 @@ section.
         LaTeX-item-indent              0))
 #+end_src
 
-**** Adding LatexMk support
-
+*** Adding LatexMk support
 The package =auctex-latexmk= adds LatexMk support to AUCTeX.
 
 #+begin_src emacs-lisp :tangle no
@@ -2796,23 +2929,7 @@ The package =auctex-latexmk= adds LatexMk support to AUCTeX.
   (auctex-latexmk-setup))
 #+end_src
 
-**** Auto completion for Auctex
-
-=company-auctex= provide autocompletion for auctex
-
-#+begin_src emacs-lisp :tangle no
-(use-package company-auctex
-  :after (:all company tex)
-  :demand t
-  :quelpa (:fetcher github :repo "alexeyr/company-auctex")
-  :init
-  (add-hook 'TeX-mode-hook
-            (lambda ()
-              (make-local-variable 'company-backends)
-              (company-auctex-init))))
-#+end_src
-
-*** Latex configuration settings
+*** Additional settings for LaTeX
 Additional settings for LaTeX buffers.
 
 #+begin_src emacs-lisp :tangle no
@@ -2894,8 +3011,7 @@ Below are the main settings loaded currently
          (latex-mode doctex-mode)))))
 #+end_src
 
-
-*** ox-latex export settings
+** ox-latex export settings
 Some settings for the =ox-latex= while assisting in the export of org documents
 into various formats.
 #+begin_src emacs-lisp :lexical no
@@ -2913,35 +3029,7 @@ into various formats.
 (setq org-latex-remove-logfiles nil)
 #+end_src
 
-*** Latex Preview Pane
-=latex-preview-pane= is a minor mode for Emacs that enables you to preview your LaTeX files directly in Emacs. It supports PDF previews, your choice of pdflatex or xelatex, and it highlights errors in your LaTeX buffer.
-
-#+begin_src emacs-lisp :lexical no
-(use-package latex-preview-pane
-  :quelpa
-  (:fetcher github :repo "https://github.com/jsinglet/latex-preview-pane")
-  :defer t
-  :config
-  (latex-preview-pane-enable))
-#+end_src
-
-*** Latex Math Preview
-A package for previewing the latex mathematical expressions.
-
-#+begin_src emacs-lisp :lexical no
-;; latex mathematical expressions preview
-(use-package latex-math-preview
-  :quelpa (:fetcher github :repo "https://github.com/emacsmirror/latex-math-preview")
-  :defer t
-  :config
-  (autoload 'latex-math-preview-expression      "latex-math-preview" nil t)
-  (autoload 'latex-math-preview-insert-symbol   "latex-math-preview" nil t)
-  (autoload 'latex-math-preview-save-image-file "latex-math-preview" nil t)
-  (autoload 'latex-math-preview-beamer-frame    "latex-math-preview" nil t))
-#+end_src
-
-*** TexPdf options and auto-fill for latex
-
+** TexPdf options and auto-fill for latex
 Enable =auto-fill= for the LaTeX content.
 
 #+begin_src emacs-lisp :lexical no
@@ -2965,8 +3053,7 @@ Enable =auto-fill= for the LaTeX content.
 (add-hook 'latex-mode-hook 'auto-fill-mode-on)    ; using Emacs Latex
 #+end_src
 
-*** Generate TeX file with a hook
-
+** Generate TeX file with a hook
 The function defined here can be used in an ~after-save-hook~ to generate the
 ~LaTeX~ document from the ~org~ source and it can be defined on a per file basis.
 
@@ -2979,15 +3066,13 @@ The function defined here can be used in an ~after-save-hook~ to generate the
 #+end_src
 
 The function can be invoked from local variables in a file with below
-
 #+begin_example
 # Local Variables:
 # after-save-hook: aqua/org-export-tex-on-save
 # End:
 #+end_example
 
-** Bibliography and Citations
-
+* Bibliography and Citations
 While writing research papers it is common to insert the links citing the
 reference from where the section has been used. ~org-ref~ is a package that helps
 with this process.
@@ -3016,8 +3101,7 @@ At the end
   ,#+LaTeX: \printbibliography[heading=none]
 #+end_src
 
-**** Some terminology for reference
-
+** Some terminology for reference
 It's first off important to realize that the term BibTeX is often used to refer
 to various distinct things, and this can lead to some confusion. For example we
 typically tell  new users to "use  bibtex for your bibliography"  which usually
@@ -3036,8 +3120,7 @@ We will use the following terms:
   bibliographies; ~natbib~ works only with ~bibtex~, while _biblatex_ (at the moment)
   works with both _bibtex_ and _biber_.)
 
-*** Biblatex
-
+** Biblatex
 When it comes to bibliography management  packages, there are three main options
 in =LaTeX: bibtex,  natbib and biblatex=. Biblatex is a  modern program to process
 bibliography information that provides an easier and more flexible interface and
@@ -3052,8 +3135,7 @@ Here, we are using =biblatex= by default for Latex.
   (setq bibtex-dialect 'bibtex))
 #+end_src
 
-*** Using org-ref for Bibliographies and Citations
-
+** Using org-ref for Bibliographies and Citations
 =org-ref=  makes  it easy  to  insert  citations, cross-references,  indexes  and
 glossaries as hyper-functional links into org files. The links are fontified so
 you can tell them apart from other  links, and each link is clickable to access
@@ -3102,9 +3184,9 @@ Installation of the ~org-ref~ package for handling bibliographies and citations.
 (use-package org-ref
   :quelpa
   (org-ref :fetcher github :repo "jkitchin/org-ref")
-  :after (org)
+  :after org
   ;; :demand t ;; ensure that it loads so that links work immediately
-  :defer t
+  ;; :defer t
   :custom-face
   (org-ref-cite-face ((t (:weight bold))))
   :init
@@ -3202,7 +3284,7 @@ typically what we want). If an  alternative citation format is required (perhaps
 one without parentheses), pressing =<C-u Enter>= will get the list of all possible
 citation formats.
 
-*** Using ivy for org-ref
+** Using ivy for org-ref
 =ivy= provides completion support for selecting and placing the right =bibtex=
 entry into the org document.
 
@@ -3231,7 +3313,7 @@ entry into the org document.
       (message "No PDF found for %s" key))))
 #+end_src
 
-*** Using ivy bibtex for managing bibliographies
+** Using ivy bibtex for managing bibliographies
 Searching and managing the bibliographies and citations in Emacs through
 ~ivy-bibtex~. Documentation for the relevant package is available at [[https://github.com/tmalsburg/helm-bibtex][helm-bibtex]].
 
@@ -3310,8 +3392,7 @@ reader =Skim=. These are two functions specifically for _MacOS_.
       (message "No PDF(s) found for this entry: %s" key)))))
 #+end_src
 
-
-*** Literate & annotated bibliography
+** Literate & annotated bibliography
 The core idea  behind literate bibliography is to have  a single structured file
 where each entry corresponds to a  reference. Information concerning an entry is
 stored as properties  and two subsections allow to enter  abstract and notes. To
@@ -3319,7 +3400,7 @@ ease the  manipulation, =org-bib-mode= provides  a sidebar menu that  displays t
 list of  bibliograpic entries and  provide tools  to ease navigation.  Under the
 hood, the =org-bib-mode= is the union of two modes:
 
-**** pdf-drop-mode
+*** pdf-drop-mode
 The =pdf-drop-mode= mode allows to drag and drop a file in order to add it to the bibliography
 using its doi that is searched automatically.
 
@@ -3336,7 +3417,7 @@ using its doi that is searched automatically.
   (pdf-drop-mode))
 #+end_src
 
-**** org-imenu
+*** org-imenu
 The =org-imenu= mode allows to easily nagivate among entries and allowing various
 operations such as filtering entries, moving entries, etc.
 
@@ -3347,7 +3428,6 @@ operations such as filtering entries, moving entries, etc.
   :quelpa (:fetcher github :repo "rougier/org-imenu"))
 #+end_src
 
-
 Now install the ~org-bib-mode~ which is the minor mode for literate & annotated bibliography.
 #+begin_src emacs-lisp
 ;; org-bib-mode
@@ -3355,7 +3435,7 @@ Now install the ~org-bib-mode~ which is the minor mode for literate & annotated 
   :quelpa (:fetcher github :repo "rougier/org-bib-mode"))
 #+end_src
 
-*** Prettify org-ref citation links
+** Prettify org-ref citation links
 ~org-ref-prettify.el~ is a minor mode for prettifying the ~org-ref~ citation links.
 
 If ~org-ref-prettify-mode~ is enabled, you cannot (and should not try to!) edit
@@ -3380,10 +3460,10 @@ are several keys) and the end of the current link.
 *** org-ref exports
 ~org-ref~ now supports the use of citeproc-el to export citations to non-LaTeX
 backends.
-
 #+begin_src emacs-lisp :lexical no
 ;; for citations to non-latex backends
-(use-package citeproc)
+(use-package citeproc
+    :after (org))
 #+end_src
 
 *** org-glossary
@@ -3423,13 +3503,12 @@ applications on the system.
                              ) org-file-apps ))))
 #+end_src
 
-** Use ~org-download~ for easier image insertion into the org notes.
-Helper for downloading images and dragging into the literate file.
+** org-download
+Use ~org-download~ for easier image insertion into the org notes. A helper for downloading images and dragging into the literate file.
 
 The ~org-download~ package eases the task of downloading or copying images and
 attaching them to a document, and it even has an org-download-screenshot
 command for taking and inserting screenshots if needed.
-
 #+begin_src emacs-lisp
 (use-package org-download
   :after (org)
@@ -3454,13 +3533,15 @@ command for taking and inserting screenshots if needed.
   (progn
     (setq org-download-screenshot-method     "screencapture -i %s"
           org-download-method                'directory
-          org-download-image-dir             "images"
+          org-download-image-dir             "./images"
           ;; do not save org-download images nested according to header, save them flat
           org-download-heading-lvl           nil
+          org-download-backend               "curl"
           org-image-actual-width             300
           org-download-timestamp             "%Y%m%d-%H%M%S_"
           org-download-display-inline-images 'posframe
-          org-download-image-attr-list       '("#+ATTR_HTML: :width 80% :align center"))))
+          org-download-image-attr-list       '("#+ATTR_HTML: :width 40% :align center"
+                                               "#+ATTR_LATEX: :width 0.5\\textwidth"))))
 #+end_src
 
 * LSP integration for LaTeX
@@ -3487,7 +3568,6 @@ Set the =lsp-server= value to =digestif=. The default is =texlab=.
   (setq lsp-latex-forward-search-executable "/Applications/Skim.app/Contents/SharedSupport/displayline"
         lsp-latex-forward-search-args       '("%l" "%p" "%f")))
 #+end_src
-
 
 * LaTeX font locking with Engrave Faces
 Per documentation:
@@ -3629,7 +3709,6 @@ orgmode.
  * ~M-x org-bibtex-yank~ to import a citation from bibtex text (clipboard)
  * ~M-x org-bibtex-check-all~ to check the validity of the entries
 
-
 * Org mode addon org-special-block-extras
 
 =org-special-block-extras= provides some extra Org-mode mark-up
@@ -3752,6 +3831,25 @@ function. Ref: [[https://sqrtminusone.xyz/configs/emacs/#import-dot-sty][sty fil
 	   (lambda (file) (concat "#+LATEX_HEADER: \\usepackage{" (file-name-sans-extension (file-relative-name file default-directory)) "}\n"))
 	   (aqua/list-sty-files)))))
 #+end_src
+
+* Embedded drawing tool for Emacs
+Emacs Easy Draw is a drawing tool that runs inside Emacs. This package is
+unbelievably good. I would have never thought it’s even possible to have this in
+Emacs.
+#+begin_src emacs-lisp :lexical no
+;; Embedded drawing tool for Emacs
+(use-package edraw-org
+  :straight (:host github :repo "misohena/el-easydraw")
+  :defer 5
+  :after (org)
+  :config
+  (edraw-org-setup-default))
+#+end_src
+
+To start drawing, type =[​[edraw:]]= and type =C-c C-o= on the link.
+
+Draw something and type =C-c C-c= and the data will be saved in the buffer.
+
 
 * For exploring further
 Here are some of the items which I would like to explore, currently categorised
