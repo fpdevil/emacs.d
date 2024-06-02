@@ -57,7 +57,17 @@ A guide for [[https://latex-beamer.com/][Latex Beamer]] is available for referen
 
 (use-package ox-beamer
   :ensure org
-  :after (org))
+  :after ox
+  :init
+  (defun org-beamer-backend-p (info)
+    (eq 'beamer (and (plist-get info :back-end)
+                     (org-export-backend-name (plist-get info :back-end)))))
+
+  ;; (add-to-list 'org-export-conditional-features
+  ;;              '(org-beamer-backend-p . beamer) t)
+  :config
+  (setq org-beamer-theme "metropolis"
+        org-beamer-frame-level 2))
 
 (use-package ox-latex
   :ensure org
@@ -281,15 +291,16 @@ https://github.com/takaxp/org-tree-slide.
 (use-package org-tree-slide
   :quelpa (:fetcher github :repo "https://github.com/takaxp/org-tree-slide")
   :after (org)
-  :custom
-  (org-tree-slide-slide-in-effect t)
-  (org-tree-slide-activate-message "Presentation started!")
-  (org-tree-slide-deactivate-message "Presentation finished!")
-  (org-tree-slide-header t)
-  (org-tree-slide-heading-emphasis t)
-  (org-tree-slide-breadcrumbs " > ")
-  (org-tree-slide-skip-outline-level 0)
-  (org-image-actual-width nil))
+  :config
+  (setq org-tree-slide-slide-in-effect t
+        org-tree-slide-never-touch-face nil
+        org-tree-slide-skip-outline-level 8
+        org-tree-slide-heading-emphasis t
+        org-tree-slide-cursor-init nil
+        org-tree-slide-header t
+        org-tree-slide-breadcrumbs " > "
+        org-tree-slide-activate-message (propertize "Presentation Started!" 'face 'success)
+        org-tree-slide-deactivate-message (propertize "Presentation Finished!" 'face 'error)))
 #+end_src
 
 ** Convert buffer text and decorations to HTML
