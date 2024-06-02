@@ -1,0 +1,618 @@
+#+TITLE: Literate Programming in Emacs
+#+DATE: \today
+#+AUTHOR: Sampath Singamsetty
+#+STARTUP: latexpreview
+
+
+# few macros
+# ------------------------------------------
+#+macro: emacs-version (eval emacs-version)
+#+macro: org-version (eval org-version)
+#+macro: today (eval (format-time-string "%m-%d-%Y"))
+# ------------------------------------------
+
+
+* Introduction
+
+#+BEGIN_QUOTE
+Literate programming is a programming paradigm introduced in 1984 by Donald
+Knuth in which a computer program is given an explanation of its logic in a
+natural language, such as English, interspersed (embedded) with snippets of
+macros and traditional source code, from which compilable source code can be
+generated. The approach is used in scientific computing and in data science
+routinely for reproducible research and open access purposes. Literate
+programming tools are used by millions of programmers today.
+
+--- [1]
+#+END_QUOTE
+
+** Setup
+
+While creating the example the software versions used are:
+
++ GNU Emacs src_emacs-lisp{emacs-version}
++ The ~.emacs~ configuration will have all the required details
++ Org Version src_emacs-lisp{org-version}
+
+Disclaimer 1: Some configurations will not work, even if you have the same
+~.emacs~ file, since it will depend on external packages (LaTeX specific
+packages for example), and the file system structure of your computer.
+
+Disclaimer 2: This document is better understood if you download the ~.org~ file
+and open it in Emacs. This way you'll can see the outputs and some org
+configurations.
+
+* Paragraphs, line breaks, and quoting
+#+BEGIN_VERSE
+Then, there was neither non-existence nor existence.
+There was no space, nor sky above. What covered it?
+Where was it? In whose protection? Was there water, deep and unfathomable?
+
+     -- Naasadiya Suktham (Rig Veda)
+#+END_VERSE
+
+#+BEGIN_QUOTE
+Everything should be made as simple as possible,
+but not any simpler -- Albert Einstein
+#+END_QUOTE
+
+#+BEGIN_CENTER
+Everything should be made as simple as possible, \\
+but not any simpler
+#+END_CENTER
+
+* LaTeX blocks
+\begin{equation}
+\begin{align}
+\mbox{Union: }  A\cup B = \{x\mid x\in A \mbox{ or } x\in B\} \newline
+\mbox{Concatenation: } A\circ B  = \{xy\mid x\in A \mbox{ and } y\in B\} \\
+\mbox{Star: } A^\star  = \{x_1x_2\ldots x_k \mid  k\geq 0 \mbox{ and each } x_i\in A\} \\
+\end{align}
+\end{equation}
+
+It can be used inline as well.
+
+If $a^2=b$ and \( b=2 \), then the solution must be either $$ a=+\sqrt{2} $$ or \[ a=-\sqrt{2} \].
+
+
+* Org SRC Blocks
+Here the information related to org src blocks with quick reference to flags are
+discussed. Most of the information presented here is from reference [6] (you must
+read all that links to really understand Org SRC blocks).
+
+** Inline code blocks
+Inline code blocks may be specified in the literate documents where needed and the format of the same is as below:
+
+#+begin_src org :eval none
+src_LANG[headers]{your code}
+
+src_<language>[:exports code]{code}
+#+end_src
+
+Some Examples:
+
+- XML: src_xml[:exports code]{<tag>text</tag>}
+- Shell: src_sh[:exports code]{echo -e "test"}
+- Elisp: src_elisp[:exports code]{( + 1 2)}
+- Rust: src_rust[:exports code]{use std:process}
+- JavaScripr: src_js[:exports code]{console.log(1 + 2)}
+- GO: src_go[:exports code]{var palette = []color.Color{color.White, color.Black}}
+- Python: src_python[:exports code]{[bin(i)[2:].zfill(8) for i in range(11)]}
+
+** Org SRC Operations
+
+In order to execute the scripts in this org document, put the cursor inside the
+SRC block and hit ~C-c C-c~ (~org-babel-execute-src-block~). It will prompt for
+acceptance to run the script, so you need to type "yes".
+
+This prompt is a security mechanism in Org, to prevent code execution. *Always
+check the code you're going to run in your system.*
+
+Then, if you want to tangle the code (extract it to another file) to run in the
+terminal, you need to put the cursor inside the SRC block, and type ~C-c C-v t~
+(~org-babel-tangle~).
+
+There is also ~C-c C-v f~ (~org-babel-tangle-file~), if you want to tangle to a
+custom file.
+
+** Org SRC Headers
+
+List of the most common headers in org source code blocks are listed here:
+
+# https://orgmode.org/manual/Tables-in-LaTeX-export.html
+#+NAME: org-src-headers-table
+#+ATTR_LATEX: :environment longtable :align |l|p{5cm}|l|p{2cm}| :hline t
+| Header       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Default             | Possible values                                                                                                                                                                                          |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :var         | Define variable values to pass the script.                                                                                                                                                                                                                                                                                                                                                                                                                                  | -                   | -                                                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :session     | The 'session' header argument is for running multiple source code blocks under one session. Org runs code blocks with the same session name in the same interpreter process. *Only languages that provide interactive evaluation can have session support.*                                                                                                                                                                                                                   | "none"              | "none", STRING                                                                                                                                                                                           |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :dir         | Define the working directory of to execute the code. When 'dir' is used with 'session', Org sets the starting directory for a new session. But Org does not alter the directory of an already existing session. *Do not use 'dir' with ':exports results' or with ':exports both' to avoid Org inserting incorrect links to remote files.* That is because Org does not expand ~default-directory~ to avoid some underlying portability issues.                                 | (default-directory) | STRING                                                                                                                                                                                                   |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :eval        | The ‘eval’ header argument can limit evaluation of specific code blocks and ‘CALL’ keyword. It is useful for protection against evaluating untrusted code blocks by prompting for a confirmation.                                                                                                                                                                                                                                                                           |                     | "never", "no", "query", "never-export", "no-export", "query-export"                                                                                                                                      |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :results     | How Org handles results of a code block execution depends on many header arguments working together. The primary determinant, however, is the ‘results’ header argument. It accepts four classes of options. Each code block can take only one option per class: *Collection, Type, Format, Handling.*                                                                                                                                                                        | "replace"           | "value", "output", "table", "vector", "list", "scalar", "verbatim", "file", "code", "drawer", "html", "latex", "link", "graphics", "org", "pp", "raw", "replace", "silent", "none", "append", "preppend" |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :post        | The ‘post’ header argument is for post-processing results from block evaluation. When ‘post’ has any value, Org binds the results to *this* variable for easy passing to ‘var’ header argument specifications. That makes results available to other code blocks, or even for direct Emacs Lisp code execution.                                                                                                                                                               | -                   | -                                                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :file        | Interpret as a filename. Save the results of execution of the code block to that file, then insert a link to it. You can control both the filename and the description associated to the link.                                                                                                                                                                                                                                                                              | -                   | STRING                                                                                                                                                                                                   |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :file-ext    | If ‘file’ header argument is missing, Org generates the base name of the output file from the name of the code block, and its extension from the ‘file-ext’ header argument. In that case, both the name and the extension are mandatory.                                                                                                                                                                                                                                   | -                   | -                                                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :file-desc   | The ‘file-desc’ header argument defines the description (see Link Format) for the link. If ‘file-desc’ is present but has no value, the ‘file’ value is used as the link description. When this argument is not present, the description is omitted. If you want to provide the ‘file-desc’ argument but omit the description, you can provide it with an empty vector (i.e., :file-desc []).                                                                               | -                   | STRING                                                                                                                                                                                                   |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :file-mode   | The ‘file-mode’ header argument defines the file permissions. To make it executable, use ‘:file-mode (identity #o755)’.                                                                                                                                                                                                                                                                                                                                                     | -                   | -                                                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :output-dir  | Combined with the 'file' mentioned before, this option is used to define the directory to store the output file.                                                                                                                                                                                                                                                                                                                                                            | (default-directory) | STRING                                                                                                                                                                                                   |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :wrap        | The ‘wrap’ header argument unconditionally marks the results block by appending strings to ‘#+BEGIN_’ and ‘#+END_’. If no string is specified, Org wraps the results in a ‘#+BEGIN_results’ … ‘#+END_results’ block.                                                                                                                                                                                                                                                        | -                   | -                                                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :exports     | It is possible to export the code of code blocks, the results of code block evaluation, both the code and the results of code block evaluation, or none.                                                                                                                                                                                                                                                                                                                    | "code"              | "code", "results", "both", "none"                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :cache       | The ‘cache’ header argument is for caching results of evaluating code blocks. Caching results can avoid re-evaluating a code block that have not changed since the previous run. To benefit from the cache and avoid redundant evaluations, the source block must have a result already present in the buffer, and neither the header arguments—including the value of ‘var’ references—nor the text of the block itself has changed since the result was last computed.    | "no"                | "yes", "no"                                                                                                                                                                                              |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :tangle      | When Org tangles code blocks, it expands, merges, and transforms them. Then Org recomposes them into one or more separate files, as configured through the options. During this tangling process, Org expands variables in the source code, and resolves any noweb style references.                                                                                                                                                                                        | "no"                | "yes", "no", FILENAME                                                                                                                                                                                    |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :mkdirp      | The ‘mkdirp’ header argument creates parent directories for tangled files if the directory does not exist. A ‘yes’ value enables directory creation whereas ‘no’ inhibits it.                                                                                                                                                                                                                                                                                               | "no"                | "yes", "no"                                                                                                                                                                                              |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :comments    | The ‘comments’ header argument controls inserting comments into tangled files. These are above and beyond whatever comments may already exist in the code block.                                                                                                                                                                                                                                                                                                            | "no"                | "no", "link", "yes", "org", "both", "noweb"                                                                                                                                                              |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :padline     | The ‘padline’ header argument controls insertion of newlines to pad source code in the tangled file.                                                                                                                                                                                                                                                                                                                                                                        | "yes"               | "yes", "no"                                                                                                                                                                                              |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :shebang     | The ‘shebang’ header argument can turn results into executable script files. By setting it to a string value—for example, ‘:shebang "#!/bin/bash"’—Org inserts that string as the first line of the tangled file that the code block is extracted to. Org then turns on the tangled file’s executable permission.                                                                                                                                                           | -                   | STRING                                                                                                                                                                                                   |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :tangle-mode | The ‘tangle-mode’ header argument specifies what permissions to set for tangled files by set-file-modes. For example, to make a read-only tangled file, use ‘:tangle-mode (identity #o444)’. To make it executable, use ‘:tangle-mode (identity #o755)’. It also overrides executable permission granted by ‘shebang’. When multiple source code blocks tangle to a single file with different and conflicting ‘tangle-mode’ header arguments, Org’s behavior is undefined. | -                   | -                                                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :no-expand   | By default Org expands code blocks during tangling. The ‘no-expand’ header argument turns off such expansions.                                                                                                                                                                                                                                                                                                                                                              | -                   | -                                                                                                                                                                                                        |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :noweb       | The ‘noweb’ header argument controls expansion of noweb syntax references. Expansions occur when source code blocks are evaluated, tangled, or exported.                                                                                                                                                                                                                                                                                                                    | "no"                | "yes", "no", "tangle", "no-export", "strip-export", "eval"                                                                                                                                               |
+|--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+
+Use the =:prologue= and =:epilogue= header arguments to prepare for code blocks to be run, without printing the setup and teardown commands to the exported file. For example, if the file to be read doesn’t exist, create it right before executing the code in the code block, and remove it after.
+
+#+header: :exports both
+#+header: :results output
+#+header: :prologue "echo 'Hello, new file!' >> /tmp/new.txt"
+#+header: :epilogue "rm /tmp/new.txt"
+#+begin_src shell
+  cat /tmp/new.txt
+#+end_src
+
+This produces both the input source block, and the results block with the contents of the file: ~/tmp/new.txt~.
+
+* Random code blocks
+
+#+begin_src emacs-lisp :results pp
+(message "org-version: %s" org-version)
+#+end_src
+
+#+RESULTS:
+: "org-version: 9.6.15"
+
+#+begin_src emacs-lisp :lexical no
+(print emacs-version)
+#+end_src
+
+#+RESULTS:
+: 29.3
+
+#+NAME: two
+#+BEGIN_SRC emacs-lisp
+(+ 1 1)
+#+END_SRC
+
+#+NAME: three
+#+BEGIN_SRC emacs-lisp :noweb yes
+(+ <<two>> 1)
+#+END_SRC
+
+#+RESULTS: three
+: 3
+
+#+NAME: my-list
+| A | 1 |
+| B | 2 |
+| C | 3 |
+| D | 4 |
+| E | 5 |
+
+#+begin_src python :results output replace :session none :exports both :cache no :noweb no :var lst=my-list
+print(lst)
+#+end_src
+
+#+RESULTS:
+: [['A', 1], ['B', 2], ['C', 3], ['D', 4], ['E', 5]]
+#+begin_src python :results value replace :session none :exports both :cache no :noweb no :var lst=my-list
+return [[chr((ord(x) + 1)), y + 1] for x, y in lst]
+#+end_src
+
+#+RESULTS:
+| B | 2 |
+| C | 3 |
+| D | 4 |
+| E | 5 |
+| F | 6 |
+
+  src_emacs-lisp{emacs-version} {{{results(=27.1=)}}}
+  src_emacs-lisp{org-version} {{{results(=9.4=)}}}
+
+For ~Python~ code, if ~return~ is specified in the code then the code *flags* =:results value= should be specified
+
+#+begin_src python :results value
+def hello(str):
+        return "Hello, " + str + "!"
+
+return hello ("dude")
+#+end_src
+
+#+RESULTS:
+: Hello, dude!
+
+#+BEGIN_SRC python :results output
+import random
+
+random.seed(1)
+print("Hello World! Here's a random number: %f" % random.random())
+#+END_SRC
+
+#+RESULTS:
+: Hello World! Here's a random number: 0.134364
+
+
+#+BEGIN_SRC ipython :results drawer :async t :session py2session
+%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+#+END_SRC
+
+#+RESULTS:
+:results:
+0 - ae471c1b-0d50-488a-a6e7-af92b8cfc32d
+:end:
+
+#+BEGIN_SRC ipython :results drawer :async t :session py2session
+fig=plt.figure(facecolor='white')
+plt.hist(np.random.randn(500000), bins=100);
+#+END_SRC
+
+#+RESULTS:
+:results:
+0 - e8fc3b58-ddcf-4795-88d0-a36ed940cf2d
+:end:
+
+# using return statement
+# Entire source block will get indented and used as the body of main()
+#+begin_src python :results value
+def foo(x):
+  if x>0:
+    return x+1
+
+  else:
+    return x-1
+
+return foo(5)
+#+end_src
+
+#+RESULTS:
+: 6
+
+** Rust code
+#+begin_src rust :results pp
+fn print() {
+    let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    for n in numbers.iter() {
+        println!("{}", n);
+    }
+}
+
+fn main() {
+    print();
+}
+#+end_src
+
+** A Dot diagram
+
+#+BEGIN_SRC dot :file /tmp/rust-wasm.png :exports both
+  digraph {
+    "Rust" -> "Compiler" -> "WASM" -> "Web page"
+    "JavaScript" -> "Web page"
+    "CSS" -> "Web page"
+    "HTML" -> "Web page"
+  }
+#+END_SRC
+
+#+RESULTS:
+[[file:/tmp/rust-wasm.png]]
+
+** C and C++ code blocks
+#+name: hello_c :exports both
+#+begin_src C
+#include <stdio.h>
+
+int main(int argc, char *argv[])
+{
+  printf("Welcome to Literate Code\n");
+  return 0;
+}
+#+end_src
+
+#+RESULTS: hello_c :exports both
+: Welcome to Literate Code
+
+** Using jq - JSON Processor
+#+begin_src shell :exports both :results pp :wrap src json
+echo '{"foo": 0, "bar": 1}' | jq .
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+{
+  "foo": 0,
+  "bar": 1
+}
+#+end_src
+
+** Fetch remote data using restclient
+
+#+NAME: restclient
+#+begin_src restclient :exports code :results value :async t
+POST http://httpbin.org/post
+Content-Type: application/json
+
+{
+    "jql": "project = HSP",
+    "startAt": 0,
+    "maxResults": 15,
+    "fields": [
+        "summary",
+        "status",
+        "assignee"
+    ]
+}
+#+end_src
+
+
+#+begin_src sh :exports code :stdin restclient :wrap src json :async t
+jq '.'
+#+end_src
+
+
+#+NAME: json-doc
+#+begin_src sh :exports both :stdin restclient :wrap src json
+jq -r .data
+#+end_src
+
+#+RESULTS: json-doc
+#+begin_src json
+{
+    "jql": "project = HSP",
+    "startAt": 0,
+    "maxResults": 15,
+    "fields": [
+        "summary",
+        "status",
+        "assignee"
+    ]
+}
+#+end_src
+
+#+begin_src python :exports both :var jsondoc=json-doc :wrap src json
+import json
+
+data = json.loads(jsondoc)
+print(json.dumps(data, indent=4))
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+{
+    "jql": "project = HSP",
+    "startAt": 0,
+    "maxResults": 15,
+    "fields": [
+        "summary",
+        "status",
+        "assignee"
+    ]
+}
+#+end_src
+
+#+name: wellknown-config
+#+begin_src restclient :cache yes :exports code :results value :async t
+GET https://api.dev.aws.united.com/oauth2/v1/.well-known/openid-configuration
+#+end_src
+
+#+NAME: openid-doc
+#+begin_src sh :exports code :stdin wellknown-config :wrap src json
+jq .
+#+end_src
+
+
+#+begin_src python :exports both :var jsondoc=openid-doc :wrap src example
+import json
+
+data = json.loads(jsondoc)
+# print(json.dumps(data, indent=4))
+print('Issuer Url: {}'.format(data['issuer']))
+print('Token Url: {}'.format(data['token_endpoint']))
+print('JWKS Url: {}'.format(data['jwks_uri']))
+#+end_src
+
+#+RESULTS:
+#+begin_src example
+Issuer Url: https://api.dev.aws.united.com
+Token Url: https://api.dev.aws.united.com/oauth2/v1/token
+JWKS Url: https://api.dev.aws.united.com/oauth2/v1/keys
+#+end_src
+
+Get pokemon information and cache it
+
+#+NAME: pokemon-cached
+#+begin_src restclient :exports code :results value drawer :cache yes :async t
+GET https://pokeapi.co/api/v2/pokemon-species/25/
+Accept: application/json
+#+end_src
+
+The drawer contains huge amount of data which we can check as below:
+
+#+begin_src sh :exports both :stdin pokemon-cached :results output
+wc
+#+end_src
+
+#+RESULTS:
+:     1963    4772   62018
+
+With large responses such as this one, it can be hard to get what the overall
+structure is like, at a glance. Let’s use jq to create a few summaries of the
+document.
+
+#+begin_src sh :exports both :stdin pokemon-cached :wrap src json
+jq 'keys'
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+[
+  "base_happiness",
+  "capture_rate",
+  "color",
+  "egg_groups",
+  "evolution_chain",
+  "evolves_from_species",
+  "flavor_text_entries",
+  "form_descriptions",
+  "forms_switchable",
+  "gender_rate",
+  "genera",
+  "generation",
+  "growth_rate",
+  "habitat",
+  "has_gender_differences",
+  "hatch_counter",
+  "id",
+  "is_baby",
+  "is_legendary",
+  "is_mythical",
+  "name",
+  "names",
+  "order",
+  "pal_park_encounters",
+  "pokedex_numbers",
+  "shape",
+  "varieties"
+]
+#+end_src
+
+Now let’s look at the first item in the names array.
+
+#+begin_src sh :exports both :stdin pokemon-cached :wrap src json :async t
+jq '.names[0]'
+#+end_src
+
+#+RESULTS:
+#+begin_src json
+{
+  "language": {
+    "name": "ja-Hrkt",
+    "url": "https://pokeapi.co/api/v2/language/1/"
+  },
+  "name": "ピカチュウ"
+}
+#+end_src
+
+#+begin_src sh :exports both :stdin pokemon-cached :wrap src csv :async t
+jq -r '.names[] | [.name, (.language | .name, .url)] | @csv'
+#+end_src
+
+#+RESULTS:
+#+begin_src csv
+"ピカチュウ","ja-Hrkt","https://pokeapi.co/api/v2/language/1/"
+"Pikachu","roomaji","https://pokeapi.co/api/v2/language/2/"
+"피카츄","ko","https://pokeapi.co/api/v2/language/3/"
+"皮卡丘","zh-Hant","https://pokeapi.co/api/v2/language/4/"
+"Pikachu","fr","https://pokeapi.co/api/v2/language/5/"
+"Pikachu","de","https://pokeapi.co/api/v2/language/6/"
+"Pikachu","es","https://pokeapi.co/api/v2/language/7/"
+"Pikachu","it","https://pokeapi.co/api/v2/language/8/"
+"Pikachu","en","https://pokeapi.co/api/v2/language/9/"
+"ピカチュウ","ja","https://pokeapi.co/api/v2/language/11/"
+"皮卡丘","zh-Hans","https://pokeapi.co/api/v2/language/12/"
+#+end_src
+
+
+#+name: opencv-libs
+#+begin_src sh :exports both :results pp :wrap src shell :cache yes
+pkg-config --cflags --libs opencv4
+#+end_src
+
+#+RESULTS[4d1e9b8fb43329867c94c152a95101ecd02f72b6]: opencv-libs
+#+begin_src shell
+-L/usr/local/lib -lopencv_gapi -lopencv_stitching -lopencv_alphamat -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn_objdetect -lopencv_dnn_superres -lopencv_dpm -lopencv_face -lopencv_freetype -lopencv_fuzzy -lopencv_hfs -lopencv_img_hash -lopencv_intensity_transform -lopencv_line_descriptor -lopencv_mcc -lopencv_quality -lopencv_rapid -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_highgui -lopencv_datasets -lopencv_text -lopencv_plot -lopencv_videostab -lopencv_videoio -lopencv_wechat_qrcode -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_video -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_imgcodecs -lopencv_features2d -lopencv_dnn -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core
+#+end_src
+
+
+#+header: :flags -std=c++17 -rpath /usr/local/lib
+#+header: :libs -lopencv_core -lopencv_highgui
+#+BEGIN_SRC C++ :exports both :results output pp
+#include "opencv2/core.hpp"
+#include "opencv2/core/version.hpp"
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+int main() {
+    cout << "Testing OpenCV" << endl;
+    cout << "OpenCV version: " << CV_VERSION << endl;
+    cout << "Major version: " << CV_MAJOR_VERSION << endl;
+    cout << "Minor version: " << CV_MINOR_VERSION << endl;
+    cout << "Subminor version: " << CV_SUBMINOR_VERSION << endl;
+}
+#+END_SRC
+
+#+RESULTS[7d1e5a2673c520d781dd8b447d8e602b16d2126e]:
+: Testing OpenCV
+: OpenCV version: 4.9.0
+: Major version: 4
+: Minor version: 9
+: Subminor version: 0
+
+
+#+BEGIN_EXPORT latex
+Noweb style syntax: <<CODE-BLOCK-ID>>.
+
+Where the CODE-BLOCK-ID refers to either the 'NAME' of a single source code
+block, or a collection of one or more source code blocks sharing the same
+'noweb-ref' header argument.
+#+END_EXPORT
+
+* Conclusion
+
+Literate programming is something that can have a huge impact in the organizations that adopt it. This technique makes it easier to keep the configuration documented, which makes it easier to onboard other people into the system.
+
+In my case, I got the idea to create this project after reading the book "O homem mais rico da Babilônia" by George S. Clason. It made me start thinking more about finances, and due to it, I decided to calculate how much money a person would have in some hypothetical scenarios.
+
+While writing this document I noticed how little I knew about org-mode and babel for SRC blocks. Then, I decided to start looking deeper into the documentation, trying to understand why some parts of the code did not work (F# part).
+
+It was a very cool and challenging situation, and my goal is to keep digging into this feature in order to really understand how it works and fix my setup.
+
+* References
+
+Finally, this last section is used to keep a record of the sources where I found
+most of the information required to create this project.
+
+[1] - https://en.wikipedia.org/wiki/Literate_programming
+
+[2] - https://orgmode.org/manual/Extracting-Source-Code.html
+
+[3] - https://orgmode.org/worg/org-contrib/babel/intro.html
+
+[4] - https://www.offerzen.com/blog/literate-programming-empower-your-writing-with-emacs-org-mode
+
+[5] - http://howardism.org/Technical/Emacs/literate-programming-tutorial.html
+
+[6] - https://orgmode.org/manual/Working-with-Source-Code.html
+
+[7] - https://orgmode.org/worg/org-contrib/babel/languages/index.html
