@@ -22,3 +22,10 @@ of the section ref:transitioning.
 
    - =C-x n s= :: To narrow to the org-mode section
    - =C-x n w= :: To widen back to the full text
+
+* Getting help
+
+help:org-format-latex-header
+help:org-latex-default-packages-alist
+help:org-latex-packages-alist
+help:org-latex-pdf-process
