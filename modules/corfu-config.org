@@ -31,6 +31,7 @@ We have the choice between =company-mode= and =corfu= when it comes for auto com
         corfu-auto t                         ;; Enable auto completion
         corfu-auto-delay 0.1
         corfu-auto-prefix 1
+        corfu-echo-mode 1
         corfu-quit-at-boundary 'separator    ;; Automatically quit at word boundary
         corfu-quit-no-match 'separator       ;; Automatically quit if there is no match
         corfu-preselect 'prompt              ;; Preselect the prompt
