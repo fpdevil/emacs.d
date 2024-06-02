@@ -13,6 +13,8 @@
   :bind (:map yas-minor-mode-map
               ("M-<tab>" . yas-expand))
 
+  :hook (yas-minor-mode . aqua/yas-auto-setup)
+
   :init (progn
           ;; enable yasnippet globally
           (yas-global-mode +1)
@@ -54,7 +56,14 @@
                       (lambda ()
                         (make-variable-buffer-local 'yas-trigger-key)
                         (setq yas-trigger-key [tab])
-                        (add-to-list 'org-tab-first-hook 'yas--org-very-safe-expand))))
+                        (add-to-list 'org-tab-first-hook 'yas--org-very-safe-expand)))
+
+            (let ((ydus yas--default-user-snippets-dir))
+              (and (member ydus yas-snippet-dirs)
+                   (yas-load-directory ydus)))
+
+            (setq yas-wrap-around-region t
+                  yas-triggers-in-field t))
 
   :preface
   (defun ad/silent-message (original &rest args)
@@ -62,6 +71,14 @@
     (let ((inhibit-message t)
           (message-log-max nil))
       (apply original args)))
+
+  (defun aqua/yas-try-expanding-auto-snippets ()
+    (when (and (boundp 'yas-minor-mode) yas-minor-mode)
+      (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
+        (yas-expand))))
+
+  (defun aqua/yas-auto-setup ()
+    (add-hook 'post-self-insert-hook #'aqua/yas-try-expanding-auto-snippets nil t))
 
 
   ;; Silences the warning when running a snippet with backticks (runs a command in the snippet)
@@ -86,4 +103,13 @@ yasnippet snippets.
 (use-package yasnippet-capf
   :after cape
   :init (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+#+end_src
+
+** 3rd party snippet collection from Doom
+Doom Emacs' Snippet Library provides snippets as well as exposes a small API to assist you in writing your own snippets.
+#+begin_src emacs-lisp :lexical no
+;; 3rd party snippet collection from doom emacs
+(use-package doom-snippets
+  :after yasnippet
+  :straight (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*")))
 #+end_src
