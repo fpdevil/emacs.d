@@ -64,6 +64,7 @@
 - [[#elisp-based-addons][elisp based addons]]
   - [[#highlight-defined][highlight-defined]]
 - [[#colour-identifiers-mode][Colour identifiers mode]]
+- [[#mixed-pitch][Mixed pitch]]
 - [[#profiling][Profiling]]
   - [[#final-report][Final report]]
 
@@ -202,7 +203,9 @@ WARN: comment boxes might increase the size of file
 This is an ~Emacs~ plugin aiming to become an aesthetic, modern looking tabs plugin.
 #+begin_src emacs-lisp
 (use-package centaur-tabs
-  :quelpa (centaur-tabs :fetcher git :url "https://github.com/ema2159/centaur-tabs")
+  :defer 5
+  :quelpa (centaur-tabs :fetcher git
+                        :url "https://github.com/ema2159/centaur-tabs")
   :demand
   :init (centaur-tabs-mode t)
   :config
@@ -350,6 +353,7 @@ and better not to have the colour names to be highlighted (x-colors).
 ;; Discover my major, a feature that discovers key bindings and their
 ;; meaning for the current Emacs major mode.
 (use-package discover-my-major
+  :defer 4
   :commands (discover-my-major discover-my-mode)
   :quelpa
   (:fetcher github :repo "jguenther/discover-my-major"))
@@ -361,6 +365,7 @@ This is a minor mode to increase selected region by semantic units.
 ;; An Emacs extension to increase selected region by semantic units.
 (use-package expand-region
   :ensure t
+  :defer 3
   :config (setq er--show-expansion-message t)
   :bind ("C-=" . er/expand-region))
 #+end_src
@@ -378,6 +383,7 @@ hard tabs and mixed indentation, and it behaves well in large buffers.
 
 #+begin_src emacs-lisp
 (use-package highlight-indent-guides
+  :defer 3
   :diminish
   :hook
   ((prog-mode yaml-mode) . highlight-indent-guides-mode)
@@ -401,7 +407,7 @@ The available keybindings are:
 - C-c C-e	“Export” diagram and show online on websequencediagrams.com
   #+begin_src emacs-lisp
 (use-package wsd-mode
-  :defer t
+  :defer 5
   :config
   (add-hook 'wsd-mode-hook 'company-mode))
   #+end_src
@@ -423,7 +429,7 @@ Drag lines, words, region, etc... around
 #+begin_src emacs-lisp
 ;; csv file handling
 (use-package csv-mode
-  :defer 2
+  :defer 3
   :mode ("\\.[Cc][Ss][Vv]\\'" . csv-mode)
   :config (setq csv-separators '("," ";" "|" " "))
   :hook (csv-mode . csv-align-mode))
@@ -449,7 +455,7 @@ buffer, but we can just leave it to run the function as needed.
 ;; Emacs library minor mode for intelligently calling whitespace-cleanup
 ;;
 (use-package whitespace-cleanup-mode
-  :defer t)
+  :defer 5)
 #+end_src
 
 ** Code Indentation with aggressive indentation
@@ -460,6 +466,7 @@ available at ~https://github.com/Malabarba/aggressive-indent-mode~.
   ;; aggressive-indent-mode is a minor mode that keeps your code always indented.
   ;; It reindents after every change, making it more reliable than electric-indent-mode.
   (use-package aggressive-indent
+    :defer 5
     :quelpa
     (:fetcher github :repo "https://github.com/Malabarba/aggressive-indent-mode")
     :commands (aggressive-indent-mode)
@@ -484,6 +491,7 @@ such as ~Blacken~ and ~prettier-js~.
 ;;  Run code formatter on buffer contents without moving point
 ;;  using RCS patches and dynamic programming.
 (use-package apheleia
+  :defer 5
   :quelpa
   (:fetcher github :repo "https://github.com/radian-software/apheleia")
   :commands (apheleia-format-buffer)
@@ -514,7 +522,7 @@ Or if you want to try out some package from the web, just paste in the URL
 ;; M-x try RET <package-name>
 ;; EXAMPLE: M-x try RET multiple-cursors RET
 (use-package try
-  :defer t
+  :defer 5
   :commands try)
 #+end_src
 
@@ -588,6 +596,7 @@ Highlight Lisp quotes and quoted symbols
 #+begin_src emacs-lisp :lexical no
 ;; Highlight Lisp quotes and quoted symbols
 (use-package highlight-quoted
+  :defer 3
   :config (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode))
 #+end_src
 
@@ -600,6 +609,7 @@ Run =M-x uptimes=.
 #+begin_src emacs-lisp :lexical no
 ;; Uptime tracking system for Emacs.
 (use-package uptimes
+  :defer 3
   :quelpa
   (:fetcher github :repo "https://github.com/davep/uptimes.el"))
 #+end_src
@@ -609,7 +619,7 @@ Using the package =preview-it= we can preview anything at a point.
 #+begin_src emacs-lisp :lexical no
 ;; preview links under cursor
 (use-package preview-it
-  :defer t
+  :defer 3
   :quelpa
   (preview-it :repo "jcs-elpa/preview-it" :fetcher github))
 #+end_src
@@ -622,7 +632,20 @@ that to work as we want it to: C-h o to describe the symbol at point.
 #+begin_src emacs-lisp :lexical no
 ;; A better Emacs *help* buffer
 (use-package helpful
-  :disabled t
+  :quelpa (helpful :fetcher "github" :repo "Wilfred/helpful")
+
+  :defer 5
+
+  :commands (helpful-callable
+             helpful-variable
+             helpful-key
+             helpful-macro
+             helpful-function
+             helpful-command)
+
+  :config
+  (setq counsel-describe-function-function #'helpful-callable)
+  (setq counsel-describe-variable-function #'helpful-variable)
 
   (defun my/describe-symbol (symbol)
     "A “C-h o” replacement using “helpful”:
@@ -653,9 +676,10 @@ that to work as we want it to: C-h o to describe the symbol at point.
        ((or (functionp it) (macrop it) (commandp it)) (helpful-callable it))
        (t (helpful-symbol it)))))
 
-  ;; Keybindings.
+  ;; replace the default Emacs help keybindings,
   (global-set-key (kbd "C-h o") #'my/describe-symbol)
-  (global-set-key (kbd "C-h k") #'helpful-key))
+  (global-set-key (kbd "C-h k") #'helpful-key)
+  (global-set-key (kbd "C-h x") #'helpful-command))
 #+end_src
 
 ** Set MacOS transparent title bar
@@ -740,8 +764,10 @@ source code.
 ;; Many major modes do no highlighting of number literals
 ;; We can use the same
 (use-package highlight-numbers
+  :defer 3
   :quelpa
-  (highlight-numbers :fetcher github :repo "Fanael/highlight-numbers")
+  (highlight-numbers :fetcher github
+                     :repo "Fanael/highlight-numbers")
   :hook
   ((prog-mode conf-mode) . highlight-numbers-mode)
   :config
@@ -754,6 +780,7 @@ tabs and ribbons. It also provides replacements for a few built-in elements.
 #+begin_src emacs-lisp :lexical no
 ;; moody - Tabs and ribbons for the mode line
 (use-package moody
+  :defer 3
   :straight
   (moody type git :host github :repo "tarsius/moody")
   :config
@@ -791,7 +818,8 @@ or “a bar with faster blinking" and set them on demand.
 ;; cursory - cursor shape control
 (use-package cursory
   :ensure t
-
+  :demand t
+  :if (display-graphic-p)
   :init
   (setq cursory-presets
         '((bar . ( :cursor-type (bar . 2)
@@ -818,23 +846,17 @@ or “a bar with faster blinking" and set them on demand.
            :blink-cursor-delay 0.2)))
 
   :config
-  ;; check `cursory-presets' for how to set your own preset styles.
-  (setq cursory-latest-state-file (locate-user-emacs-file "cursory-latest-state"))
-  (cursory-restore-latest-preset)
+  (cursory-set-preset (or (cursory-restore-latest-preset) 'bar))
 
-  ;; Set `cursory-recovered-preset' or fall back to desired style from
-  ;; `cursory-presets'.
-  ;; Set last preset or fall back to desired style from `cursory-presets'.
-  (if cursory-recovered-preset
-      (cursory-set-preset cursory-recovered-preset)
-    (cursory-set-preset 'bar))
-
+  :hook
   ;; The other side of `cursory-restore-latest-preset'.
-  (add-hook 'kill-emacs-hook #'cursory-store-latest-preset)
+  (kill-emacs . cursory-store-latest-preset)
 
+  :bind
   ;; We have to use the "point" mnemonic, because C-c c is often the
   ;; suggested binding for `org-capture'.
-  (define-key global-map (kbd "C-c c p") #'cursory-set-preset))
+  ;; (define-key global-map (kbd "C-c c p") #'cursory-set-preset)
+  ("C-c c p" . cursory-set-preset))
 #+end_src
 
 * plz - An HTTP library for Emacs
@@ -849,8 +871,10 @@ Available from https://github.com/alphapapa/plz.el
 ;; Install `plz' HTTP library
 (use-package plz
   ;;:ensure nil
-  :defer 3
-  :quelpa (plz :fetcher github :repo "alphapapa/plz.el"))
+  :defer 5
+  :quelpa (plz
+            :fetcher github
+            :repo "alphapapa/plz.el"))
 #+end_src
 
 * elisp based addons                                                  :ELISP:
@@ -917,6 +941,43 @@ for all other keywords in supported modes using a code"
     (face-remap-add-relative 'font-lock-string-face '((:slant italic)))
     (face-remap-add-relative 'font-lock-constant-face '((:weight bold))))
   (add-hook 'color-identifiers-mode-hook 'myfunc-color-identifiers-mode-hook))
+#+end_src
+
+* Mixed pitch
+Mixed pitch is a minor mode that enables mixing fixed-pitch (also known as fixed-width or monospace) and variable-pitch (AKA “proportional”) fonts. It tries to be smart about which fonts get which face. Fonts that look like code, org-tables, and such remain fixed-pitch and everything else becomes variable-pitch. The variable mixed-pitch-fixed-pitch-faces is a list of faces that will remain fixed-pitch in mixed-pitch-mode.
+
+#+begin_src emacs-lisp :lexical no
+;; mixed-pitch mode
+;; It is a better version of the variable-pitch mode. It keeps certain faces
+;; (defined in mixed-pitch-fixed-pitch-faces) fixed-pitch.
+(use-package mixed-pitch
+  :defer 5
+
+  :quelpa (mixed-pitch :fetcher github :repo "emacsmirror/mixed-pitch")
+
+  :ensure t
+
+  :hook (mixed-pitch-mode . aqua/mixed-pitch-spacing)
+
+  :config
+  (setq mixed-pitch-set-height nil)
+  (dolist (face '(line-number
+                  org-date
+                  org-priority
+                  org-property-value
+                  org-drawer
+                  org-tag
+                  org-special-keyword
+                  org-cite
+                  error
+                  corfu-current
+                  corfu-default)) ;; Some extra faces I like to be fixed-pitch
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face))
+
+  (defun aqua/mixed-pitch-spacing ()
+    (if mixed-pitch-mode
+        (setq line-spacing 0.12)
+      (setq line-spacing 0.0))))
 #+end_src
 
 * Profiling
