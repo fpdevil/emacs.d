@@ -114,6 +114,7 @@ Improve Emacs flyspell responsiveness using idle timers.
 #+begin_src emacs-lisp
 ;; Distraction-free words correction with flyspell via selected interface.
 (use-package flyspell-correct
+  :defer 3
   :after (flyspell)
   :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
 
