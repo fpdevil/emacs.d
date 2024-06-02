@@ -130,3 +130,22 @@ contextual information.
         (helpful--goto-char-widen pos)))
     (advice-add #'helpful--navigate :override #'my-helpful--navigate)))
 #+end_src
+
+* Addons for Emacs
+If ~helpful~ package is already installed, then we can extend it with the [[https://github.com/xuchunyang/elisp-demos][elisp-demos]] project.
+#+begin_src emacs-lisp
+;; Elisp API Demos
+(use-package elisp-demos
+  :quelpa (elisp-demos :fetcher github :repo "xuchunyang/elisp-demos")
+  :after helpful
+  (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
+#+end_src
+Find a function without a good demonstration? Call =elisp-demos-add-demo=.
+
+Wilfred’s [[https://github.com/Wilfred/suggest.el][suggest]] function helps us find the right function. Basically, we type in the parameters of a function, and then the desired output, and it will write the function call for us.
+#+begin_src emacs-lisp
+;; suggest.el is an Emacs package for discovering elisp functions based on examples.
+;; You supply an example input and output, and it makes suggestions.
+(use-package suggest
+  :quelpa (suggest :fetcher "github" :repo "Wilfred/suggest.el"))
+#+end_src
