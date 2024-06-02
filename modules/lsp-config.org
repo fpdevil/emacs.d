@@ -30,6 +30,7 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
 
 #+begin_src emacs-lisp
 (use-package lsp-mode
+  :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode" :upgrade t)
   :commands (lsp
              lsp-deferred
              lsp-enable-which-key-integration)
@@ -185,7 +186,7 @@ between symbols using ~M-., M-, and M-?~ keys.
 ;; lsp ui configuration
 ;; lsp-ui gives blue colored documentation boxes and the sidebar info
 (use-package lsp-ui
-  ;;:ensure t
+  :quelpa (lsp-ui :fetcher github :repo "emacs-lsp/lsp-ui" :upgrade t)
   :after (lsp-mode)
 
   :hook (lsp-mode . lsp-ui-mode)
@@ -232,6 +233,38 @@ between symbols using ~M-., M-, and M-?~ keys.
                       (setq lsp-ui-doc-border (face-foreground 'default))
                       (set-face-background 'lsp-ui-doc-background
                                            (face-background 'tooltip))))))
+#+end_src
+
+Get status of the progress for the current workspace by adding an advice as below:
+
+#+begin_src emacs-lisp :lexical no
+(defun aqua/lsp--progress-status ()
+  "Returns the status of the progress for the current workspaces."
+  (-let ((progress-status
+          (s-join
+           "|"
+           (-keep
+            (lambda (workspace)
+              (let ((tokens (lsp--workspace-work-done-tokens workspace)))
+                (unless (ht-empty? tokens)
+                  (mapconcat
+                   (-lambda ((&WorkDoneProgressBegin :message? :title :percentage?))
+                     (concat (if percentage?
+                                 (if (numberp percentage?)
+                                     (format "%.0f%%%% " percentage?)
+                                   (format "%s%%%% " percentage?))
+                               "")
+                             (let ((msg (url-unhex-string (or message\? title))))
+                               (if (string-match-p "\\`file:///" msg)
+                                   (file-name-nondirectory msg)))))
+                   (ht-values tokens)
+                   "|"))))
+            (lsp-workspaces)))))
+    (unless (s-blank? progress-status)
+      (concat lsp-progress-prefix progress-status))))
+
+(with-eval-after-load 'lsp-mode
+  (advice-add 'lsp--progress-status :override #'aqua/lsp--progress-status))
 #+end_src
 
 ** LSP ivy
