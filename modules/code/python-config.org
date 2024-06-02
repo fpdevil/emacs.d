@@ -66,7 +66,7 @@ etc., we will depend on libraries like =elpy=, =jedi=, =flycheck= etc.,
   ;;   (setq python-shell-interpreter "python3"))
   ;; (setq python-shell-interpreter-args "-i")
   (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "-i --simple-prompt")
+        python-shell-interpreter-args "--simple-prompt --classic")
 
   ;; there is a message about the interpreter not using readline
   ;; and the below should be able to handle the same
@@ -130,27 +130,28 @@ Python coding in a non-destructive way. It also helps you to find information
 about Python objects, such as docstring, function arguments and code location.
 
 #+begin_src elisp :tangle no
-;; JEDI
-;; preferred way is to install only company-jedi, so disabling this
-(use-package jedi
-  :after (python)
-  :init (add-hook 'python-mode-hook 'jedi:setup)
-  :config
-  (progn
-    (setcar jedi:install-server--command "pip3")
-    (setq jedi:complete-on-dot t)
-    (setq jedi:server-command (list "python3" jedi:server-script))))
+  ;; JEDI
+  ;; preferred way is to install only company-jedi, so disabling this
+  (use-package jedi
+    :after (python)
+    :init (add-hook 'python-mode-hook 'jedi:setup)
+    :config
+    (progn
+      (setcar jedi:install-server--command "pip3")
+      (setq jedi:complete-on-dot t)
+      (setq jedi:server-command (list "python3" jedi:server-script))))
 #+end_src
 
 Install the preferred company backend for Python jedi
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; Company backend for Python jedi
 (use-package company-jedi
-  :ensure t
+  :demand t
+  :after (python)
   :quelpa (company-jedi :fetcher github :repo "emacsorphanage/company-jedi")
-  :hook
-  (python-mode . aqua/enable-jedi-if-found)
+  ;;:hook (python-mode . aqua/enable-jedi-if-found)
+  :init (jedi:setup)
   :config
   (setq jedi:server-args
         '("--log" "/tmp/jediepcserver.log"
@@ -166,6 +167,9 @@ Install the preferred company backend for Python jedi
     (jedi:install-server-block)
     (message "Finished installing JEDI VirtualEnv Server..."))
 
+  (setq-local company-backends
+                               (append (list 'company-jedi) company-backends))
+
   ;; (unless (file-exists-p
   ;;          (expand-file-name
   ;;           ".python-environments" user-emacs-directory))
@@ -179,7 +183,7 @@ Install the preferred company backend for Python jedi
   (setq jedi:complete-on-dot t
         jedi:use-shortcuts t)
 
-  :init
+  :preface
   (defun aqua/enable-jedi-if-found ()
     "Format the current buffer using the jedi program, if available."
     (interactive)
@@ -209,17 +213,33 @@ It detects and auto-activates the right conda environment for a particular buffe
 
 #+begin_src emacs-lisp
 (use-package conda
-  :quelpa
-  (conda :fetcher github :repo "necaris/conda.el")
-  :init
-  ( setq conda-anaconda-home "/opt/homebrew/Caskroom/miniforge/base/")
+  :quelpa (conda :fetcher github :repo "necaris/conda.el")
+  :commands conda-env-activate
+  :hook (eshell-first-time-mode . conda-env-initialize-eshell)
+  :ensure t
   :config
-  ;; if you want interactive shell support, include:
-  (conda-env-initialize-interactive-shells)
-  ;; if you want eshell support, include:
-  (conda-env-initialize-eshell)
-  ;; if you want auto-activation (see below for details), include:
-  (conda-env-autoactivate-mode t))
+  (setq conda-anaconda-home "/opt/homebrew/Caskroom/miniforge/base/")
+  (setq conda-env-home-directory (expand-file-name "~/.conda/"))
+
+  (add-to-list
+   'global-mode-string
+   '(:eval
+     (list
+      (if conda-env-current-name
+          (propertize (concat "(py: " conda-env-current-name ") ")
+                      'face 'font-lock-builtin-face
+                      'help-echo "Conda Environment"
+                      'mouse-face '(:box 1)
+                      'local-map (make-mode-line-mouse-map
+                                  'mouse-1
+                                  (lambda () (interactive)
+                                    (conda-env-activate))))
+        ""))))
+
+  ;; (conda-env-initialize-interactive-shells) ; if interactive shell support is needed
+  ;; (conda-env-initialize-eshell)             ; if eshell support is needed
+  ;; (conda-env-autoactivate-mode t)           ; if auto-activation is needed
+  )
 #+end_src
 
 ** Error checking
