@@ -10,6 +10,62 @@
 ;;
 ;;; Commentary:
 ;; This module contains packages for pdf-tools
+;; PDF Tools is among other things a replacement of DocView for PDF
+;; files.  The key difference is, that pages are not prerendered by
+;; e.g. ghostscript and stored in the file-system, but rather created
+;; on-demand and stored in memory.
+;;
+;; Note: If package is updated, Emacs should be restarted afterwards.
+;;
+;; Prerequisites to be installed...
+;;  brew install poppler automake libffi
+;; To activate the package put
+;;
+;; (pdf-tools-install :no-query)
+;;
+;; M-x pdf-tools-help RET
+;; gives some help on using the package and
+;;
+;; M-x pdf-tools-customize RET
+;; offers some customization options.
+;;
+;; Features:
+;;
+;; * View
+;;   View PDF documents in a buffer with DocView-like bindings.
+;;
+;; * Isearch
+;;   Interactively search PDF documents like any other buffer. (Though
+;;   there is currently no regexp support.)
+;;
+;; * Follow links
+;;   Click on highlighted links, moving to some part of a different
+;;   page, some external file, a website or any other URI.  Links may
+;;   also be followed by keyboard commands.
+;;
+;; * Annotations
+;;   Display and list text and markup annotations (like underline),
+;;   edit their contents and attributes (e.g. color), move them around,
+;;   delete them or create new ones and then save the modifications
+;;   back to the PDF file.
+;;
+;; * Attachments
+;;   Save files attached to the PDF-file or list them in a dired buffer.
+;;
+;; * Outline
+;;   Use imenu or a special buffer to examine and navigate the PDF's
+;;   outline.
+;;
+;; * SyncTeX
+;;   Jump from a position on a page directly to the TeX source and
+;;   vice-versa.
+;;
+;; * Misc
+;;    + Display PDF's metadata.
+;;    + Mark a region and kill the text from the PDF.
+;;    + Search for occurrences of a string.
+;;    + Keep track of visited pages via a history.
+;;
 ;;
 ;;; Code:
 ;;;
@@ -21,6 +77,7 @@
 
 * PDF and Document viewing Tools and configurations                   :TOC_4:
 - [[#setup-pdf-tools][Setup pdf-tools]]
+  - [[#useful-key-bindings][Useful key bindings]]
   - [[#document-viewer-for-emacs][Document viewer for Emacs]]
   - [[#additional-packages-supporting-the-pdf-for-org][Additional packages supporting the pdf for org]]
     - [[#org-noter-setup][org-noter setup]]
@@ -36,6 +93,21 @@ In addition, we need to setup ~pkg-config~ to find some libraries by setting
 ~PKG_CONFIG_PATH~ value. homebrew will show which paths need to be added to
 ~PKG_CONFIG_PATH~ during the installation process.
 
+#+begin_src example
+we can check if the foreign function interface is avaialble else install using homebrew
+λ mdfind -name pkgconfig | grep libffi
+
+λ brew install libffi
+...
+...
+For compilers to find libffi you may need to set:
+  export LDFLAGS="-L/opt/homebrew/opt/libffi/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/libffi/include"
+
+For pkg-config to find libffi you may need to set:
+  export PKG_CONFIG_PATH="/opt/homebrew/opt/libffi/lib/pkgconfig"
+#+end_src
+
 #+begin_src emacs-lisp
 ;; set pkg-config
 (if (string-equal system-type "darwin")
@@ -50,69 +122,121 @@ In addition, we need to setup ~pkg-config~ to find some libraries by setting
 Installation of =pdf-tools= is configured here.
 
 #+begin_src emacs-lisp
-;; pdf tools for viewing and interacting with pdf
-(use-package pdf-tools
-  :functions
-  (pdf-view-revert-buffer-maybe pdf-view-revert-buffer)
+  ;; pdf tools for viewing and interacting with pdf
+  (use-package pdf-tools
+    :quelpa (pdf-tools :fetcher github
+                       :repo "vedang/pdf-tools")
 
-  :mode
-  (("\\.pdf\\'" . pdf-view-mode))
+    :functions
+    (pdf-view-revert-buffer-maybe pdf-view-revert-buffer)
 
-  :magic
-  ("%PDF" . pdf-view-mode)
+    :mode
+    (("\\.pdf\\'" . pdf-view-mode))
 
-  :hook
-  (pdf-view-mode . (lambda () (cua-mode 0)))                   ; turn off cua so copy works
-  (pdf-view-mode . (lambda () (display-line-numbers-mode -1))) ; does not work well with linum
-  (doc-view-mode . (lambda () (require 'pdf-tools)))
+    :magic
+    ("%PDF" . pdf-view-mode)
 
-  ;;:init
-  ;;(pdf-loader-install :no-query)    ; on demand loading, leads to faster startup time
+    :hook
+    (pdf-view-mode . (lambda () (cua-mode 0)))                   ; turn off cua so copy works
+    (pdf-view-mode . (lambda () (display-line-numbers-mode -1))) ; does not work well with linum
+    (doc-view-mode . (lambda () (require 'pdf-tools)))
 
-  :config
-  ;; the :no-query auto builds epfinfo when required
-  (pdf-tools-install :no-query)        ; standard activation command
+    ;;:init
+    ;;(pdf-loader-install :no-query)    ; on demand loading, leads to faster startup time
 
-  ;; (add-hook 'doc-view-mode-hook 'pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-page)      ; open pdfs scaled to the fit page
-  (setq pdf-view-use-scaling t)                       ; for mac with retina display
+    :config
+    ;; the :no-query auto builds epfinfo when required
+    (pdf-tools-install :no-query)        ; standard activation command
 
-  ;; auto annotate highlights
-  (require 'pdf-annot)
-  (setq pdf-annot-default-annotation-properties
-        `((t (label . ,user-full-name))
-          (text (icon  . "Comment")
-                (color . "#ff0000"))
-          (highlight  (color . "yellow"))
-          (squiggly   (color . "orange"))
-          (strike-out (color . "red"))
-          (underline  (color . "blue"))))
+    ;; required packages
+    (require 'pdf-tools)
+    (require 'pdf-view)
+    (require 'pdf-misc)
+    (require 'pdf-occur)
+    (require 'pdf-util)
+    (require 'pdf-annot)
+    (require 'pdf-info)
+    (require 'pdf-isearch)
+    (require 'pdf-history)
+    (require 'pdf-links)
+    (require 'pdf-outline)
+    (require 'pdf-sync)
 
-  ;; use regular isearch
-  ;; (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-  ;; additional fine-grained setting for space provisioning
-  ;; zooming with + and - than the default 25%, now 10%
-  (setq pdf-view-resize-factor 1.10
-        pdf-annot-activate-created-annotations t  ; automatically annotate highlights
-        mouse-wheel-follow-mouse t
-        pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+    ;; (add-hook 'doc-view-mode-hook 'pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page)      ; open pdfs scaled to the fit page
+    (setq pdf-view-use-scaling t)                       ; for mac with retina display
 
-  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+    ;; auto annotate highlights
+    (require 'pdf-annot)
+    (setq pdf-annot-default-annotation-properties
+          `((t (label . ,user-full-name))
+            (text (icon  . "Comment")
+                  (color . "#ff0000"))
+            (highlight  (color . "yellow"))
+            (squiggly   (color . "orange"))
+            (strike-out (color . "red"))
+            (underline  (color . "blue"))))
 
-  (defun pdf-view-revert-buffer-maybe (file)
-    (when-let ((buf (find-buffer-visiting file)))
-      (with-current-buffer buf
-        (when (derived-mode-p 'pdf-view-mode)
-          (pdf-view-revert-buffer nil t)))))
+    ;; use regular isearch
+    ;; (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+    ;; additional fine-grained setting for space provisioning
+    ;; zooming with + and - than the default 25%, now 10%
+    (setq pdf-view-resize-factor 1.10
+          pdf-annot-activate-created-annotations t  ; automatically annotate highlights
+          mouse-wheel-follow-mouse t
+          pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
 
-:bind
-(:map pdf-view-mode-map
-      ;; some keyboard shortcuts
-      ("h"   . 'pdf-annot-add-highlight-markup-annotation)
-      ("t"   . 'pdf-annot-add-text-annotation)
-      ("d"   . 'pdf-annot-delete)
-      ("C-s" . 'isearch-forward)))
+    (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+
+    (defun pdf-view-revert-buffer-maybe (file)
+      (when-let ((buf (find-buffer-visiting file)))
+        (with-current-buffer buf
+          (when (derived-mode-p 'pdf-view-mode)
+            (pdf-view-revert-buffer nil t)))))
+
+  :bind
+  (:map pdf-view-mode-map
+        ;; some keyboard shortcuts
+        ("h"   . 'pdf-annot-add-highlight-markup-annotation)
+        ("t"   . 'pdf-annot-add-text-annotation)
+        ("d"   . 'pdf-annot-delete)
+        ("C-s" . 'isearch-forward)))
 #+end_src
+
+** Useful key bindings
+  Keybindings for =pdf-tools=.
+
+  |--------------------------------+-----------------------------|
+  | Key Binding                    | Description                 |
+  |--------------------------------+-----------------------------|
+  | n                              | Next page                   |
+  | p                              | Previous page               |
+  | SPC                            | Scroll up                   |
+  | S-SPC                          | Scroll down                 |
+  | C-n                            | Next line/page              |
+  | C-p                            | Previous line/page          |
+  |--------------------------------+-----------------------------|
+  | <goto-line binding>            | Go to page                  |
+  |--------------------------------+-----------------------------|
+  | + / =                          | Enlarge view                |
+  | -                              | Shrink view                 |
+  | 0                              | Reset view                  |
+  | W                              | Fit page width              |
+  | H                              | Fit page height             |
+  | P                              | Fit page                    |
+  | s m <drag mouse to select box> | PDF zooms to that selection |
+  | s r                            | Resets the above view slice |
+  |--------------------------------+-----------------------------|
+  | M-s w                          | isearch-forward-word        |
+  | M-s o                          | pdf-isearch-occur           |
+  |--------------------------------+-----------------------------|
+  | m                              | bookmark-set                |
+  |                                | (jump to bookmark using     |
+  |                                | C-x r b)                    |
+  |--------------------------------+-----------------------------|
+  | View in Printed mode           | C-c C-r p                   |
+  | View in Midnight mode          | C-c C-r m                   |
+  |--------------------------------+-----------------------------|
 
 ** Document viewer for Emacs
 DocView is a document viewer for Emacs.  It converts a number of
@@ -178,10 +302,10 @@ According to it's documentation at [[https://depp.brause.cc/nov.el][nov.el]] the
 #+end_src
 
 Customising the rendering of =epub= files.
-In case you're not happy with the rendering at all, you can either use
+In  case  you're not  happy  with  the rendering  at  all,  you can  either  use
 =nov-pre-html-render-hook= and =nov-post-html-render-hook= to adjust the HTML before
-and after rendering or use your own rendering function by customising
-=nov-render-html-function= to one that replaces HTML in a buffer with something
+and  after  rendering  or  use   your  own  rendering  function  by  customising
+=nov-render-html-function= to  one that replaces  HTML in a buffer  with something
 nicer than the default output.
 
 Here's an advanced example of text justification with the =justify-kp= package:
@@ -236,12 +360,15 @@ the chapters with =n= and =p=. More keybinds can be looked up with =F1 m=.
 
 #+begin_src emacs-lisp
 (use-package org-pdftools
-  :quelpa (org-pdftools :fetcher github :repo "fuxialexander/org-pdftools")
+  :quelpa (org-pdftools
+           :fetcher github
+           :repo "fuxialexander/org-pdftools")
   :hook (org-mode . org-pdftools-setup-link))
 
 (use-package org-noter-pdftools
   :after org-noter
-  :quelpa (:fetcher github :repo "https://github.com/fuxialexander/org-pdftools")
+  :quelpa
+  (:fetcher github :repo "https://github.com/fuxialexander/org-pdftools")
   :config
   ;; Add a function to ensure precise note is inserted
   (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
