@@ -549,8 +549,8 @@ echo | clang -x c++ -v -E - 2>&1 | sed -n '/^#include </,/^End/s|^[^/]*\([^ ]*/i
                     '("-std=c++20 -Wall"
                       "-I/usr/local/include/opencv4"
                       "-I/opt/homebrew/opt/llvm/bin/../include/c++/v1"
-                      "-I/opt/homebrew/Cellar/llvm/17.0.3/lib/clang/17/include"
-                      "-I/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/usr/include"))))
+                      "-I/opt/homebrew/Cellar/llvm/18.1.6/lib/clang/18/include"
+                      "-I/Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include"))))
   :custom
   (custom-set-variables
    '(irony-additional-clang-options
