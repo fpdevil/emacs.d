@@ -404,7 +404,8 @@ and enable whichever we want as per our choice.
   (modus-themes :fetcher github :repo "protesilaos/modus-themes")
 
   :init
-  (setq modus-themes-bold-constructs t
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
         modus-themes-completions '((matches . (extrabold intense background))
                                    (selection . (semibold accented intense))
                                    (popup . (accented)))
@@ -416,15 +417,13 @@ and enable whichever we want as per our choice.
         modus-themes-hl-line '(intense)
         modus-themes-links '(nil)
         modus-themes-mixed-fonts t
-        modus-themes-mode-line '(moody borderless accented)
+        modus-themes-mode-line '(moody borderless)
         modus-themes-tabs-accented t
         modus-themes-prompts '(background)
         modus-themes-region '(accented bg-only)
         modus-themes-syntax '(yellow-comments)
         modus-themes-tabs-accented nil
-        modus-themes-italic-constructs t
-        modus-themes-org-blocks 'gray-background
-        modus-themes-bold-constructs t)
+        modus-themes-org-blocks 'gray-background)
 
   (setq modus-themes-org-agenda
         '((header-date . (grayscale workaholic bold-today))
@@ -432,6 +431,7 @@ and enable whichever we want as per our choice.
           (scheduled . uniform)
           (event . (italic))
           (habit . traffic-light)))
+
   :custom
   (modus-themes-to-toggle
    '(modus-operandi-tinted modus-vivendi-tinted)))
@@ -487,9 +487,8 @@ Now set the required theme for Emacs using the custom function defined.
 
 #+begin_src emacs-lisp
 ;; (aqua/toggle-theme 'doom-oceanic-next)
-;; (aqua/toggle-theme 'doom-one-light)
-;; (aqua/toggle-theme 'kaolin-breeze)
-(load-theme 'shanty-themes-light t)
+;; (load-theme 'doom-oksolar-light t)
+(load-theme 'ayu-light t)
 #+end_src
 
 * Switch themes using Hydra
