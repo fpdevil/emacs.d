@@ -1,8 +1,69 @@
-1. For justifying the text
+# ViM related tips
+1. For justifying the text in Emacs
     M-3 M-x fill-region.
 
-C-u 70 M-q
+    C-u 70 M-q
 
-(Ctrl-u 70 Alt-q)
+    (Ctrl-u 70 Alt-q)
 
-2. openssl enc -aes-256-cbc -k secret -P -md sha256
+# OpenSSL related tips
+1. Fetch information about ssl
+```bash
+λ echo | openssl s_client -connect csmc.auth.united.com:443 -brief
+Connecting to 10.240.200.142
+CONNECTION ESTABLISHED
+Protocol version: TLSv1.2
+Ciphersuite: ECDHE-RSA-AES256-GCM-SHA384
+Peer certificate: C=US, ST=Illinois, L=Chicago, O=United Airlines, Inc., CN=csmc.auth.united.com
+Hash used: SHA256
+Signature type: RSA-PSS
+Verification: OK
+Supported Elliptic Curve Point Formats: uncompressed:ansiX962_compressed_prime:ansiX962_compressed_char2
+Server Temp Key: ECDH, secp521r1, 521 bits
+DONE
+```
+
+2. Generate a key for encryption and decryption:
+```sh
+openssl enc -aes-256-cbc -k secret -P -md sha256
+```
+
+3. Print all SAN entries from certificate of remote url
+```bash
+λ openssl s_client -connect csmc.auth.united.com:443 </dev/null 2>&1 | openssl x509 -noout -noout -ext subjectAltName | sed -e 's/DNS:/\n/g'
+X509v3 Subject Alternative Name:
+
+csmc.auth.united.com,
+csmc.training.auth.united.com,
+csmc.preprod.auth.united.com,
+csmc.prodperf.auth.united.com,
+csmc.preprodsecure.auth.united.com,
+csmc.beta.auth.united.com,
+csmc.secure.auth.united.com,
+csmc.ao.auth.united.com,
+csmc.ao.secure.auth.united.com,
+csmc.ao.beta.auth.united.com
+```
+
+Alternatively, below command may be used as well:
+```bash
+echo | openssl s_client -connect csmc.auth.united.com:443 2>/dev/null | openssl x509 -noout -noout -ext subjectAltName | sed -e 's/DNS:/\n/g'
+X509v3 Subject Alternative Name:
+```
+
+4. Certificate expiration dates
+```bash
+λ echo | openssl s_client -connect csmc.auth.united.com:443 2>/dev/null | openssl x509 -noout -dates
+notBefore=Apr  4 00:00:00 2024 GMT
+notAfter=May  5 23:59:59 2025 GMT
+```
+
+5. Generating random numbers
+```bash
+λ openssl rand -base64 32
+ONWjdChPeQiDKrHdQDLlY4VWubfwVMCsG9IRVrW5t3A=
+
+# truncate the base64 characters
+λ openssl rand -base64 32 | tr -d '/|=|+|-'
+hQERlt87wWoW5U1j9vtzCrWX86kYkmWCjyZ754Eig
+```
