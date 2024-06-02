@@ -49,12 +49,35 @@ syntax tree as the source file is edited.
   :config
   ;; activate tree-sitter on any buffer containing the code
   ;; for which it has a valid parser available
+  (require 'tree-sitter-langs)
   (global-tree-sitter-mode)
   ;; we can easily observe the difference tree-sitter-hl-mode makes
   ;; for python, ts or tsx by switching on and off
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
 
+The  package ~tree-sitter-langs~  is a  convenient language  bundle for  the Emacs
+package  tree-sitter. It  serves  as an  interim  distribution mechanism,  until
+tree-sitter  is   widespread  enough   for  language-specific  major   modes  to
+incorporate its functionalities.
+
+#+begin_src emacs-lisp :tangle yes
+;; Language bundle for Emacs's tree-sitter package
 (use-package tree-sitter-langs
   :ensure t
-  :after tree-sitter)
+  :after tree-sitter
+  :quelpa (tree-stter-langs :fetcher github :repo "emacs-tree-sitter/tree-sitter-langs"))
+#+end_src
+
+For installing all the native language specific tree sitters, we can use the
+package ~treesit-auto~. It automatically pick between TreeSitter and default major
+modes in Emacs 29+.
+#+begin_src emacs-lisp :lexical no
+(use-package treesit-auto
+  :quelpa (treesit-auto :fetcher github :repo "renzmann/treesit-auto")
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 #+end_src
