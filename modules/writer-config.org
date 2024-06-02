@@ -25,6 +25,7 @@
 - [[#markdown-mode][Markdown mode]]
   - [[#generate-toc-for-markdown-file][Generate TOC for markdown file]]
   - [[#imenu-setup-for-markdown][iMenu setup for Markdown]]
+  - [[#polymode][Polymode]]
 - [[#get-word-definition-at-a-point][Get word definition at a point]]
 
 * Writing tools and Documentation configuration
@@ -262,6 +263,29 @@ Configuration of =imenu= for markdown
   :config
   (setq imenu-list-focus-after-activation t
         imenu-list-auto-resize nil))
+#+end_src
+
+** Polymode
+[[https://polymode.github.io/][Polymode]] is a framework for multiple major modes (~MMM~) inside a single Emacs buffer. It is fast and has a simple but flexible object oriented design. Creating new polymodes normally takes a few lines of code. Using polymode, let’s add syntax coloring to Markdown code blocks similar to what we do with Org.
+
+#+begin_src emacs-lisp :tangle no
+;; Polymode
+(use-package poly-markdown
+  :ensure t
+  :defer 3
+  :quelpa (poly-markdown :fetcher "github" :repo "polymode/poly-markdown")
+  :mode (("\\.md\\'" . poly-markdown-mode)
+  :config
+    (define-hostmode poly-markdown-hostmode :mode 'markdown-mode)
+    (define-auto-innermode poly-markdown-fenced-code-innermode
+                           :head-matcher (cons "^[ \t]*\\(```{?[[:alpha:]].*\n\\)" 1)
+                           :tail-matcher (cons "^[ \t]*\\(```\\)[ \t]*$" 1)
+                           :mode-matcher (cons "```[ \t]*{?\\(?:lang *= *\\)?\\([^ \t\n;=,}]+\\)" 1)
+                           :head-mode 'host
+                           :tail-mode 'host)
+    (define-polymode poly-markdown-mode
+                     :hostmode 'poly-markdown-hostmode
+                     :innermodes '(poly-markdown-fenced-code-innermode)))
 #+end_src
 
 * Get word definition at a point
