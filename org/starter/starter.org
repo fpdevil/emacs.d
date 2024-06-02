@@ -1,0 +1,493 @@
+# This should not be altered
+# ------------------------------------------
+#+OPTIONS: H:4 num:t toc:nil title:nil ^:{}
+#+OPTIONS: TeX:t LaTeX:t
+# ------------------------------------------
+
+# I need the footnotes to be inline
+# ------------------------------------------
+#+STARTUP: fninline
+#+STARTUP: fnadjust
+#+STARTUP: indent
+#+STARTUP: shrink
+# ------------------------------------------
+
+# paper size and font specifications
+# ------------------------------------------
+#+LATEX_CLASS_OPTIONS: [12pt,a4paper]
+
+#+LATEX_HEADER_EXTRA: \usepackage{fontspec}
+#+LATEX_HEADER_EXTRA: \setmainfont{Times New Roman}
+#+LATEX_HEADER: \setlength\parindent{0pt}
+# ------------------------------------------
+
+# extract only year
+#+LATEX_HEADER: \makeatletter
+#+LATEX_HEADER: \def\Year#1{%
+#+LATEX_HEADER:   \def\yy@##1##2##3##4;{##1##2##3##4}%
+#+LATEX_HEADER:   \expandafter\yy@#1;
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \makeatother
+
+# set page margins
+# ------------------------------------------
+# #+LATEX_HEADER: \usepackage[top=1.5cm, bottom=1.5cm, left=1.5cm, right=1.5cm]{geometry}
+# #+LATEX_HEADER: \newgeometry{top=1.5cm, bottom=1.5cm, left=1.5cm, right=1.5cm}
+# ------------------------------------------
+
+# few macros
+# ------------------------------------------
+#+macro: emacs-version (eval emacs-version)
+#+macro: org-version (eval org-version)
+#+macro: today (eval (format-time-string "%m-%d-%Y"))
+# ------------------------------------------
+
+
+# define custom latex colors
+# courtesy: http://latexcolor.com
+# ------------------------------------------
+#+LATEX: \definecolor{lightslategray}{rgb}{0.47, 0.53, 0.6}
+#+LATEX: \definecolor{brightmaroon}{rgb}{0.76, 0.13, 0.28}
+#+LATEX: \definecolor{ruby}{rgb}{0.88,0.07,0.37}
+#+LATEX: \definecolor{hotpink}{rgb}{0.9,0,0.5}
+#+LATEX: \definecolor{gold}{rgb}{0.85,0.66,0}
+#+LATEX: \definecolor{brickred}{rgb}{0.8,0.25,0.33}
+#+LATEX: \definecolor{brightpink}{rgb}{1.0, 0.0, 0.5}
+#+LATEX: \definecolor{sapphire}{rgb}{0.03,0.15,0.4}
+#+LATEX: \definecolor{upforestgreen}{rgb}{0.0,0.27,0.13}
+#+LATEX: \definecolor{mahogany}{rgb}{0.75,0.25,0.0}
+#+LATEX: \definecolor{airforceblue}{rgb}{0.36,0.54,0.66}
+#+LATEX: \definecolor{tangerineyellow}{rgb}{1.0,0.8,0.0}
+#+LATEX: \definecolor{cadmiumgreen}{rgb}{0.0,0.42,0.24}
+#+LATEX: \definecolor{indigodye}{rgb}{0.0,0.25,0.42}
+#+LATEX: \definecolor{palevioletred}{rgb}{0.86,0.44,0.58}
+#+LATEX: \definecolor{frenchblue}{rgb}{0.0,0.45,0.73}
+#+LATEX: \definecolor{jazzberryjam}{rgb}{0.65,0.04,0.37}
+#+LATEX: \definecolor{burgundy}{rgb}{0.5, 0.0, 0.13}
+#+LATEX: \definecolor{antiquefuchsia}{rgb}{0.57, 0.36, 0.51}
+#+LATEX: \definecolor{byzantium}{rgb}{0.44, 0.16, 0.39}
+#+LATEX: \definecolor{darkcoral}{rgb}{0.8, 0.36, 0.27}
+#+LATEX: \definecolor{dogwoodrose}{rgb}{0.84, 0.09, 0.41}
+#+LATEX: \definecolor{forestgreen(traditional)}{rgb}{0.0, 0.27, 0.13}
+#+LATEX: \definecolor{lapislazuli}{rgb}{0.15, 0.38, 0.61}
+#+LATEX: \definecolor{bulgarianrose}{rgb}{0.28, 0.02, 0.03}
+#+LATEX: \definecolor{gainsboro}{rgb}{0.86, 0.86, 0.86}
+#+LATEX: \definecolor{amber}{rgb}{1.0, 0.75, 0.0}
+#+LATEX: \definecolor{blush}{rgb}{0.87, 0.36, 0.51}
+#+LATEX: \definecolor{alizarin}{rgb}{0.82, 0.1, 0.26}
+#+LATEX: \definecolor{bondiblue}{rgb}{0.0, 0.58, 0.71}
+#+LATEX: \definecolor{cerise}{rgb}{0.87, 0.19, 0.39}
+#+LATEX: \definecolor{forestgreen(traditional)}{rgb}{0.0, 0.27, 0.13}
+#+LATEX: \definecolor{jazzberryjam}{rgb}{0.65, 0.04, 0.37}
+#+LATEX: \definecolor{mediumpersianblue}{rgb}{0.0, 0.4, 0.65}
+#+LATEX: \definecolor{midnightblue}{rgb}{0.1, 0.1, 0.44}
+#+LATEX: \definecolor{bittersweet}{rgb}{1.0, 0.44, 0.37}
+#+LATEX: \definecolor{cadet}{rgb}{0.33, 0.41, 0.47}
+#+LATEX: \definecolor{cinereous}{rgb}{0.6, 0.51, 0.48}
+#+LATEX: \definecolor{darkorchid}{rgb}{0.6, 0.2, 0.8}
+#+LATEX: \definecolor{glaucous}{rgb}{0.38, 0.51, 0.71}
+#+LATEX: \definecolor{huntergreen}{rgb}{0.21, 0.37, 0.23}
+#+LATEX: \definecolor{mulberry}{rgb}{0.77, 0.29, 0.55}
+#+LATEX: \definecolor{burntorange}{rgb}{0.8, 0.33, 0.0}
+#+LATEX: \definecolor{burgundy}{rgb}{0.5, 0.0, 0.13}
+#+LATEX: \definecolor{goldenrod}{rgb}{0.85, 0.65, 0.13}
+#+LATEX: \definecolor{sienna}{rgb}{0.53, 0.18, 0.09}
+#+LATEX: \definecolor{redbrown}{rgb}{0.65, 0.16, 0.16}
+#+LATEX: \definecolor{palegoldenrod}{rgb}{0.93, 0.91, 0.67}
+#+LATEX: \definecolor{patriarch}{rgb}{0.5, 0.0, 0.5}
+#+LATEX: \definecolor{prussianblue}{rgb}{0.0, 0.19, 0.33}
+#+LATEX: \definecolor{winestain}{rgb}{0.5,0,0}
+#+LATEX: \definecolor{darkred}{rgb}{0.55, 0.0, 0.0}
+#+LATEX: \definecolor{brass}{rgb}{0.71, 0.65, 0.26}
+#+LATEX: \definecolor{brightturquoise}{rgb}{0.03, 0.91, 0.87}
+#+LATEX: \definecolor{cadet}{rgb}{0.33, 0.41, 0.47}
+#+LATEX: \definecolor{byzantium}{rgb}{0.44, 0.16, 0.39}
+#+LATEX: \definecolor{tropicalrainforest}{rgb}{0.0, 0.46, 0.37}
+#+LATEX: \definecolor{vermilion}{rgb}{0.89, 0.26, 0.2}
+#+LATEX: \definecolor{davysgrey}{rgb}{0.33, 0.33, 0.33}
+#+LATEX: \definecolor{antiquefuchsia}{rgb}{0.57, 0.36, 0.51}
+#+LATEX: \definecolor{ocre}{HTML}{F16723}
+# ------------------------------------------
+
+# For title and names
+#+LATEX_HEADER: \definecolor{titlepagecolor}{rgb}{0.96, 0.96, 0.96}
+#+LATEX_HEADER: \definecolor{namecolor}{rgb}{0.0, 0.48, 0.65}
+#+LATEX_COLOR: \definecolor{rulecolor}{cmy}{0.7, 0.5, 0.3}
+
+# For captions
+# ------------------------------------------
+# #+LATEX_HEADER: \usepackage[font=small]{caption}
+#+LATEX_HEADER: \usepackage[font={small,it}]{caption}
+#+LATEX_HEADER: \captionsetup{format=hang,font=small,labelfont=it}
+# ------------------------------------------
+
+# placeins – Control float placement
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{placeins}
+# ------------------------------------------
+
+# For Hyperlinks setup
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage[x11names,dvipnames]{xcolor}
+#+LATEX_HEADER: \hypersetup{
+#+LATEX_HEADER:     colorlinks=true,
+#+LATEX_HEADER:     linktoc=all,
+#+LATEX_HEADER:     linkcolor=winestain,
+#+LATEX_HEADER:     filecolor=green,
+#+LATEX_HEADER:     urlcolor=magenta,
+#+LATEX_HEADER:     citecolor=cyan,
+#+LATEX_HEADER:     pdfpagemode=FullScreen,
+#+LATEX_HEADER:     pdftitle   = {A Sample ORG LaTeX Document},
+#+LATEX_HEADER:     pdfsubject = {\emph{Exploration of Literate document generation org \& TeX}},
+#+LATEX_HEADER:     pdfauthor  = {\textcopyright\ Sampath Singamsetty},
+#+LATEX_HEADER:     pdfcreator={{{{emacs-version}}} ({{{org-version}}})},
+#+LATEX_HEADER: }
+# ------------------------------------------
+
+
+# For tables where the text in a cell should be able to get wrapped to
+# the next line. Width can be defined explicitly
+# booktabs can be used for getting a nicer table style with
+# thicker lines on top and on the bottom
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{tabularx,siunitx,booktabs}
+# ------------------------------------------
+
+
+# For tables spanning multiple pages with text wrapping. Tabu seems more
+# powerful than tabularx, but I still need time to investigate more thoroughly.
+# tabularx was not able to handle table captions in long tables, while the
+# tabu package succeeds.
+# ------------------------------------------
+#+LATEX_HEADER_EXTRA: \usepackage{tabu,longtable}
+#+LATEX_HEADER: \usepackage{multirow}
+#+LATEX_HEADER: \usepackage{float}
+# ------------------------------------------
+
+# For SRC Code blocks
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usemintedstyle{one-dark}
+
+# background color seems to cause issue with page break
+# We will used mdframed for setting the same
+# #+LATEX_HEADER: \setminted{bgcolor=yellow!5,rulecolor=teal}
+#+LATEX_HEADER: \setminted{rulecolor=teal,ignorelexererrors=true}
+
+#+latex_header: \usepackage{mdframed}
+#+latex_header: \mdfsetup{%
+#+latex_header: topline=false,bottomline=false,leftline=false,rightline=false, %
+#+latex_header: backgroundcolor=gray!5!white %
+#+latex_header: }
+# If the below 2 lines are not included, the mdframed config above will not be effective
+#+latex_header: \BeforeBeginEnvironment{minted}{\begin{mdframed}}
+#+latex_header: \AfterEndEnvironment{minted}{\end{mdframed}}
+# ------------------------------------------
+
+# using verbs anywhere
+# #+latex_header: \usepackage{cprotect}
+
+# expand value of key "highlightlines"
+#+latex_header: \usepackage{refcount}
+#+latex_header: \makeatletter
+#+latex_header: \define@key{FV}{highlightlines}{\edef\FV@HighlightLinesList{#1}}
+#+latex_header: \makeatother
+
+
+# defines multiline commenting using the tags \begin{comment} \end{comment}
+# used to avoid conflict between bibtex and biblatex
+# ------------------------------------------
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\scriptsize,formatcom=\color{blue}}
+# ------------------------------------------
+
+
+# for indexed and cross references
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{imakeidx}
+#+LATEX_HEADER: \makeindex[columns=2, title=INDEX, options={-s MyStyle.ist}]
+#+LATEX_HEADER: \usepackage[totoc, initsep=10pt, font=small, unbalanced=true]{idxlayout}
+#+LATEX_HEADER: \usepackage{cleveref}
+# ------------------------------------------
+
+
+# Fancy Headers
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[english]{babel}
+# ------------------------------------------
+
+# For Header and Footer
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancy}
+#+LATEX_HEADER: \fancyhf{}
+#+LATEX_HEADER: \fancyhead[LE,RO]{Copyright \copyright\space United Airlines, Inc. All rights reserved.}
+#+LATEX_HEADER: \fancyhead[RE,LO]{\textit{Confidential Property}}
+#+LATEX_HEADER: \fancyfoot[LE,RO]{\thepage}
+#+LATEX_HEADER: \lhead{\scriptsize\textrm{\textcolor{lightslategray}{ORG \S\hspace{1pt} LaTeX}}}
+#+LATEX_HEADER: \chead{}
+#+LATEX_HEADER: \rhead{\scriptsize{\textrm{\textcolor{lightslategray}{\today}}}}
+#+LATEX_HEADER: \lfoot{\textsc{\scriptsize\textcolor{lightslategray}{Research \& Engineering\space |\space Copyright \textcopyright \hspace{1pt}{\Year{\the\year}}\hspace{1pt} Origin "0", Inc. All rights reserved.}}}
+#+LATEX_HEADER: \cfoot{}
+#+LATEX_HEADER: \rfoot{\scriptsize{\textrm{\textcolor{lightslategray}{\thepage}}}}
+
+#+LATEX_HEADER: \renewcommand{\headrulewidth}{2pt}
+#+LATEX_HEADER: \renewcommand{\footrulewidth}{1pt}
+# ------------------------------------------
+
+
+# Needed for rotating floats, e.g. for placing the sidewaystable
+# correctly and for rotating graphics
+# ------------------------------------------
+#+LATEX_HEADER_EXTRA: \usepackage{rotfloat}
+# ------------------------------------------
+
+# TiKz for drawing
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{tikz}
+# ------------------------------------------
+
+
+# smartdiagrams, tikz, tcolorbox and color boxes
+# ------------------------------------------
+# tcolorbox loaded from org-config with theorems,skins,many
+# #+LATEX_HEADER: \usepackage[many]{tcolorbox}
+#+LATEX_HEADER: \usepackage{smartdiagram}
+#+LATEX_HEADER: \usetikzlibrary{shapes.symbols}
+# ------------------------------------------
+
+
+# Diagrams and Pictures (admonitions)
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{awesomebox}
+# ------------------------------------------
+
+
+# Putting notes
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage[colorinlistoftodos]{todonotes}
+# ------------------------------------------
+
+
+# for title page
+# ------------------------------------------
+#+LATEX_HEADER: \usepackage{pagecolor}
+#+LATEX_HEADER: \usepackage{afterpage}
+#+LATEX_HEADER: \setcounter{tocdepth}{3}
+#+LATEX_HEADER: \usepackage{setspace}
+#+LATEX_HEADER: \setstretch{1.2}
+#+LATEX_HEADER: \usepackage{csquotes}
+# #+LATEX_HEADER: \usepackage[font={small,it}]{caption}
+# ------------------------------------------
+
+
+# Watermark
+# ------------------------------------------
+# #+LATEX_HEADER: \usepackage[printwatermark]{xwatermark}
+# #+LATEX_HEADER: \newwatermark[allpages,color=magenta!10,angle=45,scale=5,xpos=0,ypos=0]{UAL}
+
+#+LATEX_HEADER: \usepackage{draftwatermark} % package for watermarks
+#+LATEX_HEADER: \SetWatermarkText{United\\Airlines}
+#+LATEX_HEADER: \SetWatermarkScale{0.8}
+#+LATEX_HEADER: \SetWatermarkColor[gray]{0.9}
+#+LATEX_HEADER: \SetWatermarkLightness{0.95}
+# ------------------------------------------
+
+# rename the table of contents
+#+LATEX_HEADER: \renewcommand*\contentsname{Table Of Contents}
+
+
+\thispagestyle{plain}
+#+begin_export latex
+\graphicspath{ {./images/} }
+
+\begin{titlepage}
+    \begin{center}
+        %defines the geometry for the titlepage
+        % Centre all text
+        \centering
+        \pagecolor{titlepagecolor}
+
+        \Large
+        \textbf{\textsf{\textcolor{namecolor}{Research \& Engineering}}}\\
+
+
+        \vspace*{\fill}   % Fill Whitespace
+        \textit{\textbf{\textsf{\textcolor{lightslategray}{A Sample Literate document}}}}\\
+        \vspace*{\fill}   % Fill Whitespace
+
+        % --- Organization logo, name and date --- %
+        \includegraphics[width=7cm]{images/UAL.png}\\[-1em]
+        \color{white}
+        \makebox[4pt]{\rule{0.8\textwidth}{1pt}}\\[-0.5em]
+        \par
+        \noindent
+
+        {\small\textbf{\textcolor{namecolor}{ORG Mode}}} \\[-0.5em]
+        {\Large{\textbf{\textcolor{namecolor}{United Airlines, Inc.}}}}
+
+        % --- Publisher name or date here --- %
+        % \vskip\baselineskip
+        {\small{\textbf{\textcolor{lightslategray}{\today}}}
+    \end{center}
+\end{titlepage}
+#+end_export
+
+
+#+TITLE: A Sample document
+#+AUTHOR: Sampath Singamsetty
+#+SUBTITLE: Sample document with cover page
+#+DESCRIPTION: A Brief overview of some of the features of org and LateX
+#+DATE: \today
+
+# restores the geometry
+\restoregeometry
+\tableofcontents
+\newpage
+
+* Code foundations
+Some inline code examples
+This is inline =C++= code \mintinline{cpp}|int main()|
+
+This is inline =Rust= code \mintinline{rust}|use chrono::{Utc, DateTime};|
+
+This is =bash= inline code \mintinline[escapeinside=||]{bash}|${#parameter}|
+
+This is =python= inline code \mintinline[escapeinside=||]{python}{|$\omega_x$| = [1, 2, 3]}
+
+Another =Rust= one liner here \mintinline[frame=lines,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,escapeinside=||]{rust}|use rand::{distributions::Uniform, Rng};|
+
+Other inline code examples:
+- XML: src_xml[:exports code]{<tag>text</tag>}
+- Shell: src_sh[:exports code]{echo -e "test"}
+- Elisp: src_elisp[:exports code]{( + 1 2)}
+- Rust: src_rust[:exports code]{use std:process}
+- JavaScripr: src_js[:exports code]{console.log(1 + 2)}
+- GO: src_go[:exports code]{var palette = []color.Color{color.White, color.Black}}
+- Python: src_python[:exports code]{[bin(i)[2:].zfill(8) for i in range(11)]}
+
+** A python code snippet
+\begin{listing}[!ht]
+\centering
+\begin{minted}[
+    frame=lines,
+    mathescape=true,
+    breaklines=true,
+    breakanywhere=true
+    linenos=true,
+    escapeinside=!!,
+]{python}
+# Note: $\pi=\lim_{n\to\infty}\frac{P_n}{d}$
+title = "Hello World"
+
+sum = 0
+for i in range(10):
+    sum += i
+\end{minted}
+\caption{A Python snippet}
+\end{listing}
+\FloatBarrier
+
+** A LaTeX code snippet
+\begin{minted}[
+    fontsize=\small,
+    frame=lines,
+    mathescape=true,
+    breaklines=true,
+    breakanywhere=true
+    linenos=true
+]{tex}
+% This is a TeX comment but is not disregarded because it's inside
+
+\documentclass{article}
+
+\usepackage{minted}
+
+\begin{document}
+Dont use $$ in \LaTeXe!  % It's weird!
+\end{document}
+\end{minted}
+
+
+** JSX code snippet
+\begin{listing}[!ht]
+\centering
+\begin{minted}[
+    frame=lines,
+    mathescape=true,
+    breaklines=true,
+    breakanywhere=true
+    linenos=true
+]{jsx}
+const Component = () => {
+    return <div>test</div>
+}
+\end{minted}
+\label{jsx-snippet}
+\caption{JSX Code block}
+\end{listing}
+
+* Directory Listing
+Listing of files in a directory as a =tree=.
+
+#+begin_verse
+/Users/sampathsingamsetty/sw/ual/projects/openid/OpenID_V2/
+│
+├── oauth/
+│
+├── transformations/
+│
+├── aaa/
+│
+├── log-transformations/
+│
+├── lib/
+│
+├── conf/
+│
+└── gatewayscripts/
+    └── js-files/
+        ├── new/
+        │
+        └── backup/
+#+end_verse
+
+The same in a different format here
+
+#+begin_src awk :eval never
+/local/OpenID_V2/
+│
+├── oauth/
+│
+├── transformations/
+│
+├── aaa/
+│   ├── CIAMGuestAuthentication.xsl
+│
+├── log-transformations/
+│
+├── lib/
+│   ├── Commons.js
+│
+├── conf/
+│   ├── opi-metadata.xml
+│
+├── gatewayscripts/
+│   │
+│   ├── tokenProcessing.js
+│   ├── CIAMGuestAuthenticator.js
+#+end_src
+
+#+begin_latex
+\begin{awesomeblock}[violet]{3pt}{\faRocket}{violet}
+\notebox{The listed files under their respective parent directories were either changed or introduced!}
+\begin{itemize}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{CIAMGuestAuthentication.xsl - "New XSL module to handle custom Authentication in AAA"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{Commons.js - "Existing lib module with a function update"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{opi-metadata.xml - "Existing configuration updated with Ping login url"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{tokenProcessing.js - "Existing module updated with new processing rules"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{CIAMGuestAuthenticator.js - "New module to call Ping login"}
+\end{itemize}
+\end{awesomeblock}
+#+end_latex
