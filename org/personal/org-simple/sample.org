@@ -568,7 +568,6 @@ using namespace std;
 int main() {
     cout << "--- OpenCV Version Information ---" << endl;
     cout << "    OpenCV Version: " << CV_VERSION << endl;
-    cout << "    OpenCV version: " << CV_VERSION << endl;
     cout << "    Major version: " << CV_MAJOR_VERSION << endl;
     cout << "    Minor version: " << CV_MINOR_VERSION << endl;
     cout << "    Subminor version: " << CV_SUBMINOR_VERSION << endl;
@@ -630,6 +629,36 @@ long double
 
 \FloatBarrier
 
+
+Another way of running the same code without supplying the full list of =libs= is:
+
+#+header: :flags -std=c++17 -rpath /usr/local/lib
+#+header: :libs -lopencv_core -lopencv_highgui
+#+BEGIN_SRC C++ :results output pp
+#include "opencv2/core.hpp"
+#include "opencv2/core/version.hpp"
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+int main() {
+    cout << " OpenCV Version " << endl;
+    cout << "OpenCV version: " << CV_VERSION << endl;
+    cout << "Major version: " << CV_MAJOR_VERSION << endl;
+    cout << "Minor version: " << CV_MINOR_VERSION << endl;
+    cout << "Subminor version: " << CV_SUBMINOR_VERSION << endl;
+}
+#+END_SRC
+
+#+RESULTS[306d8dd10d8db2bd8d7dbd9cc306c966e2477618]:
+:  OpenCV Version
+: OpenCV version: 4.9.0
+: Major version: 4
+: Minor version: 9
+: Subminor version: 0
+\FloatBarrier
+
 index:org-babel!c-cpp!lambdas
 *** Examples using lambdas
 
@@ -677,6 +706,43 @@ int main()
 
 #+RESULTS[87810ecd74fa75404accc2bc186f14d3278463fb]:
 : June and July start with the same letter
+
+
+** Checking for setbit
+
+#+begin_src C++ :results verbatim :main no :flags -std=c++17 :exports both
+#include <iostream>
+
+bool is_power_of_2(int x) {
+    if ((x & (x - 1)) != 0) {
+        return false;
+    }
+    return true;
+}
+
+int main() {
+    for (int n = 0; n <= 10; n++) {
+        std::cout << n << ": " << ((is_power_of_2(n)) ? "YES" : "NO") << std::endl;
+    }
+
+    return 0;
+}
+#+end_src
+
+#+RESULTS[208088d5f4d41e816a3870e648b7ca39176b2a40]:
+#+BEGIN_EXAMPLE
+0: YES
+1: YES
+2: YES
+3: NO
+4: YES
+5: NO
+6: NO
+7: NO
+8: YES
+9: NO
+10: NO
+#+END_EXAMPLE
 
 
 index:org-babel!c-cpp!noweb
@@ -1176,6 +1242,36 @@ print('\n'.join(pst))
           $pst-vals
   }
 #+end_src
+
+
+#+name: char-table
+| e | 1648 |
+| t | 1127 |
+| a | 1082 |
+| o | 1043 |
+| i |  968 |
+| r |  967 |
+| n |  885 |
+| s |  884 |
+| l |  815 |
+| c |  580 |
+
+#+NAME: python-pyplot
+#+HEADER: :output-dir images :file python-pyplot.svg
+#+begin_src python :var tbl=char-table :results file graphics :exports both
+import matplotlib.pyplot as plt
+import pandas as pd
+
+data = pd.DataFrame(tbl)
+fig=plt.figure(figsize=(4,2))
+fig.tight_layout()
+plt.bar(data[0], data[1])
+fgname = 'images/python-pyplot.svg'
+plt.savefig(fgname)
+#+end_src
+
+#+RESULTS: python-pyplot
+[[file:images/python-pyplot.svg]]
 
 
 index:miscellneous
