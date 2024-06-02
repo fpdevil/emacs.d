@@ -35,12 +35,15 @@ on MELPA but seems to run into issues if installed using =straight= or =quelpa=.
 #+begin_src emacs-lisp :lexical no
 ;; installing the dependencies for chatgpt-shell
 (use-package shell-maker
-  :quelpa (:host github :repo "xenodium/chatgpt-shell/shell-maker.el"))
+  :defer 5
+  :quelpa
+  (:host github :repo "xenodium/chatgpt-shell/shell-maker.el"))
 #+end_src
 
 #+begin_src emacs-lisp
 ;; chatgpt shell interface from Emacs
 (use-package chatgpt-shell
+  :defer 5
   :quelpa
   (:fetcher github :repo "xenodium/chatgpt-shell")
   :config
@@ -53,7 +56,9 @@ on MELPA but seems to run into issues if installed using =straight= or =quelpa=.
 
 #+begin_src emacs-lisp
 (use-package dall-e-shell
-  :quelpa (:host github :repo "xenodium/chatgpt-shell/dall-e-shell.el")
+  :defer 5
+  :quelpa
+  (:host github :repo "xenodium/chatgpt-shell/dall-e-shell.el")
   :config
   (setq dall-e-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com")))
@@ -83,13 +88,15 @@ ref: https://github.com/emacs-openai/chatgpt
 ;; Use ChatGPT inside Emacs
 ;; install openai which is a dependency for chatgpt
 (use-package openai
-  :defer 2
-  :quelpa (openai :fetcher github :repo "emacs-openai/openai"))
+  :defer 5
+  :quelpa
+  (openai :fetcher github :repo "emacs-openai/openai"))
 
 ;; install chatgpt
 (use-package chatgpt
-  :defer 3
-  :quelpa (chatgpt :fetcher github :repo "emacs-openai/chatgpt")
+  :defer 5
+  :quelpa
+  (chatgpt :fetcher github :repo "emacs-openai/chatgpt")
   :init
   (setq openai-key (auth-source-pick-first-password :host "api.openai.com")))
 #+end_src
