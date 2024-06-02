@@ -9,7 +9,6 @@
   - [[#company-quickhelp-for-providing-additional-completion-help][Company quickhelp for providing additional completion help]]
   - [[#company-box-for-providing-additional-completion-item-help-for-popups][Company box for providing additional completion item help for popups]]
   - [[#all-additional-company-auxiliary-packages-and-settings][All additional company auxiliary packages and settings]]
-  - [[#insert-emacs-org-blocks-with-completion-via-company-mode][Insert Emacs org blocks with completion (via company mode)]]
   - [[#better-org-babel-with-fast-block-insertion][Better Org Babel with Fast Block Insertion]]
   - [[#synchronising-company-with-pcomplete-for-org-mode][Synchronising company with pcomplete for org-mode]]
 - [[#tabnine-completions][TabNine Completions]]
@@ -26,8 +25,7 @@
 
   :init
   (setq company-show-quick-access t
-	    company-idle-delay 0.3
-	    ;; time for activate completion
+	    company-idle-delay 0.3        ; time for activate completion
 	    company-echo-delay 0.01
 	    company-require-match 'never
 
@@ -36,7 +34,13 @@
 
 	    company-minimum-prefix-length 1
 	    company-tooltip-align-annotations t
-	    company-transformers '(company-sort-by-occurrence)
+
+        ;; Display candidates according to importance,
+        ;; then case, then in-buffer frequency
+	    company-transformers '(company-sort-by-backend-importance
+                               company-sort-prefer-same-case-prefix
+                               company-sort-by-occurrence)
+
         ;; custom settings for frontend
         company-frontends
         '(company-pseudo-tooltip-unless-just-one-frontend ; always show candidates in overlay tooltip
@@ -48,6 +52,7 @@
         ;; suggests text your open buffers). This prevents Company from causing
         ;; lag once you have a lot of buffers open.
         company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers nil
         ;; Make `company-dabbrev' fully case-sensitive, for improved UX with
         ;; domain-specific words with particular casing.
 	    ;; do not downcase completions by default.
@@ -99,7 +104,7 @@
   (set-face-attribute 'company-scrollbar-fg nil
                       :background "orange")
   (set-face-attribute 'company-scrollbar-bg nil
-                      :background "gray40"))
+                      :Background "gray40"))
 #+end_src
 
 ** Company quickhelp for providing additional completion help
@@ -333,18 +338,6 @@ Here we define some custom settings for interacting yas with company mode.
 		  (indent-for-tab-command)))))
 
 (global-set-key (kbd "M-o") 'tab-indent-or-complete)
-#+end_src
-
-** Insert Emacs org blocks with completion (via company mode)
-#+begin_src emacs-lisp
-;; https://github.com/xenodium/company-org-block
-(use-package company-org-block
-  :ensure t
-  :custom
-  (company-org-block-edit-style 'auto) ;; 'auto, 'prompt, or 'inline
-  :hook ((org-mode . (lambda ()
-			           (setq-local company-backends '(company-org-block))
-			           (company-mode +1)))))
 #+end_src
 
 ** Better Org Babel with Fast Block Insertion
