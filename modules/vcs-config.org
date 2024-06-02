@@ -36,8 +36,10 @@ Customisation's aren't really needed, except perhaps for some keybindings:
 ;; At the bottom of Emacs, we can see which branch we are on
 ;; and whether the local file is modified or not
 (use-package magit
-  :straight (magit :type git :host github :repo "magit/magit")
+  :straight
+  (magit :type git :host github :repo "magit/magit")
   :ensure t
+  :defer 3
   :commands (magit-status magit-get-current-branch)
   :init (require 'magit-files)
   :bind (("C-c g g" . magit-status)
@@ -144,6 +146,7 @@ through history to gain further insights as to how and why the code evolved with
 (use-package blamer
   :straight
   (:host github :repo "artawower/blamer.el")
+  :defer 3
   :bind (("C-c g s i" . blamer-show-commit-info))
   :custom
   (blamer-idle-time 0.3)
