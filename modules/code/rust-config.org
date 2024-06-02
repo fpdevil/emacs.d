@@ -91,15 +91,23 @@ ln -s /Users/sampathsingamsetty/.rustup/toolchains/stable-aarch64-apple-darwin/b
 Support for ~Rust~ in ~Emacs~ has been continuously improving with plugins and also
 =LSP= agents.
 
+~rust-mode~ may be configured as below:
+#+begin_src emacs-lisp :tangle no
+(use-package rust-mode
+  :init
+  (setq rust-mode-treesitter-derive t)
+  :config
+  (setq indent-tabs-mode nil))
+#+end_src
+
 Once proper configuration on =Emacs= has been done, the editor will be capable of
 providing the following benefits:
-
 
 + Navigating the source code (go to to implementation, list references, outline module structure)
 + Code completion
 + Code snippets
 + Highlighting errors and warnings inline
-+ Apply code fixes and refactorings.
++ Apply code fixes and refactoring.
 + Automatically import definitions if necessary (such as for Traits)
 + Code formatting with rustfmt.
 + Building & running other cargo commands.
