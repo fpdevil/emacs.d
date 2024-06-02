@@ -170,9 +170,9 @@ We will not use the below configuration, so setting the =tang;e= option to _no_.
 #+begin_src emacs-lisp :lexical no
 ;; emmet mode
 (use-package emmet-mode
-  :ensure t
+  :defer 3
   :diminish emmet-mode
-  :init (require 'emmet-mode)
+  ;;:init (require 'emmet-mode)
   :config
   (progn
     (add-hook 'html-mode-hook 'emmet-mode)
