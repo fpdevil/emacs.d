@@ -79,7 +79,7 @@ gets tangled to ~config.el~.
 
 ** Sectional profiling
 Define a timer profiler for identifying and checking which module takes how
-much time to check if needed.
+uch time to check if needed.
 #+begin_src emacs-lisp :lexical no
 (defvar aqua/init-start-time (current-time) "Time when init.el was started")
 (defvar aqua/section-start-time (current-time) "Time when section was started")
@@ -100,9 +100,9 @@ To use the above, follow the below format
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle "~/.emacs.d/early-init.el"
 :END:
+This will be the first file that Emacs reads while starting up and it should contain code that does not depend on any package or proportions of the Emacs frame. In general, this early initialisation file is meant to set up a few basic things before Emacs produces the initial frame by delegating to the =init.el= file.
 
-This code is meant to go into the [[file:early-init.el][early-init.el]] file. When this is tangled, it will create the file [[file:~/.emacs.d/early-init.el][~/.emacs.d/early-init.el]] (from the [[early init]] section)
-
+The code is meant to go into the [[file:early-init.el][early-init.el]] file, which when tangled will create the file [[file:~/.emacs.d/early-init.el][~/.emacs.d/early-init.el]] (from the [[early init]] section)
 
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
@@ -196,7 +196,6 @@ This code is meant to go into the [[file:early-init.el][early-init.el]] file. Wh
 
 ;; ^ Makes the Aqua titlebar color the same as Emacs.
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-
 #+end_src
 
 
@@ -252,13 +251,16 @@ control. This enables us to keep specific config local to each machine
 (setq custom-file my/custom-file)
 (when (file-exists-p custom-file)
   (load custom-file 'noerror))
+
+;; TODO remove later
+;;(setq max-lisp-eval-depth 20000)
 #+end_src
 
 ** Optional settings
 Optionally enable the =debug-on-error= value.
 #+begin_src emacs-lisp :eval no
 ;; enable debug setting value to t for troubleshooting any startup issues
-(setq debug-on-error nil)
+(setq debug-on-error t)
 #+end_src
 
 Keep local variables safe.
@@ -946,30 +948,51 @@ more frequently but in less time.
 * Loading of the Literate Mode Configurations                              :CFGLST:
 Configuration for individual or specific modules, functions, modes and languages
 
- #+begin_src shell :results replace raw :eval no
-for i in `ls modules/*.org`;do echo "- " file:${i}; done
+ #+begin_src shell :results replace raw :eval yes
+# for i in `ls modules/*.org`;do echo "- " file:${i}; done
+
+find modules -name "*.org" -exec echo "- file:"{} \;
  #+end_src
 
  #+RESULTS:
- -  file:modules/addons-config.org
- -  file:modules/buffermgmt-config.org
- -  file:modules/color-themes.org
- -  file:modules/company-config.org
- -  file:modules/completion-config.org
- -  file:modules/custom-config.org
- -  file:modules/documentation-config.org
- -  file:modules/eglot-config.org
- -  file:modules/eldoc-config.org
- -  file:modules/flycheck-config.org
- -  file:modules/flyspell-config.org
- -  file:modules/keymapping-config.org
- -  file:modules/lsp-config.org
- -  file:modules/neotree-config.org
- -  file:modules/org-config.org
- -  file:modules/pdftools-config.org
- -  file:modules/presentations-config.org
- -  file:modules/ranbow-config.org
- -  file:modules/yas-config.org
+ - file:modules/company-config.org
+ - file:modules/error-checker-config.org
+ - file:modules/yas-config.org
+ - file:modules/pdftools-config.org
+ - file:modules/lsp-config.org
+ - file:modules/color-themes.org
+ - file:modules/completion-config.org
+ - file:modules/lsp-bridge-config.org
+ - file:modules/eglot-config.org
+ - file:modules/addons-config.org
+ - file:modules/corfu-config.org
+ - file:modules/code/file-types.org
+ - file:modules/code/typescript-config.org
+ - file:modules/code/rust-config.org
+ - file:modules/code/css-config.org
+ - file:modules/code/emacs-lisp-config.org
+ - file:modules/code/xml-config.org
+ - file:modules/code/python-config.org
+ - file:modules/code/go-config.org
+ - file:modules/code/cpp-config.org
+ - file:modules/code/webmode-config.org
+ - file:modules/code/javascript-config.org
+ - file:modules/flyspell-config.org
+ - file:modules/benchmarking-config.org
+ - file:modules/vcs-config.org
+ - file:modules/writer-config.org
+ - file:modules/presentations-config.org
+ - file:modules/authsource-config.org
+ - file:modules/keymapping-config.org
+ - file:modules/custom-config.org
+ - file:modules/org-config.org
+ - file:modules/buffermgmt-config.org
+ - file:modules/eldoc-config.org
+ - file:modules/chatgpt-config.org
+ - file:modules/neotree-config.org
+ - file:modules/macros-config.org
+
+
 
 * Profiling
 
