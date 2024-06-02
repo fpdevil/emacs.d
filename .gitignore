@@ -7,6 +7,9 @@ straight
 # auto saves
 savefile
 
+# ignore reccent files list
+recentf
+
 # python jedi and elpy related
 .python-environments
 elpy
@@ -45,3 +48,12 @@ eshell
 .lsp-session-v1
 .org-id-locations
 /vimish-fold/
+
+# exclude the below transient files
+.uptimes.el
+ac-comphist.dat
+cursory-latest-state
+cursory-latest-state.eld
+
+# exclude the ccls build file
+ccls
