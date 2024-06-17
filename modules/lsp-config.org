@@ -76,21 +76,6 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
                               :priority '1
                               :server-id 'lsp-go-remote)))
 
-          ;; (with-eval-after-load "lsp-rust"
-          ;;       (lsp-register-client
-          ;;        (make-lsp-client
-          ;;         :new-connection (lsp-tramp-connection "rust-analyzer")
-          ;;         :remote? t
-          ;;         :major-modes '(rust-mode)
-          ;;         :initialization-options 'lsp-rust-analyzer--make-init-options
-          ;;         :notification-handlers (ht<-alist lsp-rust-notification-handlers)
-          ;;         :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
-          ;;         :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
-          ;;         :after-open-fn (lambda ()
-          ;;                          (when lsp-rust-analyzer-server-display-inlay-hints
-          ;;                            (lsp-rust-analyzer-inlay-hints-mode)))
-          ;;         :ignore-messages nil
-          ;;         :server-id 'rust-analyzer-remote)))
           )
 
   :custom
@@ -99,6 +84,7 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
         lsp-completion-show-kind t
         lsp-enable-indentation t
         lsp-auto-guess-root t
+
         ;; enable log for debug lsp-workspace-show-log will switch
         ;; to the corresponding log buffer.
         ;; set this to t, else TRAMP + lsp-mode won't work
@@ -131,18 +117,26 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
             (with-no-warnings
               (lsp-enable-which-key-integration t))
 
-          (dolist (dir '(
-                         "[/\\\\]\\.venv$"
-                         "[/\\\\]\\.mypy_cache$"
-                         "[/\\\\]__pycache__$"
-                         "[/\\\\]\\.vscode$"
-                         ))
-            (push dir lsp-file-watch-ignored)))
+            (dolist (dir '(
+                           "[/\\\\]\\.venv$"
+                           "[/\\\\]\\.mypy_cache$"
+                           "[/\\\\]__pycache__$"
+                           "[/\\\\]\\.vscode$"
+                           ))
+              (push dir lsp-file-watch-ignored)))
 
   :preface
   (defun efs/lsp-mode-setup ()
     (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
     (lsp-headerline-breadcrumb-mode)))
+#+end_src
+
+To counter an issue with =lsp= particularly when =lsp-terraform= is loaded we are
+disabling the same here as I do not use =terraform=.
+#+begin_src emacs-lisp :lexical no
+(with-eval-after-load "lsp-mode"
+  ;; https://github.com/emacs-lsp/lsp-mode/issues/3577#issuecomment-1709232622
+  (delete 'lsp-terraform lsp-client-packages))
 #+end_src
 
 ** LSP Servers
