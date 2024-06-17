@@ -260,7 +260,7 @@ control. This enables us to keep specific config local to each machine
 Optionally enable the =debug-on-error= value.
 #+begin_src emacs-lisp :eval no
 ;; enable debug setting value to t for troubleshooting any startup issues
-(setq debug-on-error t)
+(setq debug-on-error nil)
 #+end_src
 
 Keep local variables safe.
