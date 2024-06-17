@@ -23,6 +23,19 @@ of the section ref:transitioning.
    - =C-x n s= :: To narrow to the org-mode section
    - =C-x n w= :: To widen back to the full text
 
+* Standard important key bindings
+Some key bindings are very handy and few such are listed here:
+
+- =C-h i m pkg-name= :: To go through the documentation of a package
+
+* AucTeX Tips
+Using =auctex= for document editing provides some powerful features for editing
+and previewing documents. Here’s a list of what can be done:
+
+- =C-c C-p C-d= :: Preview a section right inside the buffer
+- =C-c C-p C-b= :: Preview the entire buffer
+- =C-c C-c=     :: Compile into a buffer
+
 * Getting help
 
 help:org-format-latex-header
