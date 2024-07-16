@@ -1,0 +1,259 @@
+\documentclass{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,  %Colours links instead of ugly boxes
+  urlcolor   = blue,  %Colour for external hyperlinks
+  linkcolor  = blue,  %Colour of internal links
+  citecolor  = red    %Colour of citations
+}
+\usepackage{amsmath,amssymb,amsthm,bbm}
+\usepackage{adjustbox}
+\usepackage{booktabs,fancyhdr,verbatim,graphicx}
+\usepackage{bookmark}
+\usepackage[dvipsnames,table,svgnames]{xcolor}
+\usepackage[tableposition=above]{caption}
+\usepackage{pifont}
+\usepackage{lipsum}  % produce dummy text as filler
+\usepackage{array}
+\usepackage[parfill]{parskip}
+\usepackage{cancel}
+\usepackage{float}
+\usepackage{tabularx} % for 'tabularx' env. and 'X' col. type
+\usepackage{multirow} % for columns spanning multiple rows
+\usepackage{hhline}
+
+\setlength\extrarowheight{2pt} % make the tables look less cramped
+\newcommand*\CHECK{\ding{51}}
+
+\newcommand*{\mylemon}{\cellcolor{LemonChiffon}}
+\newcommand*{\myblue}{\cellcolor{SkyBlue}}
+\newcommand*{\mythistle}{\cellcolor{Thistle}}
+
+\definecolor{byzantium}{rgb}{0.44, 0.16, 0.39}
+\definecolor{mediumpersianblue}{rgb}{0.0, 0.4, 0.65}
+\definecolor{bondiblue}{rgb}{0.0, 0.58, 0.71}
+\definecolor{mulberry}{rgb}{0.77, 0.29, 0.55}
+
+\begin{document}
+
+The default table style provided by \LaTeX{} is not good-looking and professional and hence we can employ packages like \textsf{booktabs} and \textsf{multirow} for more customization and professionally looking tables.
+
+\begin{table}[ht!]
+\caption{A full-width \texttt{tabularx} environment at various font sizes\strut} \label{tab:42}
+
+\Large
+    \begin{tabularx}{\linewidth}{ | X | X  |}
+        \hline
+        Column1 & Column2 \\
+        \hline
+        Data & \texttt{\textbackslash Large} \\
+        \hline
+    \end{tabularx}
+\medskip
+
+\large
+    \begin{tabularx}{\linewidth}{ | X | X  |}
+        \hline
+        Column1 & Column2 \\
+        \hline
+        Data & \texttt{\textbackslash large} \\
+        \hline
+    \end{tabularx}
+\medskip
+
+\normalsize % that's the default
+    \begin{tabularx}{\linewidth}{ | X | X  |}
+        \hline
+        Column1 & Column2 \\
+        \hline
+        Data & \texttt{\textbackslash normalsize} \\
+        \hline
+    \end{tabularx}
+\medskip
+
+\small
+    \begin{tabularx}{\linewidth}{ | X | X  |}
+        \hline
+        Column1 & Column2 \\
+        \hline
+        Data & \texttt{\textbackslash small} \\
+        \hline
+    \end{tabularx}
+\medskip
+
+\footnotesize
+    \begin{tabularx}{\linewidth}{ | X | X  |}
+        \hline
+        Column1 & Column2 \\
+        \hline
+        Data & \texttt{\textbackslash footnotesize} \\
+        \hline
+    \end{tabularx}
+\medskip
+
+\scriptsize
+    \begin{tabularx}{\linewidth}{ | X | X  |}
+        \hline
+        Column1 & Column2 \\
+        \hline
+        Data & \texttt{\textbackslash scriptsize} \\
+        \hline
+    \end{tabularx}
+\end{table}
+\medskip
+
+\begin{table}[ht!]
+    \centering
+    \caption{Simple color table}
+    \begin{tabular}{|c|c|}
+        \hline
+        \cellcolor{purple!30}A & \cellcolor{pink!60}B \\
+        \hline
+        \cellcolor{red!40}C & \cellcolor{orange!50}D \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+    \resizebox{1.4\textwidth}{!}{\begin{minipage}{\textwidth}
+    \begin{tabular}{r|c|c|}
+    & \multicolumn{1}{c}{noninteractive}
+    & \multicolumn{1}{c}{interactive} \\
+    \cline{2-3}
+    massively multiple & Library & University \\
+    \cline{2-3}
+    one-to-one & Book & Tutor \\
+    \cline{2-3}
+    \end{tabular}
+    \caption[Table caption text]{Table}
+    \label{table:name}
+    \end{minipage} }
+\end{table}
+\medskip
+
+\begin{center}
+\rowcolors{1}{green}{pink}
+
+\begin{tabularx}{\textwidth}{lll}
+odd 	& odd 	& odd \\
+even 	& even 	& even\\
+odd 	& odd 	& odd \\
+even 	& even 	& even\\
+\end{tabularx}
+\end{center}
+\medskip
+
+
+\begin{table}[ht]
+  \centering
+  \caption{Allowed Content\-Type formats for requesting access token}
+  \label{table:content-types}
+  \begin{adjustbox}{width=1\linewidth}
+    \small
+    \begin{tabularx}{\linewidth}{lll}
+      \toprule
+      \textcolor{mulberry}{\textbf{SNo}} & \textcolor{mulberry}{\textbf{Content\-Type}} & \textcolor{mulberry}{\textbf{Remarks}}   \\
+      \midrule
+      \textbf{1} & \textcolor{byzantium}{application/json} & POST with \textsf{json} format \\
+      \textbf{2} & \textcolor{bondiblue}{application/x\-www\-form\-urlencoded}  & POST with \textsf{url\-query} format \\
+      \textbf{3} & \textcolor{mediumpersianblue}{application/xml}  & POST with \textsf{xml} format \\
+      \bottomrule
+    \end{tabularx}
+  \end{adjustbox}
+\end{table}
+\medskip
+
+\begin{table}
+    \centering
+    \caption{MWE of a table using booktabs}
+    \rowcolors{5}{}{gray!10}
+    %\rowcolors{2}{White}{LightBlue!30}% colors to shade rows withs
+    \begin{tabular}{*4c}
+        \toprule
+        & \multicolumn{3}{c}{methods tested} \\
+        \cmidrule(lr){2-4}
+        Case & Heat  & Exhaust & Outdoor \\    
+        \#   & Wheel & Air     & Air     \\
+        \midrule
+        1 &        & \CHECK &        \\
+        2 &        &        & \CHECK \\
+        3 &        & \CHECK & \CHECK \\
+        4 & \CHECK &        &        \\
+        5 & \CHECK & \CHECK &        \\
+        6 & \CHECK &        & \CHECK \\
+        7 & \CHECK & \CHECK & \CHECK \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\medskip
+
+\begin{table}
+    \centering
+    \caption{Another fancy table}
+    \begin{tabular}{*5l}
+        \toprule
+        \emph{name} & \emph{foo} &&&  \\
+        \midrule
+        \rowcolor{Lavender}
+        Models    & A  & B  & C  & D  \\ 
+        \rowcolor{PeachPuff}
+        Model $X$ & X1 & X2 & X3 & X4\\ 
+        \rowcolor{VioletRed}
+        Model $Y$ & Y1 & Y2 & Y3 & Y4\\
+        \bottomrule
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}
+    \centering
+    \caption{Table with columns spanning multiple rows}
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \multicolumn{3}{|c|}{Team sheet} \\
+    \hline
+    Goalkeeper & GK & Paul Robinson \\
+    \hline
+    \multirow{4}{*}{Defenders} & LB & Lucus Radebe \\
+     & DC & Michael Duberry \\
+     & DC & Dominic Matteo \\
+     & RB & Didier Domi \\
+     \hline
+    \multirow{3}{*}{Midfielders} & MC & David Batty \\
+     & MC & Eirik Bakke \\
+     & MC & Jody Morris \\
+     \hline
+    Forward & FW & Jamie McMaster \\
+    \hline
+    \multirow{2}{*}{Strikers} & ST & Alan Smith \\
+     & ST & Mark Viduka \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[htb]
+    \arrayrulecolor{white}
+    \doublerulesepcolor{gray!20}
+    \centering
+    \sffamily
+    \captionsetup{font={bf,sf},skip=0.5ex}
+    \caption*{Access Levels}
+    \begin{tabular}{||*{5}{c||}}
+    \hhline{|t:=:t:=:t:=:t:=:t:=:t|}
+    \rowcolor{blue!30}
+    \bfseries Modifier               & \bfseries Class & \bfseries Package & \bfseries Subclass & \bfseries World \\ \hhline{|:=::=::=::=::=:|}
+    \mythistle\texttt{public}          & \mylemon Y      & \mylemon Y        & \mylemon Y         & \mylemon Y      \\
+    \hhline{|:=::=::=::=::=:|}
+    \mythistle\texttt{protected}       & \mylemon Y      & \mylemon Y        & \mylemon Y         & \myblue N        \\
+    \hhline{|:=::=::=::=::=:|}
+    \mythistle\itshape no modifier     & \mylemon Y      & \mylemon Y        & \myblue N           & \myblue N        \\
+    \hhline{|:=::=::=::=::=:|}
+    \mythistle\texttt{private}         & \mylemon Y      & \myblue N         & \myblue N           & \myblue N        \\
+    \hhline{|b:=:b:=:b:=:b:=:b:=:b|}
+    \end{tabular}
+\end{table}
+
+\end{document}

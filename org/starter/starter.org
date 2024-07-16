@@ -162,6 +162,7 @@
 #+LATEX_HEADER_EXTRA: \usepackage{tabu,longtable}
 #+LATEX_HEADER: \usepackage{multirow}
 #+LATEX_HEADER: \usepackage{float}
+#+LATEX_HEADER: \usepackage{colortbl}
 # ------------------------------------------
 
 # For SRC Code blocks
@@ -491,3 +492,22 @@ The same in a different format here
 \end{itemize}
 \end{awesomeblock}
 #+end_latex
+
+* A colorful table
+We can customize the style of an org-mode table when exported to Latex.
+
+#+LATEX: \definecolor{contiYellow}{RGB}{255,165,0}
+#+LATEX: \rowcolors[]{2}{contiYellow!5}{contiYellow!20}
+#+ATTR_LATEX: :align rS
+| *Type*                                     | *Stiffness* in N/mm |
+|--------------------------------------------+---------------------|
+| Two bearings SKF in radial dir. (supplier) |              167800 |
+| Measurement bearings + rotor + device      |                8398 |
+| Measurement device                         |               14753 |
+| Calculation rotor + bearings               |               19500 |
+|--------------------------------------------+---------------------|
+| Sim. Rotor + "bearings" (package solid)    |               50900 |
+| Sim. Rotor + "joints" (package solid)      |               33320 |
+| Sim. Shaft + "bearings" (without package)  |               12000 |
+| Sim. Shaft + "bearings" 10 mm              |               20030 |
+ #+TBLFM: @2$2=2*8.39e4

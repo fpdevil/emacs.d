@@ -1,0 +1,398 @@
+% Created 2024-07-13 Sat 13:41
+% Intended LaTeX compiler: xelatex
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[top=1in, bottom=1.in, left=1in, right=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[theorems,skins,many]{tcolorbox}
+\usepackage[numbers,square,sort&compress]{natbib}
+\usepackage{natmove}
+\usepackage{url}
+\usepackage[cache=false]{minted}
+\usepackage[strings]{underscore}
+\usepackage[linktocpage,pdfstartview=FitH,colorlinks=true,linkcolor=teal,anchorcolor=teal,
+citecolor=magenta,filecolor=green,urlcolor=cyan]{hyperref}
+\usepackage{attachfile}
+\usepackage{setspace}
+\setlength\parindent{0pt}
+\makeatletter
+\def\Year#1{%
+\def\yy@##1##2##3##4;{##1##2##3##4}%
+\expandafter\yy@#1;
+}
+\makeatother
+\definecolor{titlepagecolor}{rgb}{0.96, 0.96, 0.96}
+\definecolor{namecolor}{rgb}{0.0, 0.48, 0.65}
+\usepackage[font={small,it}]{caption}
+\captionsetup{format=hang,font=small,labelfont=it}
+\usepackage{placeins}
+\usepackage[x11names,dvipnames]{xcolor}
+\hypersetup{
+colorlinks=true,
+linktoc=all,
+linkcolor=winestain,
+filecolor=green,
+urlcolor=magenta,
+citecolor=cyan,
+pdfpagemode=FullScreen,
+pdftitle   = {A Sample ORG LaTeX Document},
+pdfsubject = {\emph{Exploration of Literate document generation org \& TeX}},
+pdfauthor  = {\textcopyright\ Sampath Singamsetty},
+pdfcreator={{{{emacs-version}}} ({{{org-version}}})},
+}
+\usepackage{tabularx,siunitx,booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{minted}
+\usemintedstyle{one-dark}
+\setminted{rulecolor=teal,ignorelexererrors=true}
+\usepackage{mdframed}
+\mdfsetup{%
+topline=false,bottomline=false,leftline=false,rightline=false, %
+backgroundcolor=gray!5!white %
+}
+\BeforeBeginEnvironment{minted}{\begin{mdframed}}
+\AfterEndEnvironment{minted}{\end{mdframed}}
+\usepackage{refcount}
+\makeatletter
+\define@key{FV}{highlightlines}{\edef\FV@HighlightLinesList{#1}}
+\makeatother
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\scriptsize,formatcom=\color{blue}}
+\usepackage{imakeidx}
+\makeindex[columns=2, title=INDEX, options={-s MyStyle.ist}]
+\usepackage[totoc, initsep=10pt, font=small, unbalanced=true]{idxlayout}
+\usepackage{cleveref}
+\usepackage[utf8]{inputenc}
+\usepackage[english, american]{babel}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{Copyright \copyright\space United Airlines, Inc. All rights reserved.}
+\fancyhead[RE,LO]{\textit{Confidential Property}}
+\fancyfoot[LE,RO]{\thepage}
+\lhead{\scriptsize\textrm{\textcolor{lightslategray}{ORG \S\hspace{1pt} LaTeX}}}
+\chead{}
+\rhead{\scriptsize{\textrm{\textcolor{lightslategray}{\today}}}}
+\lfoot{\textsc{\scriptsize\textcolor{lightslategray}{Research \& Engineering\space |\space Copyright \textcopyright \hspace{1pt}{\Year{\the\year}}\hspace{1pt} Origin "0", Inc. All rights reserved.}}}
+\cfoot{}
+\rfoot{\scriptsize{\textrm{\textcolor{lightslategray}{\thepage}}}}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{smartdiagram}
+\usetikzlibrary{shapes.symbols}
+\usepackage{awesomebox}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{pagecolor}
+\usepackage{afterpage}
+\setcounter{tocdepth}{3}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{csquotes}
+\usepackage{draftwatermark} % package for watermarks
+\SetWatermarkText{United\\Airlines}
+\SetWatermarkScale{0.8}
+\SetWatermarkColor[gray]{0.9}
+\SetWatermarkLightness{0.95}
+\renewcommand*\contentsname{Table Of Contents}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage{tabu,longtable}
+\usepackage{rotfloat}
+\author{Sampath Singamsetty}
+\date{\today}
+\title{A Sample document\\\medskip
+\large Sample document with cover page}
+\begin{document}
+
+\definecolor{lightslategray}{rgb}{0.47, 0.53, 0.6}
+\definecolor{brightmaroon}{rgb}{0.76, 0.13, 0.28}
+\definecolor{ruby}{rgb}{0.88,0.07,0.37}
+\definecolor{hotpink}{rgb}{0.9,0,0.5}
+\definecolor{gold}{rgb}{0.85,0.66,0}
+\definecolor{brickred}{rgb}{0.8,0.25,0.33}
+\definecolor{brightpink}{rgb}{1.0, 0.0, 0.5}
+\definecolor{sapphire}{rgb}{0.03,0.15,0.4}
+\definecolor{upforestgreen}{rgb}{0.0,0.27,0.13}
+\definecolor{mahogany}{rgb}{0.75,0.25,0.0}
+\definecolor{airforceblue}{rgb}{0.36,0.54,0.66}
+\definecolor{tangerineyellow}{rgb}{1.0,0.8,0.0}
+\definecolor{cadmiumgreen}{rgb}{0.0,0.42,0.24}
+\definecolor{indigodye}{rgb}{0.0,0.25,0.42}
+\definecolor{palevioletred}{rgb}{0.86,0.44,0.58}
+\definecolor{frenchblue}{rgb}{0.0,0.45,0.73}
+\definecolor{jazzberryjam}{rgb}{0.65,0.04,0.37}
+\definecolor{burgundy}{rgb}{0.5, 0.0, 0.13}
+\definecolor{antiquefuchsia}{rgb}{0.57, 0.36, 0.51}
+\definecolor{byzantium}{rgb}{0.44, 0.16, 0.39}
+\definecolor{darkcoral}{rgb}{0.8, 0.36, 0.27}
+\definecolor{dogwoodrose}{rgb}{0.84, 0.09, 0.41}
+\definecolor{forestgreen(traditional)}{rgb}{0.0, 0.27, 0.13}
+\definecolor{lapislazuli}{rgb}{0.15, 0.38, 0.61}
+\definecolor{bulgarianrose}{rgb}{0.28, 0.02, 0.03}
+\definecolor{gainsboro}{rgb}{0.86, 0.86, 0.86}
+\definecolor{amber}{rgb}{1.0, 0.75, 0.0}
+\definecolor{blush}{rgb}{0.87, 0.36, 0.51}
+\definecolor{alizarin}{rgb}{0.82, 0.1, 0.26}
+\definecolor{bondiblue}{rgb}{0.0, 0.58, 0.71}
+\definecolor{cerise}{rgb}{0.87, 0.19, 0.39}
+\definecolor{forestgreen(traditional)}{rgb}{0.0, 0.27, 0.13}
+\definecolor{jazzberryjam}{rgb}{0.65, 0.04, 0.37}
+\definecolor{mediumpersianblue}{rgb}{0.0, 0.4, 0.65}
+\definecolor{midnightblue}{rgb}{0.1, 0.1, 0.44}
+\definecolor{bittersweet}{rgb}{1.0, 0.44, 0.37}
+\definecolor{cadet}{rgb}{0.33, 0.41, 0.47}
+\definecolor{cinereous}{rgb}{0.6, 0.51, 0.48}
+\definecolor{darkorchid}{rgb}{0.6, 0.2, 0.8}
+\definecolor{glaucous}{rgb}{0.38, 0.51, 0.71}
+\definecolor{huntergreen}{rgb}{0.21, 0.37, 0.23}
+\definecolor{mulberry}{rgb}{0.77, 0.29, 0.55}
+\definecolor{burntorange}{rgb}{0.8, 0.33, 0.0}
+\definecolor{burgundy}{rgb}{0.5, 0.0, 0.13}
+\definecolor{goldenrod}{rgb}{0.85, 0.65, 0.13}
+\definecolor{sienna}{rgb}{0.53, 0.18, 0.09}
+\definecolor{redbrown}{rgb}{0.65, 0.16, 0.16}
+\definecolor{palegoldenrod}{rgb}{0.93, 0.91, 0.67}
+\definecolor{patriarch}{rgb}{0.5, 0.0, 0.5}
+\definecolor{prussianblue}{rgb}{0.0, 0.19, 0.33}
+\definecolor{winestain}{rgb}{0.5,0,0}
+\definecolor{darkred}{rgb}{0.55, 0.0, 0.0}
+\definecolor{brass}{rgb}{0.71, 0.65, 0.26}
+\definecolor{brightturquoise}{rgb}{0.03, 0.91, 0.87}
+\definecolor{cadet}{rgb}{0.33, 0.41, 0.47}
+\definecolor{byzantium}{rgb}{0.44, 0.16, 0.39}
+\definecolor{tropicalrainforest}{rgb}{0.0, 0.46, 0.37}
+\definecolor{vermilion}{rgb}{0.89, 0.26, 0.2}
+\definecolor{davysgrey}{rgb}{0.33, 0.33, 0.33}
+\definecolor{antiquefuchsia}{rgb}{0.57, 0.36, 0.51}
+\definecolor{ocre}{HTML}{F16723}
+
+\thispagestyle{plain}
+\graphicspath{ {./images/} }
+
+\begin{titlepage}
+    \begin{center}
+        %defines the geometry for the titlepage
+        % Centre all text
+        \centering
+        \pagecolor{titlepagecolor}
+
+        \Large
+        \textbf{\textsf{\textcolor{namecolor}{Research \& Engineering}}}\\
+
+
+        \vspace*{\fill}   % Fill Whitespace
+        \textit{\textbf{\textsf{\textcolor{lightslategray}{A Sample Literate document}}}}\\
+        \vspace*{\fill}   % Fill Whitespace
+
+        % --- Organization logo, name and date --- %
+        \includegraphics[width=7cm]{images/UAL.png}\\[-1em]
+        \color{white}
+        \makebox[4pt]{\rule{0.8\textwidth}{1pt}}\\[-0.5em]
+        \par
+        \noindent
+
+        {\small\textbf{\textcolor{namecolor}{ORG Mode}}} \\[-0.5em]
+        {\Large{\textbf{\textcolor{namecolor}{United Airlines, Inc.}}}}
+
+        % --- Publisher name or date here --- %
+        % \vskip\baselineskip
+        {\small{\textbf{\textcolor{lightslategray}{\today}}}
+    \end{center}
+\end{titlepage}
+
+
+\restoregeometry
+\tableofcontents
+\newpage
+
+\section{Code foundations}
+\label{sec:orgeec4d49}
+Some inline code examples
+This is inline \texttt{C++} code \mintinline{cpp}|int main()|
+
+This is inline \texttt{Rust} code \mintinline{rust}|use chrono::\{Utc, DateTime\};|
+
+This is \texttt{bash} inline code \mintinline[escapeinside=||]{bash}|\$\{\#parameter\}|
+
+This is \texttt{python} inline code \mintinline[escapeinside=||]{python}{|$\omega_x$| = [1, 2, 3]}
+
+Another \texttt{Rust} one liner here \mintinline[frame=lines,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,escapeinside=||]{rust}|use rand::\{distributions::Uniform, Rng\};|
+
+Other inline code examples:
+\begin{itemize}
+\item XML: \mintinline[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{xml}{<tag>text</tag>}
+\item Shell: \mintinline[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{sh}{echo -e "test"}
+\item Elisp: \mintinline[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{elisp}{( + 1 2)}
+\item Rust: \mintinline[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{rust}{use std:process}
+\item JavaScripr: \mintinline[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{js}{console.log(1 + 2)}
+\item GO: \mintinline[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{go}{var palette = []color.Color{color.White, color.Black}}
+\item Python: \mintinline[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{python}{[bin(i)[2:].zfill(8) for i in range(11)]}
+\end{itemize}
+
+\subsection{A python code snippet}
+\label{sec:org1eb095d}
+\begin{listing}[!ht]
+\centering
+\begin{minted}[
+    frame=lines,
+    mathescape=true,
+    breaklines=true,
+    breakanywhere=true
+    linenos=true,
+    escapeinside=!!,
+]{python}
+# Note: $\pi=\lim_{n\to\infty}\frac{P_n}{d}$
+title = "Hello World"
+
+sum = 0
+for i in range(10):
+    sum += i
+\end{minted}
+\caption{A Python snippet}
+\end{listing}
+\FloatBarrier
+
+\subsection{A \LaTeX{} code snippet}
+\label{sec:org180ebe0}
+\begin{minted}[
+    fontsize=\small,
+    frame=lines,
+    mathescape=true,
+    breaklines=true,
+    breakanywhere=true
+    linenos=true
+]{tex}
+% This is a TeX comment but is not disregarded because it's inside
+
+\documentclass{article}
+
+\usepackage{minted}
+
+\begin{document}
+Dont use $$ in \LaTeXe!  % It's weird!
+\end{document}
+\end{minted}
+
+
+\subsection{JSX code snippet}
+\label{sec:org5e40297}
+\begin{listing}[!ht]
+\centering
+\begin{minted}[
+    frame=lines,
+    mathescape=true,
+    breaklines=true,
+    breakanywhere=true
+    linenos=true
+]{jsx}
+const Component = () => {
+    return <div>test</div>
+}
+\end{minted}
+\label{jsx-snippet}
+\caption{JSX Code block}
+\end{listing}
+
+\section{Directory Listing}
+\label{sec:org16f846a}
+Listing of files in a directory as a \texttt{tree}.
+
+\begin{verse}
+\emph{Users/sampathsingamsetty/sw/ual/projects/openid/OpenID\_V2}\\[0pt]
+│\\[0pt]
+├── oauth/\\[0pt]
+│\\[0pt]
+├── transformations/\\[0pt]
+│\\[0pt]
+├── aaa/\\[0pt]
+│\\[0pt]
+├── log-transformations/\\[0pt]
+│\\[0pt]
+├── lib/\\[0pt]
+│\\[0pt]
+├── conf/\\[0pt]
+│\\[0pt]
+└── gatewayscripts/\\[0pt]
+\hspace*{4em}└── js-files/\\[0pt]
+\hspace*{8em}├── new/\\[0pt]
+\hspace*{8em}│\\[0pt]
+\hspace*{8em}└── backup/\\[0pt]
+\end{verse}
+
+The same in a different format here
+
+\begin{minted}[frame=lines,fontsize=\scriptsize,linenos=true,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true,tabsize=4]{awk}
+/local/OpenID_V2/
+│
+├── oauth/
+│
+├── transformations/
+│
+├── aaa/
+│   ├── CIAMGuestAuthentication.xsl
+│
+├── log-transformations/
+│
+├── lib/
+│   ├── Commons.js
+│
+├── conf/
+│   ├── opi-metadata.xml
+│
+├── gatewayscripts/
+│   │
+│   ├── tokenProcessing.js
+│   ├── CIAMGuestAuthenticator.js
+\end{minted}
+
+\begin{latex}
+\begin{awesomeblock}[violet]{3pt}{\faRocket}{violet}
+\notebox{The listed files under their respective parent directories were either changed or introduced!}
+\begin{itemize}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{CIAMGuestAuthentication.xsl - "New XSL module to handle custom Authentication in AAA"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{Commons.js - "Existing lib module with a function update"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{opi-metadata.xml - "Existing configuration updated with Ping login url"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{tokenProcessing.js - "Existing module updated with new processing rules"}
+\item \mintinline[fontsize=\small,autogobble=true,mathescape=true,breaklines=true,breakanywhere=true]{js}{CIAMGuestAuthenticator.js - "New module to call Ping login"}
+\end{itemize}
+\end{awesomeblock}
+\end{latex}
+
+\section{A colorful table}
+\label{sec:org112ce07}
+We can customize the style of an org-mode table when exported to Latex.
+
+\definecolor{contiYellow}{RGB}{255,165,0}
+\rowcolors[]{2}{contiYellow!5}{contiYellow!20}
+\begin{center}
+\begin{tabular}{rS}
+\textbf{Type} & \textbf{Stiffness} in N/mm\\[0pt]
+\hline
+Two bearings SKF in radial dir. (supplier) & 167800\\[0pt]
+Measurement bearings + rotor + device & 8398\\[0pt]
+Measurement device & 14753\\[0pt]
+Calculation rotor + bearings & 19500\\[0pt]
+\hline
+Sim. Rotor + ``bearings'' (package solid) & 50900\\[0pt]
+Sim. Rotor + ``joints'' (package solid) & 33320\\[0pt]
+Sim. Shaft + ``bearings'' (without package) & 12000\\[0pt]
+Sim. Shaft + ``bearings'' 10 mm & 20030\\[0pt]
+\end{tabular}
+\end{center}
+\end{document}

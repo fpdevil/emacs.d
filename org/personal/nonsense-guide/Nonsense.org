@@ -1,0 +1,845 @@
+# ------------------------------------------
+# Preamble - Custom options and settings
+# ------------------------------------------
+
+
+# This should not be altered
+# ------------------------------------------
+#+OPTIONS: H:4 num:t toc:nil title:nil ^:{}
+#+OPTIONS: TeX:t LaTeX:t
+# ------------------------------------------
+
+#+TITLE: The No-nonsense document for org latex reference
+
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{tikzmark}
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \usepackage[dvipsnames]{xcolor}
+#+LATEX_HEADER: \usepackage{colortbl}
+#+LATEX_HEADER: \usepackage{siunitx}
+#+LATEX_HEADER: \usepackage{lipsum}
+#+LATEX_HEADER: \usepackage{lmodern}
+#+LATEX_HEADER: \usepackage[skins,many,breakable]{tcolorbox}
+#+LATEX_HEADER: \tcbuselibrary{theorems}
+#+LATEX_HEADER: \newcounter{savedeq}
+
+# TCOLORBOX VARIATIONS
+
+#+LATEX_HEADER: \newtcolorbox{exercise_box}[1][Non Mutually Exclusive Events]{
+#+LATEX_HEADER:     skin=widget,
+#+LATEX_HEADER:     boxrule=1mm,
+#+LATEX_HEADER:     coltitle=black,
+#+LATEX_HEADER:     colframe=blue!45!white,
+#+LATEX_HEADER:     colback=blue!15!white,
+#+LATEX_HEADER:     title=#1}
+
+#+LATEX_HEADER: \newtcolorbox[auto counter]{derivation}{%
+#+LATEX_HEADER:   code=\setcounter{savedeq}{\value{equation}}%
+#+LATEX_HEADER:     \setcounter{equation}{0}\renewcommand{\theequation}{\thetcbcounter-\arabic{equation}},%
+#+LATEX_HEADER:   after=\setcounter{equation}{\value{savedeq}},%
+#+LATEX_HEADER:   ams align,%
+#+LATEX_HEADER:   title={DERIVATION \thetcbcounter},%
+#+LATEX_HEADER:   fonttitle=\bfseries,%
+#+LATEX_HEADER:   label={derivation@\thetcbcounter},
+#+LATEX_HEADER:   coltitle=black,%
+#+LATEX_HEADER:   colback=orange!25,%
+#+LATEX_HEADER:   colframe=orange!60,%
+#+LATEX_HEADER:   %colback=orange!5!white,%
+#+LATEX_HEADER:   %colframe=orange!75!black%
+#+LATEX_HEADER: }%
+#+LATEX_HEADER: %\numberwithin{equation}{derivation}
+
+# new tcolorbox environment
+# #1: tcolorbox options
+# #2: color
+# #3: box title
+#+LATEX_HEADER: \newtcolorbox{mybox}[3][]
+#+LATEX_HEADER: {
+#+LATEX_HEADER:   colframe = #2!25,
+#+LATEX_HEADER:   colback  = #2!10,
+#+LATEX_HEADER:   coltitle = #2!20!black,
+#+LATEX_HEADER:   title    = {#3},
+#+LATEX_HEADER:   #1,
+#+LATEX_HEADER: }
+
+# new tcolorbox environment
+# #1: tcolorbox options
+# #2: title
+# #3: coltitle
+#+LATEX_HEADER: \newtcolorbox{crazybox}[1][]
+#+LATEX_HEADER: {
+#+LATEX_HEADER:   enhanced,
+#+LATEX_HEADER:   boxrule=0pt,frame hidden,
+#+LATEX_HEADER:   borderline west={3pt}{0pt}{Peach},
+#+LATEX_HEADER:   title=Example,
+#+LATEX_HEADER:   colback=Peach!5,
+#+LATEX_HEADER:   coltitle=Peach,
+#+LATEX_HEADER:   attach title to upper={\ },
+#+LATEX_HEADER:   fonttitle=\bfseries,
+#+LATEX_HEADER:   sharp corners,
+#+LATEX_HEADER:   #1
+#+LATEX_HEADER: }
+
+
+#+LATEX_HEADER: \newtcolorbox{CalloutBox}[1]{%
+#+LATEX_HEADER:     colback=red!5!white,%
+#+LATEX_HEADER:     colframe=red!75!black,%
+#+LATEX_HEADER:     fonttitle=\bfseries,%
+#+LATEX_HEADER:     title={#1},%
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \newtcolorbox{CalloutBoxWithOptions}[2][]{%
+#+LATEX_HEADER:     colback=red!5!white,%
+#+LATEX_HEADER:     colframe=red!75!black,%
+#+LATEX_HEADER:     fonttitle=\bfseries,%
+#+LATEX_HEADER:     title={#2},%
+#+LATEX_HEADER:     #1
+#+LATEX_HEADER: }
+
+\author{Sampath Singamsetty}
+\date{\today}
+\title{A No-Nonsense guide to ORG/LaTeX}
+
+
+\maketitle
+
+\setcounter{tocdepth}{4}
+# \tableofcontents
+# rename the table of contents
+#+LATEX_HEADER: \renewcommand*\contentsname{Table Of Contents}
+
+\newpage
+
+#+begin_abstract
+One cannot use an org-mode header here. If you do, it trashes the table of contents for the =apa6= document class. That's why Abstract is bolded manually.
+
+As can be seen, We wrote in documents 1 sentence to a line. This is to keep these documents under version control. A single English sentence is similar to a single line of code. One wouldn't run lines of code together in a production codebase, so don't run sentences together in a VC'ed text document.
+
+Latex and org-mode both interpret a single empty line as a paragraph break, so the fact that the source document is 1 sentence per line will not be visible to anybody other than self.
+#+end_abstract
+
+Now, let's start with a headline, this is kind of like Markdown's # character:
+
+* This is an example headline
+
+Text can be put into the headline. You can create another headline at the same
+level with another * character
+
+* Another headline
+Nesting headlines is as easy as adding another start
+
+** Nested headline
+
+** Another nested headline
+
+*** Deeper
+
+** Another headline
+**** Deeper...
+
+***** Deeper.....
+
+
+* Formatting text
+** Simple formatting
+You can apply simple formatting to your text by enclosing words in special characters. These include:
+
+ - /italicised text/
+ - *bold text*
+ - _underlines_
+ - +strikethrough+
+ - =literal text=
+ - ~code~ (generally appears the same as literal text)
+
+** Tables
+
+Auto expanding tables are one of the coolest features of org-mode, because tables in Markdown just plain suck. In order to create a new table, you can start typing it manually, or press =C-c |=, which will prompt for the table's dimensions.
+
+| First Name                 | Last Name           | Years using Emacs |
+|----------------------------+---------------------+-------------------|
+| Lee                        | Hinman              |                 5 |
+| Mike                       | Hunsinger           |                 2 |
+| Daniel                     | Glauser             |                 4 |
+| Really-long-first-name-guy | long-last-name-pers |                 1 |
+
+** Formatted blocks of text
+For longer pieces of text you can enclose the text in blocks marking
+it as a specific sort of text. I commonly use these ones
+
+#+BEGIN_EXAMPLE
+This is an example block into which you can type text that you don't want org to mess with like a [[link]]. This will typically be rendered in a monospace font when exported.
+#+END_EXAMPLE
+
+#+BEGIN_QUOTE
+This block encloses text that you want to appear as a quotation.
+#+END_QUOTE
+
+#+BEGIN_CENTER
+This text will be centred when it is exported.
+#+END_CENTER
+
+You can save time typing out the block wrapper by using shortcuts. Go to the start of a new line and type <e and press TAB and it will expand to an example block. The same works for <q for quote and <c for centre.
+
+Various fonts for styling in mathematics is as below:
+
+| Type            | Input                | Output               |
+|-----------------+----------------------+----------------------|
+| Default         | ABCabc123            | ABCabc123            |
+| Roman           | =\mathrm{ABCabc123}=   | \mathrm{ABCabc123}   |
+| Bold            | =\mathbf{ABCabc123}=   | \mathbf{ABCabc123}   |
+| Italics         | =\mathit{ABCabc123}=   | \mathit{ABCabc123}   |
+| Typewriter      | =\mathtt{ABCabc123}=   | \mathtt{ABCabc123}   |
+| Blackboard Bold | =\mathbb{ABC}=         | \mathbb{ABC}         |
+| Blackboard Bold | =\mathbbm{abc12}=      | \mathbbm{abc12}      |
+| Calligraphic    | =\mathcal{ABC}=        | \mathcal{ABC}        |
+| Euler Script    | =\EuScript{ABC}=       | \EuScript{ABC}       |
+| Fraktur         | =\mathfrak{ABCabc123}= | \mathfrak{ABCabc123} |
+| Script          | =\mathscr{ABC}=        | \mathscr{ABC}                     |
+
+
+
+** LaTeX Typesetting
+Org-mode does a good job of understanding snippets of LaTeX (a [[https://www.latex-project.org/][powerful typesetting language]] used in scientific and other technical documents). For example, it will correctly export simple superscripts x^2 or subscripts x_0 or symbols like \alpha, \beta, \gamma.
+
+In-line math:
+$\lim_{x \to \infty} \int_1^x \frac{1}{x}\,dx$, and forced displaystyle in-line: $\ds\lim_{x \to \infty} \int_1^x \frac{1}{x}\,dx$.
+
+For more complex equations we can use [[https://en.wikibooks.org/wiki/LaTeX/Mathematics][latex math syntax]] and wrap in single a =$= for inline equations, and double =$$= for equation blocks like =$a=+\sqrt{2}$= yielding to $a=+\sqrt{2}$
+
+And =$$P\left(A=2\middle|\frac{A^2}{B}>4\right)$$= would render as
+
+$$P\left(A=2\middle|\frac{A^2}{B}>4\right)$$
+
+Org also understands more complex LaTeX like this
+
+\begin{eqnarray}
+x^2 + \left(\frac{y}{z}\right)^4 = 0
+\end{eqnarray}
+
+but for longer bits of LaTeX it is better to use a LaTeX block. You start one with <l and TAB
+
+#+BEGIN_LaTeX
+LaTeX code goes here
+
+\begin{equation}
+x=\sqrt{b}
+\end{equation}
+#+END_LaTeX
+
+We can also wrap in =\(= and close with =\)= for inline and =\[ \]= for blocks to produce the same effect
+
+
+\begin{equation}
+  x = a_0 + \cfrac{1}{a_1
+          + \cfrac{1}{a_2
+          + \cfrac{1}{a_3 + \cfrac{1}{a_4} } } }
+\end{equation}
+
+
+#+CAPTION: Testing the table
+#+NAME: questionnaire
+#+ATTR_LaTeX: :align |l|l|
+   |---+---|
+   | A | B |
+   |---+---|
+   | 1 | 2 |
+   | 3 | 4 |
+   |---+---|
+
+A numbered display equation:
+
+\begin{equation}
+\frac{\partial u}{\partial t}-\alpha\nabla^2u=0\tag{1}
+\end{equation}
+
+A second numbered equation:
+
+\begin{equation}
+E=MC^2\tag{2}
+\end{equation}
+
+Quadratic equation:
+
+$ax^2 + bx + c = 0 \iff x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+
+Equations can be troublesome at times. While we could simply type any LaTeX source into the org document, often after compiling, the equation is too long to fit in (the width of) the page.
+
+The solution isn't anything special to org-mode; instead of using =\begin{equation}=, use =\begin{gather*}=:
+
+\begin{gather*}
+    \text{This is a nice equation.}\\
+    e^{i \cdot \pi} + 1 = 0
+\end{gather*}
+
+**  This is a latex experiment
+so with the text...
+#+NAME: code:1
+#+BEGIN_SRC shell-script
+echo hello world
+#+END_SRC
+[[code:1]] is a reference to src block
+
+#+NAME: eqn:1
+\begin{equation}
+    f(x) =  \sum\limits_0^\infty(f^{(n)}(x)|_{x=0} \cdot x)
+\end{equation}
+
+And this is an equation [[eqn:1]]
+
+** Pretty Inline Symbolic Mathematics in Org-Mode
+A babel literate code  example using the python's =SymPy= computing some common calculus
+equations producing inline LaTeX output:
+
+#+BEGIN_SRC python :session
+from sympy import *
+
+def inline(s):
+    return "\[" + s + "\]\n"
+#+END_SRC
+
+#+BEGIN_SRC python :session :results replace raw
+x = symbols("x")
+functions = [
+    x*2,
+    ln(x),
+    ln(x)**2,
+    csc(x),
+    sin(x**2),
+    atan(x),
+    x**x,
+    2**x,
+    exp(x**2)
+]
+display = lambda f: inline(latex(Integral(f, x)) + " = " + latex(integrate(f)) + " + c")
+"\n".join(map(display, functions))
+#+END_SRC
+
+#+RESULTS:
+\[\int 2 x\, dx = x^{2} + c\]
+
+\[\int \log{\left(x \right)}\, dx = x \log{\left(x \right)} - x + c\]
+
+\[\int \log{\left(x \right)}^{2}\, dx = x \log{\left(x \right)}^{2} - 2 x \log{\left(x \right)} + 2 x + c\]
+
+\[\int \csc{\left(x \right)}\, dx = \frac{\log{\left(\cos{\left(x \right)} - 1 \right)}}{2} - \frac{\log{\left(\cos{\left(x \right)} + 1 \right)}}{2} + c\]
+
+\[\int \sin{\left(x^{2} \right)}\, dx = \frac{3 \sqrt{2} \sqrt{\pi} S\left(\frac{\sqrt{2} x}{\sqrt{\pi}}\right) \Gamma\left(\frac{3}{4}\right)}{8 \Gamma\left(\frac{7}{4}\right)} + c\]
+
+\[\int \operatorname{atan}{\left(x \right)}\, dx = x \operatorname{atan}{\left(x \right)} - \frac{\log{\left(x^{2} + 1 \right)}}{2} + c\]
+
+\[\int x^{x}\, dx = \int x^{x}\, dx + c\]
+
+\[\int e^{x^{2}}\, dx = \frac{\sqrt{\pi} \operatorname{erfi}{\left(x \right)}}{2} + c\]
+\[\int 2 x\, dx = x^{2} + c\]
+
+\[\int \log{\left(x \right)}\, dx = x \log{\left(x \right)} - x + c\]
+
+\[\int \csc{\left(x \right)}\, dx = \frac{\log{\left(\cos{\left(x \right)} - 1 \right)}}{2} - \frac{\log{\left(\cos{\left(x \right)} + 1 \right)}}{2} + c\]
+
+\[\int \operatorname{atan}{\left(x \right)}\, dx = x \operatorname{atan}{\left(x \right)} - \frac{\log{\left(x^{2} + 1 \right)}}{2} + c\]
+
+\[\int e^{x^{2}}\, dx = \frac{\sqrt{\pi} \operatorname{erfi}{\left(x \right)}}{2} + c\]
+
+
+*** Resizing delimiters
+
+The symbols for Braces, Brackets, Parentheses, etc., can be automatically resized using the =\left= and =\right= commands:
+
+Input: =\left\{ \Floor{ \left( a^n \right)^{n^2} }^{\frac{1}{2n-1}} \right\}=
+
+Will produce:
+
+Output: \left\{ \Floor{ \left( a^n \right)^{n^2} }^{\frac{1}{2n-1}} \right\}
+
+The =\left= and =\right= commands do not need to take the same delimiters, but they do have to be
+paired. A period =.= can be used to produce one-sided delimiters as below:
+
+
+\begin{gather*}
+\begin{align*}
+\int_a^b x\,dx = \left. \frac{x^2}{2} \right|_a^b
+\end{align*}
+\end{gather*}
+
+** org-special-blocks
+=org-special-blocks= turns org blocks into LaTeX environments and HTML divs.
+
+An example for Fermat's Last Theorem:
+
+#+begin_theorem
+If an integer $n$ is greater than 2, then the equation $a^n + b^n = c^n$
+has no solutions in non-zero integers $a$, $b$, and $c$.
+#+end_theorem
+
+
+#+begin_proof
+I have a truly /marvelous/ proof of this proposition that this margin is too
+narrow to contain.
+#+end_proof
+
+The above will be exported into the LaTeX as:
+
+#+begin_example
+\begin{theorem}
+If an integer $n$ is greater than 2, then the equation $a^n + b^n = c^n$
+has no solutions in non-zero integers $a$, $b$, and $c$.
+\end{theorem}
+
+\begin{proof}
+I have a truly \emph{marvelous} proof of this proposition that this
+margin is too narrow to contain.
+\end{proof}
+#+end_example
+
+** Quotes and Verses
+
+Use the quote block for content that doesn't require the preservation of line breaks.
+
+#+begin_quote
+Everything should be made as simple as possible,
+but not any simpler. -- Albert Einstein
+#+end_quote
+
+In a verse environment, there is an implicit line break at the end of each line, and indentation is preserved:
+
+#+begin_verse
+Everything should be made as simple as possible,
+but not any simpler. -- Albert Einstein
+#+end_verse
+
+
+Typically used for quoting passages of an email message:
+
+#+begin_verse
+>>  The meeting has been postponed to next Friday.
+>
+> Has the deadline for the report been moved too?
+
+Yes.  And chekout http://www.doodle.com/ for rescheduling the meeting.
+
+In the text body,
+   indentation is
+preserved.
+#+end_verse
+
+
+** Source code blocks
+It is also handy to include source code in your notes - on a new line
+type <s and TAB to create a source block. You can tell org what type
+of code is contained - in this case we'll put in some simple shell
+code, so well put "sh" at the top of the block.
+
+#+BEGIN_SRC sh
+  echo "Hello $USER! Today is `date`"
+  exit
+#+END_SRC
+
+You can get org to syntax highlight the text in the block by adding
+the following to your [[http://pragmaticemacs.com/emacs/editing-your-emacs-config-file/][emacs config file]] (without the source block
+wrapper of course).
+
+#+BEGIN_SRC elisp
+;;syntax highlight code blocks
+(setq org-src-fontify-natively t)
+#+END_SRC
+
+What is more, when the cursor is inside a SRC block, you can use C-c '
+to create a new temporary buffer in the major mode of the programming
+language you have specified. Type some code in, and then type C-c '
+again to come back to this buffer.
+
+** Executing source code blocks
+Org-mode can execute your source code blocks and add the output to
+your file. This part of org-mode is called babel. I'll write more
+about this later, but it is too cool not to mention here.
+
+For example, take the simple code block we had above:
+
+#+BEGIN_SRC sh
+  echo "Hello $USER! Today is `date`"
+  exit
+#+END_SRC
+
+Put the cursor inside the block and hit C-c C-c to execute it. You
+will be asked to confirm and then you should see the output appear
+like this:
+
+#+RESULTS:
+#+begin_example
+Hello bjm! Today is Fri 25 Sep 2015 15:03:12 BST
+#+end_example
+
+You can do much more with this, like reading input data from a table in the same file, creating images that appear in the file, extracting (tangling) all the code snippets into one or more files to be executed separately, and much more. [[http://orgmode.org/worg/org-contrib/babel/intro.html][Here are some nice examples]].
+
+We can tell org-mode which programming languages to support by adding
+something like the below to our =Emacs= configuration:
+
+#+BEGIN_SRC elisp :eval no
+;; Some initial languages we want org-babel to support
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (sh      . t)
+   (python  . t)
+   (ditaa   . t)
+   (perl    . t)
+   (gnuplot . t)
+   ))
+#+END_SRC
+
+
+* Links and images
+Org mode supports links to files, URLs, and to other points in the org
+file. In this example let's use an image from my website. First copy
+it to the current directory. You can do this within emacs but for now
+just run this command in your terminal.
+
+#+begin_src shell
+curl https://pngimg.com/d/superman_PNG9.png -o /tmp/superman.png
+#+end_src
+
+#+RESULTS:
+
+
+To add a link to a file use C-u C-c C-l and type the name of a file.
+Use tab-completion to select the image we just copied and you will
+then be asked for a description - you can press enter to leave this
+blank. This will create a link that looks like this
+
+<<superman>>
+#+ATTR_LATEX: :width 0.6\textwidth
+[[file:./superman.png]]
+
+If you do this in your org file, you wont see the [[superman]] above, instead
+you'll see the text as a clickable link.
+
+Since the file we have linked to is an image, we can tell emacs to the
+image in the document using C-c C-x C-v and use the same command to
+turn the image off again.
+
+You can also click the link with the mouse, or use C-c C-o to follow
+it, which might open your web browser, an image viewer or open a file
+in emacs depending on the target of the link.
+
+The structure of a link in org mode looks like this
+
+#+BEGIN_EXAMPLE
+[[link address][description]]
+#+END_EXAMPLE
+
+(I've enclosed the link in an example block which prevents org-mode from trying to interpret as a real link, for the purpose of showing its structure - we'll come back to blocks like this later.)
+
+The link address is the URL or file name, and the description is the text that is displayed, so we can replace our superman link with something tidier like [[file:superman_cluster.gif][this]].
+
+Links to web pages are easy - just put the http address in as the link address. Use C-c C-l as a quick way to add such a link (remember we used C-u C-c C-l is for adding a link to a file).
+
+Links to other parts of the org file are added easily like [[Links and
+images][this link]]. Because the address part of the link matches a headline in this document, then org-mode points the link to that part
+of the file. Clicking it will move the cursor there.
+
+Finally, we can add a caption and a name to our image like this
+
+#+CAPTION: Superman and a galaxy cluster
+#+NAME: fig.super
+#+ATTR_HTML: :width 40% :align center
+#+ATTR_LATEX: :width 0.5\textwidth
+[[file:superman.png]]
+
+
+which means we can refer to our image later with a link like this one
+[[fig.super]]
+
+* Tables
+Hopefully you can see straight away that the simple structure provided
+by org-mode gives a nice way to keep an electronic note book.
+
+Often it is nice to include tables in our notes. Org handles this by
+using | to separate columns, and a line of --- (inserted with C-c -)
+to add horizontal lines.
+
+Exercise: start typing in this table below; type the first line in
+verbatim
+ 1) when you get to the "s" of comments, press TAB to go to the next
+    line
+ 2) go up to the previous line and use C-c - to add the row of dashes
+ 3) next enter a few lines of data, using TAB to go through the
+    cells - you should notice the columns changing width as needed
+
+| ID | x |  y | comments       |
+|----+---+----+----------------|
+| A  | 2 |  4 | blah           |
+| B  | 3 |  9 | blah           |
+| C  | 4 | 16 | blah blah blah |
+| D  | 5 | 25 | blah           |
+
+Now, you can move rows and columns around using M-arrow and insert or
+delete rows and columns using M-S-arrow. Try this out now.
+
+** Creating and exporting tables
+You can create an empty table using C-c | to run the command
+org-table-create-or-convert-from-region, which will prompt for table
+dimensions if no region is selected.
+
+The same command can easily convert some text to a table; select the
+following text and use C-c | to run the command
+org-table-create-or-convert-from-region again to convert the text to a
+table
+
+ ID  x   y
+ A   2   4
+ B   3   9
+ C   4  16
+ D   5  25
+
+You can also save tables to their own files by putting the cursor in
+the table and using M-x org-table-export. You'll be asked for a
+file name and a format. For the format, type orgtbl-to and press TAB
+to see the available options (e.g. orgtbl-to-csv will convert to csv
+in the output file).
+
+
+#+name: this-is-the-table
+| 1 | 4 | 7 |
+| 2 | 5 | 8 |
+| 3 | 6 | 9 |
+
+#+name: this-is-the-table
+#+begin_src emacs-lisp :var table=this-is-the-table :exports both
+  (mapcar (lambda (row) (mapcar (lambda (cell) (* cell 2)) row)) table)
+#+end_src
+
+#+RESULTS: this-is-the-table
+| 2 |  8 | 14 |
+| 4 | 10 | 16 |
+| 6 | 12 | 18 |
+
+** Table with aligned cells
+If you want to override the automatic alignment, use =<r>=, =<c>= or =<l>=.
+
+#+CAPTION: Table with aligned columns
+|          <r> |     <c>      | <l>          |
+|            1 |      2       | 3            |
+|        Right |    Center    | Left         |
+| xxxxxxxxxxxx | xxxxxxxxxxxx | xxxxxxxxxxxx |
+
+*** Left aligned table
+Here is a table on the left side:
+
+#+LATEX: \noindent
+#+ATTR_LATEX: :center nil
+| a | b | c |
+|---+---+---|
+| 1 | 2 | 3 |
+| 4 | 5 | 6 |
+#+LATEX: \hfill
+
+The =noindent= just gets rid of the indentation of the first line of a paragraph which in this case is the table. The =hfill= adds infinite stretch after the table, so it pushes the table to the left.
+
+*** Center
+Here is a centered aligned table:
+
+| a | b | c |
+|---+---+---|
+| 1 | 2 | 3 |
+| 4 | 5 | 6 |
+
+*** Right
+And here's a table on the right side aligned table:
+
+#+LATEX: \hfill
+#+ATTR_LATEX: :center nil
+| a | b | c |
+|---+---+---|
+| 1 | 2 | 3 |
+| 4 | 5 | 6 |
+
+Here the =hfill= adds infinite stretch before the table, so it pushes the table to the right.
+
+Table size can be adjusted as well:
+
+#+ATTR_HTML: :width 100%
+| Cell in column 1, row 1 | Cell in column 2, row 1 |
+| Cell in column 1, row 2 | Cell in column 2, row 2 |
+
+
+
+** Formulae
+You can use formulae to do arithmetic on tables, and use them like a
+spreadsheet. This is something I keep meaning to use more often, but
+don't generally find I need it. One useful command is C-c + which runs
+org-table-sum to sum the numbers in the current column.
+
+For more on this, see e.g. this introduction. Notice that we just
+added a link in our org-mode file - this is a teaser for what we will
+cover next!
+
+* org-mode structure
+Text in org is structured by headings, denoted by lines starting with
+one or more * so we are currently in a section!
+
+** A subheading
+Starts with an extra * and so on
+
+** navigation
+Headings can be expanded or collapsed by moving to the (sub)heading
+and pressing TAB. S-TAB cycles all headings. You can jump to next and
+previous headings with C-c C-n and C-c C-p respectively.
+
+You can move headings up and down to reorder them with the arrow keys,
+using M-up or M-down. You can change the level of headings with M-left
+and M-right (and use M-S-left and M-S-right to also change the levels
+of and subheadings).
+
+** lists
+*** bullet lists
+ - bullet lists can be created like this (start a line with one or
+   more space and a -
+ - pressing M-RET gives you a new bullet
+ - we might also like nested bullets
+   - like this one (I pressed M-RET TAB to indent it)
+   - and another (M-RET now indents to the new level)
+ - the nice thing is that for long lines of text, emacs wraps them
+   so that they line up with the bullet
+ - you can also reorder list items and change indentation using
+   M-up or M-down just like with section headings
+ - you can change bullet style using S-left and S-right
+
+*** numbered lists
+ 1) numbered lists are also possible
+ 2) M-RET gives me a new number
+
+*** checklists [/]
+ - [ ] we can even have check lists
+ - [ ] M-S-RET gives a new item with a check box
+ - [ ] C-c C-c check/unchecks a box
+ - [ ] you can have sub items
+   + [ ] like this
+   + [ ] that can be checked off individually
+ - [ ] and you can track the number of items by adding [/] to the end
+   of a line above a checklist - this updates when you check items off
+
+*** definition lists
+ - definition lists :: these are useful sometimes
+ - item 2 :: M-RET again gives another item, and long lines wrap in a
+      tidy way underneath the definition
+
+
+* Admonitions
+
+Admonitions (contextual backgrounds) are statements taken out of the content's flow and labelled with a title.
+
+\begin{tcolorbox}[
+  colback=Magenta!5!white,
+  colframe=Magenta!75!black,
+  title={\centering Homework}]
+The math problem should be here...
+\end{tcolorbox}
+
+
+    \begin{exercise_box}[example 4]
+        If A and B are two events that are not mutually exclusive then:
+        \tcblower
+        $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+    \end{exercise_box}
+
+    \begin{exercise_box}[example 4.5]
+        If A and B are two events that are not mutually exclusive then:
+        \tcblower
+        $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+    \end{exercise_box}
+
+    \begin{exercise_box}
+        If A and B are two events that are not mutually exclusive then:
+        \tcblower
+        $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+    \end{exercise_box}
+
+\begin{mybox}{red}{A red box}
+\begin{enumerate}
+\item Test
+\end{enumerate}
+\end{mybox}
+
+\begin{mybox}{green}{A green box}
+\begin{enumerate}
+\item Test
+\end{enumerate}
+\end{mybox}
+
+
+\begin{crazybox}
+This is an example
+\end{crazybox}
+
+\begin{crazybox}[coltitle=RubineRed, title=Question]
+This is a question
+\end{crazybox}
+
+
+
+\begin{equation}
+E=mc^2
+\end{equation}
+\begin{derivation}
+  x + y &= z     && \text{given} \\
+      y &= z - x && \text{solve for \(y\)}
+\end{derivation}
+\begin{equation}
+
+E=h\nu
+\end{equation}
+\begin{derivation}
+  \gamma &= \frac{1}{\sqrt{1-v^2}}      && \text{definition} \\
+       v &= \sqrt{1-\frac{1}{\gamma^2}} && \text{solve for \(v\)}
+\end{derivation}
+\begin{equation}
+a^2+b^2=c^2
+\end{equation}
+
+
+\begin{tcolorbox}[colback=yellow,colframe=red,fonttitle=\bfseries,colbacktitle=red,enhanced,attach boxed title to top center={yshift=-10pt},title={\color{white}Junker Bunker}]
+\lipsum[1]
+\end{tcolorbox}
+
+
+    \begin{CalloutBox}{title}
+        some text
+    \end{CalloutBox}
+
+    \begin{CalloutBoxWithOptions}[colframe=blue!75!black]{title}
+        note the ability to override or add to the options
+    \end{CalloutBoxWithOptions}
+
+    \begin{CalloutBoxWithOptions}{title}
+        or just use the defaults
+    \end{CalloutBoxWithOptions}
+
+
+* Exporting an org-mode buffer
+
+Org has a lot of export options, they are all contained behind a =C-c C-e=
+export backend, exporting to HTML, markdown, plain text, pdf, etc.
+
+#+begin_src http :pretty :wrap src js :exports both
+GET http://ip-api.com/json/
+#+end_src
+
+#+RESULTS:
+#+begin_src js
+{
+  "status": "success",
+  "country": "India",
+  "countryCode": "IN",
+  "region": "TS",
+  "regionName": "Telangana",
+  "city": "Hyderabad",
+  "zip": "500028",
+  "lat": 17.3724,
+  "lon": 78.4378,
+  "timezone": "Asia/Kolkata",
+  "isp": "Beam Telecom Pvt Ltd",
+  "org": "BEAMCABLE",
+  "as": "AS18209 Atria Convergence Technologies pvt ltd",
+  "query": "124.123.170.138"
+}
+#+end_src
