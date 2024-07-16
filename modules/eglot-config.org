@@ -40,7 +40,7 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
   :preface
   (defun mp-eglot-eldoc ()
     (setq eldoc-documentation-strategy
-            'eldoc-documentation-compose-eagerly))
+          'eldoc-documentation-compose-eagerly))
 
   ;; modes for which eglot is enabled
   :hook ((js-mode
@@ -59,7 +59,7 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
   (setq eglot-sync-connect             0
         eglot-connect-timeout          10
         eglot-events-buffer-size       0       ; No event buffers, disable providers cause
-                                               ; a lot of hover traffic.
+                                        ; a lot of hover traffic.
         eglot-autoshutdown             t       ; shutdown unused servers.
         eglot-send-changes-idle-time   0.5
         ;; NOTE We disable eglot-auto-display-help-buffer because :select t in
@@ -98,14 +98,14 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
                          '(python-mode "pylsp"))
             (setq! eglot-workspace-configuration
                    '((:pylsp . (:configurationSources ["flake8"]
-                                :plugins (
-                                          :pycodestyle (:enabled :json-false)
-                                          :black       (:enabled nil :line_length 88 :cache_config t)
-                                          :mccabe      (:enabled nil)
-                                          :flake8      (:enabled t :json-false :maxLineLength 88)
-                                          :pydocstyle  (:enabled t :convention "numpy")
-                                          :yapf        (:enabled :json-false)
-                                          :autopep8    (:enabled :json-false))))))
+                                                      :plugins (
+                                                                :pycodestyle (:enabled :json-false)
+                                                                :black       (:enabled nil :line_length 88 :cache_config t)
+                                                                :mccabe      (:enabled nil)
+                                                                :flake8      (:enabled t :json-false :maxLineLength 88)
+                                                                :pydocstyle  (:enabled t :convention "numpy")
+                                                                :yapf        (:enabled :json-false)
+                                                                :autopep8    (:enabled :json-false))))))
 
             ;; For JavaScript and TypeScript...
             (add-to-list 'eglot-server-programs
@@ -120,6 +120,8 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
             ;; (add-to-list 'eglot-server-programs
             ;;              '(js-mode "tailwindcss-language-server" "--stdio"))
 
+            ;; For LaTeX editing
+            (add-to-list 'eglot-server-programs '(LaTeX-mode . ("digestif")))
 
             ;; CSS LSP: npm i -g vscode-langservers-extracted
             ;; https://github.com/hrsh7th/vscode-langservers-extracted
