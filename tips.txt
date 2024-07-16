@@ -51,6 +51,12 @@ echo | openssl s_client -connect csmc.auth.united.com:443 2>/dev/null | openssl 
 X509v3 Subject Alternative Name:
 ```
 
+Another version using `openssl` can be:
+
+```bash
+openssl s_client -showcerts -servername gnupg.org -connect gnupg.org:443 </dev/null 2>/dev/null | openssl x509 -noout -ext subjectAltName | sed -e 's/DNS:/\n/g'
+```
+
 4. Certificate expiration dates
 ```bash
 λ echo | openssl s_client -connect csmc.auth.united.com:443 2>/dev/null | openssl x509 -noout -dates
