@@ -3551,8 +3551,9 @@ integrating the tex-mode with lsp.
 
 Set the =lsp-server= value to =digestif=. The default is =texlab=.
 #+BEGIN_SRC emacs-lisp
-;; set lsp server for tex files
-(setq lsp-tex-server 'digestif)
+;; set lsp server for tex files digestif or texlab are the
+;; available servers
+(setq lsp-tex-server 'texlab)
 #+END_SRC
 
 #+begin_src emacs-lisp :lexical no
