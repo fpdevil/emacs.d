@@ -57,3 +57,8 @@ cursory-latest-state.eld
 
 # exclude the ccls build file
 ccls
+
+# ignore eln-cache/
+eln-cache
+
+# ignore 
