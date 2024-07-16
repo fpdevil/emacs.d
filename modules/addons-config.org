@@ -205,7 +205,7 @@ This is an ~Emacs~ plugin aiming to become an aesthetic, modern looking tabs plu
 (use-package centaur-tabs
   :quelpa (centaur-tabs :fetcher git
                         :url "https://github.com/ema2159/centaur-tabs")
-  :demand
+  :after (dashboard org)
   :init (centaur-tabs-mode t)
   :config
   (setq centaur-tabs-style "bar"
@@ -226,9 +226,19 @@ This is an ~Emacs~ plugin aiming to become an aesthetic, modern looking tabs plu
   (setq uniquify-separator "/")
   (setq uniquify-buffer-name-style 'forward)
   :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
+  (("C-x <left>" . centaur-tabs-backward-tab)
+   ("C-x <right>" . centaur-tabs-forward-tab))
+  :custom
+  (centaur-tabs-set-icons t)
+  (centaur-tabs-plain-icons t)
+  (centaur-tabs-set-modified-marker t)
+  :hook
+  ((dashboard-mode . centaur-tabs-local-mode)
+   (org-src-mode . centaur-tabs-local-mode)
+   (calendar-mode . centaur-tabs-local-mode)))
 #+end_src
+
+#+RESULTS:
 
 ** Awesome Tabs
 This is an Emacs package to provide out-of-the-box configuration to use tabs.
@@ -294,6 +304,7 @@ symbols.
   :defer 3
   :diminish fira-code-mode
   :config
+  (fira-code-mode-set-font)
   (setq fira-code-mode-enable-hex-literal nil)
   ;; List of ligatures to turn off
   :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x"))
