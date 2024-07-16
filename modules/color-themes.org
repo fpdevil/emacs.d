@@ -37,6 +37,7 @@
     - [[#tangonov-dark-and-light-theme][Tangonov Dark and Light theme]]
     - [[#catppuccin-soothing-theme][Catppuccin Soothing theme]]
     - [[#shanty-emacs-theme][Shanty Emacs Theme]]
+    - [[#moe-theme][Moe theme]]
 - [[#set-a-colour-theme][Set a colour theme]]
 - [[#switch-themes-using-hydra][Switch themes using Hydra]]
 - [[#custom-utilities][Custom Utilities]]
@@ -481,6 +482,22 @@ full of pleasant colours.
   (shanty-themes :fetcher github :repo "qhga/shanty-themes"))
 #+end_src
 
+*** Moe theme
+Moe theme is a customizable colorful eye-candy theme for Emacs which is optimized for terminal's 256 color palettes.
+#+begin_src emacs-lisp :lexical no
+;; moe theme setup
+(use-package moe-theme
+  :quelpa
+  (moe-theme :fetcher github :repo "kuanyui/moe-theme.el")
+  :config
+  ;; highlighted buffer-id as decoration
+  (setq moe-theme-highlight-buffer-id t)
+  ;; Resize titles
+  (setq moe-theme-resize-title-markdown '(2.0 1.7 1.5 1.3 1.0 1.0))
+  (setq moe-theme-resize-title-org '(2.2 1.8 1.6 1.4 1.2 1.0 1.0 1.0 1.0))
+  (setq moe-theme-resize-title-rst '(2.0 1.7 1.5 1.3 1.1 1.0)))
+#+end_src
+
 * Set a colour theme
 
 Now set the required theme for Emacs using the custom function defined.
@@ -488,7 +505,8 @@ Now set the required theme for Emacs using the custom function defined.
 #+begin_src emacs-lisp
 ;; (aqua/toggle-theme 'doom-oceanic-next)
 ;; (load-theme 'doom-oksolar-light t)
-(load-theme 'ayu-light t)
+;; (load-theme 'ayu-light t)
+(load-theme 'modus-vivendi-tritanopia t)
 #+end_src
 
 * Switch themes using Hydra
