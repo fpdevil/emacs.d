@@ -1258,7 +1258,9 @@ Configure ~ob-python~ for native org python code support.
   :ensure nil
   :after (ob python)
   :config
-  (setq org-babel-python-command python-shell-interpreter))
+  ;; (setq org-babel-python-command (shell-command-to-string "printf %s \"$(which python3)\""))
+  (setq org-babel-python-command python-shell-interpreter)
+  )
 #+end_src
 
 A few examples...
@@ -2230,6 +2232,7 @@ automatically adding inline math dollars if necessary:
 
 ;; company completion for latex math symbols
 (use-package company-math
+  :quelpa (company-math :fetcher github :repo "vspinu/company-math")
   :after (:any org-mode tex-mode)
   :preface
   ;; local configuration for TeX modes
