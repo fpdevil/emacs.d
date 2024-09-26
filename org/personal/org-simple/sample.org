@@ -987,6 +987,28 @@ undefined{
 }
 #+end_json
 
+Exploring the =reduce= function in jaavscrpt:
+
+#+begin_src js
+// This also generates an array from 1 to 10
+let array = Array.from(Array(10).keys());
+console.log(`Generated array: ${array}`);
+
+// convert array to string array
+let sarray = array.map(s => String(s));
+console.log(`Stringified array: ${sarray}`);
+
+// apply reduce on sarray
+let result = sarray.reduce((acc, value) => '{ ' + acc + (acc !== '' ? ' + ' : ' ') + value + ' }', '');
+console.log(`reduce: ${result}`);
+#+end_src
+
+#+RESULTS:
+: Generated array: 0,1,2,3,4,5,6,7,8,9
+: Stringified array: 0,1,2,3,4,5,6,7,8,9
+: reduce: { { { { { { { { { {  0 } + 1 } + 2 } + 3 } + 4 } + 5 } + 6 } + 7 } + 8 } + 9 }
+: undefined
+
 index:org-babel!restclient
 ** Restclient
 
