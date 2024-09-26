@@ -215,7 +215,7 @@ Install the preferred company backend for Python jedi
 ~conda.el~ is an Emacs helper library (and minor mode) to work with conda environments.
 It detects and auto-activates the right conda environment for a particular buffer.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package conda
   :quelpa (conda :fetcher github :repo "necaris/conda.el")
   :commands conda-env-activate
