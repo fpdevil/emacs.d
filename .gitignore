@@ -10,6 +10,9 @@ savefile
 # ignore reccent files list
 recentf
 
+# ignore custom settings generated file
+custom-settings.el
+
 # python jedi and elpy related
 .python-environments
 elpy
@@ -24,6 +27,9 @@ modules/code/*.el
 
 # filter the LSP servers which would be installed
 .cache
+
+# ignore anything with shells
+.chatgpt-shell.el
 
 # do not push the latex image cache
 modules/ltximg
