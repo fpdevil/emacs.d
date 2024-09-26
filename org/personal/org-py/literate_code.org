@@ -1,0 +1,748 @@
+#+TITLE: Literate coding
+#+AUTHOR: Sampath Singamsetty
+#+EMAIL: Singamsetty.Sampath@gmail.com
+
+#+STARTUP: align
+#+OPTIONS: toc:nil \n:nil
+
+#+latex_header: \usepackage{makeidx}
+#+latex_header: \makeindex
+#+latex_header: \usepackage{cleveref}
+
+#+latex_header: \usepackage{longtable}
+#+latex_header: \usepackage{tabularx}
+#+latex_header: \usepackage{placeins} % prevent table from floating past
+
+#+macro: emacs-version (eval emacs-version)
+#+macro: org-version (eval org-version)
+#+macro: today (eval (format-time-string "%m-%d-%Y"))
+
+#+PROPERTY: header-args:python :session hello
+#+PROPERTY: header-args:python+ :async yes
+
+\maketitle
+\tableofcontents
+
+
+\begin{abstract}
+The document provides the features of org-mode on Emacs and specifically serves as a reference on how to program w
+ith multiple langugaes like, emacs-lisp, python, golang, C & C++ etc on org-babel. Org mode also provides first ha
+nd support for Bibliography and Citations through various addon packages and examples for the same are included.
+\end{abstract}
+
+* Introduction <<intro-section>>
+This guide features the way =org-babel= interacts with various languages by
+harnessing the rich type setting features of LaTeX and Emacs. It was originally
+written on {{{today}}} using Emacs {{{emacs-version}}} and Org-mode
+{{{org-version}}} running on Mac OS X.
+
+- Reproducible Research (RR)
+  #+begin_quote Buckheit and Donoho 1995
+    An article about computational science in a scientific publication
+    is not the scholarship itself, it is merely advertising of the
+    scholarship. The actual scholarship is the complete software
+    development environment and complete set of instructions which
+    generated the figures.
+  #+end_quote
+
+- Literate Programming (LP)
+  #+begin_quote Knuth 1984
+    Let us change our traditional attitude to the construction of
+    programs: Instead of imagining that our main task is to instruct a
+    computer what to do, let us concentrate rather on explaining to
+    human beings what we want a computer to do.
+  #+end_quote
+
+** elisp code
+
+#+name: fibonacci-inputs
+| 1 | 2 | 3 | 4 |  5 |  6 |  7 |  8 |  9 | 10 |
+| 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 |
+
+#+name: fibonacci-seq
+#+begin_src emacs-lisp :var fib-inputs=fibonacci-inputs
+  (defun fibonacci (n)
+    (if (or (= n 0) (= n 1))
+        n
+      (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
+
+  (mapcar (lambda (row)
+            (mapcar #'fibonacci row)) fib-inputs)
+#+end_src
+
+#+RESULTS: fibonacci-seq
+| 1 | 1 | 2 |  3 |  5 |   8 |  13 |  21 |   34 |   55 |
+| 1 | 3 | 8 | 21 | 55 | 144 | 377 | 987 | 2584 | 6765 |
+
+
+
+** Python code
+Here, we cover some code blocks in =python= covering basic to the advanced ones
+involving graphics.
+
+*** Simple Python
+#+begin_src python :results output pp
+import sys
+
+print('Python Version: {}'.format(sys.version))
+#+end_src
+
+#+RESULTS:
+: Python Version: 3.12.4 (main, Jun  6 2024, 18:26:44) [Clang 15.0.0 (clang-1500.3.9.4)]
+
+Pretty printing in =python=
+
+#+begin_src python :results output pp
+from pprint import pprint as pp
+
+data = {'powers': [x**10 for x in range(10)]}
+pp(data)
+#+end_src
+
+#+RESULTS:
+#+BEGIN_EXAMPLE
+{'powers': [0,
+            1,
+            1024,
+            59049,
+            1048576,
+            9765625,
+            60466176,
+            282475249,
+            1073741824,
+            3486784401]}
+#+END_EXAMPLE
+
+
+#+BEGIN_SRC python :results output pp
+import sys
+import os
+
+print('Hello ', os.getlogin(), ' system path is:')
+[print(p) for p in sys.path]
+#+END_SRC
+
+#+RESULTS:
+: Hello  sampathsingamsetty  system path is:
+: /Users/sampathsingamsetty/.virtualenv/bin
+: /opt/homebrew/Cellar/python@3.12/3.12.4/Frameworks/Python.framework/Versions/3.12/lib/python312.zip
+: /opt/homebrew/Cellar/python@3.12/3.12.4/Frameworks/Python.framework/Versions/3.12/lib/python3.12
+: /opt/homebrew/Cellar/python@3.12/3.12.4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload
+:
+: /Users/sampathsingamsetty/.virtualenv/lib/python3.12/site-packages
+: /opt/homebrew/opt/python-tk@3.12/libexec
+
+
+
+#+begin_src python :results output :session hello :async yes
+print('node', 'child', 'child', 'node', sep=' -> ')
+#+end_src
+
+#+RESULTS:
+: node -> child -> child -> node
+
+#+begin_src python :results output org drawer
+def hello(str):
+    return "Hello, " + str + "!"
+
+print(hello("Dude"))
+#+end_src
+
+#+RESULTS:
+:results:
+Hello, Dude!
+:end:
+
+
+
+#+begin_src python :results output org drawer
+import time
+
+for i in range(5):
+    print(i)
+    time.sleep(1)
+#+end_src
+
+#+RESULTS:
+:results:
+0
+1
+2
+3
+4
+:end:
+
+
+#+NAME: my-list
+| A | 1 |
+| B | 2 |
+| C | 3 |
+
+my-list is a variable in this org document and can be passed in as data to a
+source code block.
+
+#+BEGIN_SRC python :results output :var lst=my-list
+print(lst)
+#+END_SRC
+
+#+RESULTS:
+: [['A', 1], ['B', 2], ['C', 3]]
+
+The data structure that will be passed to the source block is a vector or
+vectors.
+
+And just like with a normal Python application you can manipulate the data.
+
+#+BEGIN_SRC python :results output :var lst=my-list
+print([[chr((ord(x)+1)), y+1] for x,y in lst])
+#+END_SRC
+
+#+RESULTS:
+: [['B', 2], ['C', 3], ['D', 4]]
+
+
+
+#+begin_src python :results output pp :display plain
+import pandas as pd
+
+df = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+print(df)
+#+end_src
+
+#+RESULTS:
+:    a  b
+: 0  1  3
+: 1  2  4
+
+
+#+BEGIN_SRC python :results output pp
+import random
+random.seed(1)
+print("Hello World! Here's a random number: %f" % random.random())
+#+END_SRC
+
+#+RESULTS:
+: Hello World! Here's a random number: 0.134364
+
+
+#+tblname: data_table
+| a | 1 |
+| b | 2 |
+| c | 3 |
+
+#+begin_src python :var val=1 :var data=data_table :results output pp
+# Return row specified by val.
+# In non-session mode, use return to return results.
+print(data[val])
+#+end_src
+
+#+RESULTS:
+: ['b', 2]
+
+The volume of an n-sphere of radius r is
+
+$$\frac{\pi^{\frac{n}{2}}}{\Gamma\left(\frac{n}{2} + 1\right)}r^n.$$
+
+#+begin_src python :results output pp
+from scipy import constants
+from scipy.special import gamma
+
+def vol(r, n):
+    return constants.pi**(n/2)*r**n/gamma(n/2 + 1)
+
+print(vol(1, 5))
+#+end_src
+
+#+RESULTS:
+: 5.263789013914324
+
+
+#+BEGIN_SRC jupyter-python
+def stringcomposition(k, string):
+    composition = []
+    for i in range(len(string) - k + 1):
+        pattern = string[i : i + k]
+        composition.append(pattern)
+    return composition
+
+# Test
+k = 5
+string = "CAATCCAAC"
+
+result = stringcomposition(k, string)
+
+# Sort results
+result = sorted(result)
+print(result)
+#+END_SRC
+
+#+RESULTS:
+: ['AATCC', 'ATCCA', 'CAATC', 'CCAAC', 'TCCAA']
+
+#+BEGIN_SRC python :results output
+def stringcomposition(k, string):
+    composition = []
+    for i in range(len(string) - k + 1):
+        pattern = string[i : i + k]
+        composition.append(pattern)
+    return composition
+
+# Test
+k = 5
+string = "CAATCCAAC"
+
+result = stringcomposition(k, string)
+
+# Sort results
+result = sorted(result)
+print(result)
+#+END_SRC
+
+#+RESULTS:
+: ['AATCC', 'ATCCA', 'CAATC', 'CCAAC', 'TCCAA']
+
+
+
+
+
+
+*** Python data analysis
+Here some =python= code blocks predominantly involving the analysis of data and
+using packages like =matplotlib=, =pandas=, =numpy= etc., are covered.
+
+#+HEADER: :output-dir images
+#+HEADER: :var image="images/sine.png"
+#+BEGIN_SRC python :results output file graphics :exports both :eval no
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Sine Function')
+plt.grid(True)
+
+plt.savefig(image)
+print(image)
+#+END_SRC
+
+#+RESULTS:
+[[file:images/sine.png]]
+
+
+
+
+
+#+NAME: rowdata
+|         id | moving_time |       date | rows |   rpm |
+| 8804906424 |         901 | 2023-03-30 |  388 | 25.84 |
+| 8786341302 |         902 | 2023-03-27 |  365 | 24.28 |
+| 8775651293 |         902 | 2023-03-25 |  372 | 24.75 |
+| 8765797455 |         903 | 2023-03-23 |  382 | 25.38 |
+| 6830032281 |         902 | 2022-03-15 |  319 | 21.22 |
+| 6819994746 |         903 | 2022-03-13 |  356 | 23.65 |
+| 6804568223 |         902 | 2022-03-10 |  294 | 19.56 |
+| 6794097174 |         902 | 2022-03-08 |  372 | 24.75 |
+
+
+#+BEGIN_SRC python :var tbl=rowdata :results output
+import pandas as pd
+
+df = pd.DataFrame(tbl[1:], columns=tbl[0])
+print(df.iloc[:2])
+#+END_SRC
+
+#+RESULTS:
+:            id  moving_time        date  rows    rpm
+: 0  8804906424          901  2023-03-30   388  25.84
+: 1  8786341302          902  2023-03-27   365  24.28
+
+#+NAME: pandas-plot
+#+HEADER: :output-dir images
+#+HEADER: :var fname="images/pandas-plot.png"
+#+BEGIN_SRC python :var tbl=rowdata :results output file graphics :exports both :eval no
+import pandas as pd
+
+df = pd.DataFrame(tbl[1:], columns=tbl[0])
+p = df.set_index("date").plot(y="rpm", kind="bar")
+# bbox_inches="tight" cuts the image to the correct size
+
+p.get_figure().savefig(fname, bbox_inches="tight")
+
+print(fname)
+# return filename
+#+END_SRC
+
+#+RESULTS: pandas-plot
+[[file:images/pandas-plot.png]]
+
+#+begin_src python :results output file :file images/hello.png :exports both :eval no
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+plt.plot([1, 2, 3, 4], [1, 4, 2, 3])
+plt.savefig('images/hello.png')
+# print('[[file:images/hello.png]]')
+print('images/hello.png')
+pass
+#+end_src
+
+#+RESULTS:
+[[file:images/hello.png]]
+
+
+
+
+#+begin_src python :results output file :exports both :eval no
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_circles
+
+X, y = make_circles(100, factor=.1, noise=.1)
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn')
+plt.xlabel('x1')
+plt.ylabel('x2')
+plt.savefig('images/plotCircles.png', dpi = 300)
+print('images/plotCircles.png') # return filename to org-mode
+#+end_src
+
+#+RESULTS:
+[[file:images/plotCircles.png]]
+
+
+#+name: square
+#+header: :var x=0
+#+begin_src python
+return x*x
+#+end_src
+
+#+RESULTS: square
+: 0
+
+#+call: square(x=6)
+
+#+RESULTS:
+: 36
+
+
+#+name: mySweetTable
+| One | Two | Three | Four |
+|-----+-----+-------+------|
+|   1 |   2 |     3 |    4 |
+|   5 |   6 |     7 |    8 |
+|   9 |  10 |    11 |   12 |
+|  13 |  14 |    15 |   16 |
+|  17 |  18 |    19 |   20 |
+|  21 |  22 |    23 |   24 |
+|  25 |  26 |    27 |   28 |
+|  29 |  30 |    31 |   32 |
+
+
+
+#+begin_src python :results output file :exports both :var data=mySweetTable :eval no
+import matplotlib.pyplot as plt
+
+'''If you have formatting lines on your table
+(http://orgmode.org/manual/Column-groups.html) you need to remove them
+"by hand" with a line like:
+
+data = data[2:]
+'''
+
+'''Turn the table data into x and y data'''
+x = [a[0] for a in data]
+y1 = [a[1] for a in data]
+y2 = [a[2] for a in data]
+y3 = [a[3] for a in data]
+
+''' Plot the x and y data'''
+a, = plt.plot(x, y1, label="y1", marker='v')
+b, = plt.plot(x, y2, label="y2", marker='o')
+c, = plt.plot(x, y3, label="y3", marker='x')
+
+''' Set the x and y labels on the graph '''
+plt.xlabel("x axis label")
+plt.ylabel("y axis label")
+
+''' Create the legend '''
+plt.legend(handles=[a,b,c],loc="upper left")
+
+''' Save the PNG file '''
+filename = "images/mySweetPlot.png"
+plt.savefig(filename)
+
+''' Return the PNG file path to OrgMode '''
+print(filename)
+# return(filename)
+#+end_src
+
+#+RESULTS:
+[[file:images/mySweetPlot.png]]
+
+#+NAME: experiments
+|   k |  Trial 1 |  Trial 2 | Trial 3 |  Trial 4 |  Trial 5 |
+|   5 | 0.357094 | 0.332661 | 0.28434 | 0.320276 | 0.288069 |
+|  10 | 0.403938 | 0.389808 | 0.36694 | 0.372952 | 0.357887 |
+|  25 | 0.443313 | 0.441736 | 0.42937 | 0.425222 | 0.418354 |
+|  50 | 0.471826 | 0.458904 | 0.45862 | 0.443338 | 0.445892 |
+|  75 | 0.472505 | 0.473701 | 0.48072 | 0.452730 | 0.461352 |
+| 100 | 0.473184 | 0.481455 | 0.49159 | 0.462386 | 0.476871 |
+
+
+#+BEGIN_SRC python :results output file :file images/mySweetPlot.png :exports both :var data=experiments :eval no
+import matplotlib.pyplot as plt
+import pandas as pd
+
+data = pd.DataFrame(data[1:], columns=data[0]).set_index('k')
+data.plot(kind='bar', legend=True)
+
+filename = "images/mySweetPlot.png"
+plt.savefig(filename)
+
+print(filename)
+# return(filename)
+#+END_SRC
+
+#+RESULTS:
+[[file:images/mySweetPlot.png]]
+
+
+
+
+#+name: char-table
+| e | 1648 |
+| t | 1127 |
+| a | 1082 |
+| o | 1043 |
+| i |  968 |
+| r |  967 |
+| n |  885 |
+| s |  884 |
+| l |  815 |
+| c |  580 |
+
+#+NAME: python-pyplot
+#+HEADER: :output-dir images
+#+HEADER: :file "python-pyplot.png"
+#+begin_src python :var tbl=char-table :results drawer file graphics :exports both :eval no
+import matplotlib.pyplot as plt
+import pandas as pd
+
+data = pd.DataFrame(tbl)
+fig=plt.figure(figsize=(4,2))
+fig.tight_layout()
+plt.bar(data[0], data[1])
+fgname = 'images/python-pyplot.png'
+plt.savefig(fgname)
+print(fgname)
+#+end_src
+
+#+RESULTS: python-pyplot
+[[file:images/python-pyplot.png]]
+
+
+#+name: py-pdf-image
+#+header: :output-dir images
+#+HEADER: :var myfile="images/myfig.png"
+#+begin_src python :session hello :results output file graphics :exports both :eval no
+import matplotlib
+import matplotlib.pyplot as plt
+
+fig=plt.figure(figsize=(3,2))
+plt.plot([1,3,2])
+fig.tight_layout()
+
+plt.savefig(myfile)
+print(myfile) # return this to org-mode
+#+end_src
+
+#+RESULTS: py-pdf-image
+[[file:images/myfig.png]]
+
+
+#+NAME: matplot-pyplot
+#+HEADER: :output-dir images
+#+HEADER: :var mfile="images/python-matplot-fig.png"
+#+begin_src python :session hello :results output drawer file graphics :exports both :eval no
+import matplotlib, numpy
+import matplotlib.pyplot as plt
+
+fig=plt.figure(figsize=(4,2))
+fig.tight_layout()
+x=numpy.linspace(-15,15)
+plt.plot(numpy.sin(x)/x)
+
+plt.savefig(mfile)
+print(mfile)
+# return fname # return filename to org-mode
+#+end_src
+
+#+RESULTS: matplot-pyplot
+[[file:images/python-matplot-fig.png]]
+
+
+
+HEADER: :output-dir images
+#+begin_src ipython :session hello :results raw drawer :async t :exports both :eval no
+%matplotlib inline
+%config InlineBackend.figure_format = 'png'
+import matplotlib.pyplot as plt
+import numpy as np
+
+# fig, ax = plt.subplots()
+# ax.plot([1, 2, 3, 4], [1, 4, 2, 3])
+p = plt.hist(np.random.randn(1000), bins=20)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[13]:
+[[file:./obipy-resources/324OZl.png]]
+:end:
+
+
+
+HEADER: :output-dir images
+#+begin_src ipython :session hello :results raw drawer :async t :exports both :eval no
+%matplotlib inline
+%config InlineBackend.figure_format = 'png'
+import matplotlib.pyplot as plt
+import numpy as np
+
+data = {
+    'a': np.arange(50),
+    'c': np.random.randint(0, 50, 50),
+    'd': np.random.randn(50)
+}
+data['b'] = data['a'] + 10*np.random.randn(50)
+data['d'] = np.abs(data['d'])*100
+
+plt.scatter('a', 'b', c='c', s='d', data=data)
+plt.title('Scatter Plot')
+plt.xlabel('entry a')
+plt.ylabel('entry b')
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[12]:
+: Text(0, 0.5, 'entry b')
+[[file:./obipy-resources/rICIXY.png]]
+:end:
+
+
+
+#+begin_src ipython :session hello :results raw drawer :async t :exports both :eval no
+%matplotlib inline
+%config InlineBackend.figure_format = 'png'
+import matplotlib.pyplot as plt
+import numpy as np
+
+mu, sigma = 100, 15
+x = mu + sigma * np.random.randn(10000)
+
+n, bins, patches = plt.hist(x, 50, density=1, facecolor='r', alpha=0.75)
+
+plt.xlabel('Intellectual')
+plt.ylabel('Probability')
+plt.title('Histogram of IQ')
+plt.text(60, 0.025, r'$\mu=100,\ \sigma=15$')
+plt.axis([40, 160, 0, 0.03])
+plt.grid(True)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[10]:
+[[file:./obipy-resources/xF5w0L.png]]
+:end:
+
+#+begin_src ipython :session hello :results raw drawer :async t :exports both :eval no
+%matplotlib inline
+%config InlineBackend.figure_format = 'png'
+import matplotlib.pyplot as plt
+
+fig = plt.figure()
+ax = fig.add_axes([0, 0, 1, 1])
+langs = ['C', 'C++', 'Rust', 'Python', 'Java', 'JavaScript']
+students = [23, 17, 35, 29, 12, 40]
+
+ax.bar(langs, students)
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[9]:
+: <BarContainer object of 6 artists>
+[[file:./obipy-resources/R5xXRV.png]]
+:end:
+
+
+#+BEGIN_SRC ipython :results drawer :async t :session py2session :exports both :eval no
+%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out[2]:
+:end:
+
+#+BEGIN_SRC ipython :results drawer :async t :session py2session :exports both :eval no
+fig=plt.figure(facecolor='white')
+plt.hist(np.random.randn(500000), bins=100);
+#+END_SRC
+
+#+RESULTS:
+:results:
+# Out[3]:
+[[file:./obipy-resources/lWycRS.png]]
+:end:
+
+
+
+HEADER: :output-dir images
+#+begin_src ipython :session hello :results raw drawer :async t :exports both :eval no
+%matplotlib inline
+%config InlineBackend.figure_format = 'png'
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.special import jn
+
+x = np.linspace(0, 4.5)
+for i in range(6):
+    plt.plot(x, jn(i, x))
+#+end_src
+
+#+RESULTS:
+:results:
+# Out[8]:
+[[file:./obipy-resources/u4gzyb.png]]
+:end:
+
+
+* Post processing
+
+#+NAME: attr_wrap
+#+BEGIN_SRC sh :var data="" :var width="\\textwidth" :results output
+  echo "#+ATTR_LATEX: :width $width"
+  echo "$data"
+#+END_SRC
+
+#+HEADER: :file "images/it.png"
+#+BEGIN_SRC dot :post attr_wrap(width="5cm", data=*this*) :results drawer
+  digraph{
+          a -> b;
+          b -> c;
+          c -> a;
+  }
+#+end_src
+
+#+RESULTS:
+:results:
+#+ATTR_LATEX: :width 5cm
+[[file:images/it.png]]
+:end:
