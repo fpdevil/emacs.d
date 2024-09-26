@@ -122,77 +122,77 @@ For pkg-config to find libffi you may need to set:
 Installation of =pdf-tools= is configured here.
 
 #+begin_src emacs-lisp
-  ;; pdf tools for viewing and interacting with pdf
-  (use-package pdf-tools
-    :quelpa (pdf-tools :fetcher github
-                       :repo "vedang/pdf-tools")
+;; pdf tools for viewing and interacting with pdf
+(use-package pdf-tools
+  ;; :quelpa (pdf-tools :fetcher github
+  ;;                    :repo "vedang/pdf-tools")
 
-    :functions
-    (pdf-view-revert-buffer-maybe pdf-view-revert-buffer)
+  :functions
+  (pdf-view-revert-buffer-maybe pdf-view-revert-buffer)
 
-    :mode
-    (("\\.pdf\\'" . pdf-view-mode))
+  :mode
+  (("\\.pdf\\'" . pdf-view-mode))
 
-    :magic
-    ("%PDF" . pdf-view-mode)
+  :magic
+  ("%PDF" . pdf-view-mode)
 
-    :hook
-    (pdf-view-mode . (lambda () (cua-mode 0)))                   ; turn off cua so copy works
-    (pdf-view-mode . (lambda () (display-line-numbers-mode -1))) ; does not work well with linum
-    (doc-view-mode . (lambda () (require 'pdf-tools)))
+  :hook
+  (pdf-view-mode . (lambda () (cua-mode 0)))                   ; turn off cua so copy works
+  (pdf-view-mode . (lambda () (display-line-numbers-mode -1))) ; does not work well with linum
+  (doc-view-mode . (lambda () (require 'pdf-tools)))
 
-    ;;:init
-    ;;(pdf-loader-install :no-query)    ; on demand loading, leads to faster startup time
+  ;;:init
+  ;;(pdf-loader-install :no-query)    ; on demand loading, leads to faster startup time
 
-    :config
-    ;; the :no-query auto builds epfinfo when required
-    (pdf-tools-install :no-query)        ; standard activation command
+  :config
+  ;; the :no-query auto builds epfinfo when required
+  (pdf-tools-install :no-query)        ; standard activation command
 
-    ;; required packages
-    (require 'pdf-tools)
-    (require 'pdf-view)
-    (require 'pdf-misc)
-    (require 'pdf-occur)
-    (require 'pdf-util)
-    (require 'pdf-annot)
-    (require 'pdf-info)
-    (require 'pdf-isearch)
-    (require 'pdf-history)
-    (require 'pdf-links)
-    (require 'pdf-outline)
-    (require 'pdf-sync)
+  ;; required packages
+  (require 'pdf-tools)
+  (require 'pdf-view)
+  (require 'pdf-misc)
+  (require 'pdf-occur)
+  (require 'pdf-util)
+  (require 'pdf-annot)
+  (require 'pdf-info)
+  (require 'pdf-isearch)
+  (require 'pdf-history)
+  (require 'pdf-links)
+  (require 'pdf-outline)
+  (require 'pdf-sync)
 
-    ;; (add-hook 'doc-view-mode-hook 'pdf-tools-install)
-    (setq-default pdf-view-display-size 'fit-page)      ; open pdfs scaled to the fit page
-    (setq pdf-view-use-scaling t)                       ; for mac with retina display
+  ;; (add-hook 'doc-view-mode-hook 'pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-page)      ; open pdfs scaled to the fit page
+  (setq pdf-view-use-scaling t)                       ; for mac with retina display
 
-    ;; auto annotate highlights
-    (require 'pdf-annot)
-    (setq pdf-annot-default-annotation-properties
-          `((t (label . ,user-full-name))
-            (text (icon  . "Comment")
-                  (color . "#ff0000"))
-            (highlight  (color . "yellow"))
-            (squiggly   (color . "orange"))
-            (strike-out (color . "red"))
-            (underline  (color . "blue"))))
+  ;; auto annotate highlights
+  (require 'pdf-annot)
+  (setq pdf-annot-default-annotation-properties
+        `((t (label . ,user-full-name))
+          (text (icon  . "Comment")
+                (color . "#ff0000"))
+          (highlight  (color . "yellow"))
+          (squiggly   (color . "orange"))
+          (strike-out (color . "red"))
+          (underline  (color . "blue"))))
 
-    ;; use regular isearch
-    ;; (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-    ;; additional fine-grained setting for space provisioning
-    ;; zooming with + and - than the default 25%, now 10%
-    (setq pdf-view-resize-factor 1.10
-          pdf-annot-activate-created-annotations t  ; automatically annotate highlights
-          mouse-wheel-follow-mouse t
-          pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+  ;; use regular isearch
+  ;; (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+  ;; additional fine-grained setting for space provisioning
+  ;; zooming with + and - than the default 25%, now 10%
+  (setq pdf-view-resize-factor 1.10
+        pdf-annot-activate-created-annotations t  ; automatically annotate highlights
+        mouse-wheel-follow-mouse t
+        pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
 
-    (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
 
-    (defun pdf-view-revert-buffer-maybe (file)
-      (when-let ((buf (find-buffer-visiting file)))
-        (with-current-buffer buf
-          (when (derived-mode-p 'pdf-view-mode)
-            (pdf-view-revert-buffer nil t)))))
+  (defun pdf-view-revert-buffer-maybe (file)
+    (when-let ((buf (find-buffer-visiting file)))
+      (with-current-buffer buf
+        (when (derived-mode-p 'pdf-view-mode)
+          (pdf-view-revert-buffer nil t)))))
 
   :bind
   (:map pdf-view-mode-map
