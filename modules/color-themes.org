@@ -250,11 +250,12 @@ and enable whichever we want as per our choice.
 #+end_src
 
 *** Github theme
+=github-emacs-theme= set of themes are designed to give your Emacs editor a sleek, modern look inspired by GitHub's theme mode.
 #+begin_src emacs-lisp :lexical no
 ;; github flavour theme
-(use-package github-theme
+(use-package github-emacs-theme
   :ensure t
-  :defer t)
+  :quelpa (github-emacs-theme :fetcher github :repo "ladroid/github-emacs-theme"))
 #+end_src
 
 *** Kaolin themes
@@ -482,6 +483,7 @@ full of pleasant colours.
   (shanty-themes :fetcher github :repo "qhga/shanty-themes"))
 #+end_src
 
+
 *** Moe theme
 Moe theme is a customizable colorful eye-candy theme for Emacs which is optimized for terminal's 256 color palettes.
 #+begin_src emacs-lisp :lexical no
@@ -505,8 +507,7 @@ Now set the required theme for Emacs using the custom function defined.
 #+begin_src emacs-lisp
 ;; (aqua/toggle-theme 'doom-oceanic-next)
 ;; (load-theme 'doom-oksolar-light t)
-;; (load-theme 'ayu-light t)
-(load-theme 'modus-vivendi-tritanopia t)
+;; (load-theme 'modus-vivendi-tritanopia t)
 #+end_src
 
 * Switch themes using Hydra
