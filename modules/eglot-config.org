@@ -1,4 +1,5 @@
 
+
 #+begin_src emacs-lisp :exports none
   ;;;-*- lexical-binding:t ; -*-
   ;;; package --- eglot lsp client configuration
@@ -23,6 +24,7 @@
 - [[#eglot-configuration][Eglot configuration]]
   - [[#protocol-extensions-for-eglot-eglot-x][Protocol extensions for Eglot: eglot-x]]
   - [[#yasnippet-suggestions-for-eglot][YASnippet suggestions for eglot]]
+- [[#boost-eglot-using-lsp-booster][Boost eglot using lsp-booster]]
 - [[#language-support][Language support]]
   - [[#golang][golang]]
 - [[#consult-integration][Consult Integration]]
@@ -36,8 +38,10 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
 ;; eglot lsp client
 (use-package eglot
   :ensure t
-
+  :defer t
   :preface
+  ;; Collects and displays all available documentation immediately, even if
+  ;; multiple sources provide it. It concatenates the results.
   (defun mp-eglot-eldoc ()
     (setq eldoc-documentation-strategy
           'eldoc-documentation-compose-eagerly))
@@ -52,7 +56,7 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
           latex-mode
           LaTeX-mode
           python-mode
-          rustic-mode) . eglot-ensure)
+          rust-mode) . eglot-ensure)
   ((eglot-managed-mode . mp-eglot-eldoc))
 
   :init
@@ -68,11 +72,11 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
 
   ;; Show all of the available eldoc information when we want it. This way Flymake errors
   ;; don't just get clobbered by docstrings.
-  (add-hook 'eglot-managed-mode-hook
-            (lambda ()
-              "Make sure Eldoc will show us all of the feedback at point."
-              (setq-local eldoc-documentation-strategy
-                          #'eldoc-documentation-compose)))
+  ;; (add-hook 'eglot-managed-mode-hook
+  ;;           (lambda ()
+  ;;             "Make sure Eldoc will show us all of the feedback at point."
+  ;;             (setq-local eldoc-documentation-strategy
+  ;;                         #'eldoc-documentation-compose)))
 
   :config (progn
             ;; set max bytes to read from subprocess in a single chunk
@@ -89,23 +93,29 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
             (add-to-list 'eglot-server-programs
                          '((c++-mode c-mode) "clangd"
                            "-j=3"
+                           "--enable-config"
                            "--background-index"
                            "--clang-tidy"
                            "--completion-style=detailed"))
 
             ;; For Python
             (add-to-list 'eglot-server-programs
-                         '(python-mode "pylsp"))
-            (setq! eglot-workspace-configuration
-                   '((:pylsp . (:configurationSources ["flake8"]
-                                                      :plugins (
-                                                                :pycodestyle (:enabled :json-false)
-                                                                :black       (:enabled nil :line_length 88 :cache_config t)
-                                                                :mccabe      (:enabled nil)
-                                                                :flake8      (:enabled t :json-false :maxLineLength 88)
-                                                                :pydocstyle  (:enabled t :convention "numpy")
-                                                                :yapf        (:enabled :json-false)
-                                                                :autopep8    (:enabled :json-false))))))
+                         `(python-mode
+                           . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+                                                    ("jedi-language-server")
+                                                    ("pylsp")))))
+
+            ;; (setq eglot-workspace-configuration
+            ;;       '((:pylsp . (:configurationSources
+            ;;                    ["flake8"]
+            ;;                    :plugins (
+            ;;                              :pycodestyle (:enabled :json-false)
+            ;;                              :black       (:enabled nil :line_length 88 :cache_config t)
+            ;;                              :mccabe      (:enabled nil)
+            ;;                              :flake8      (:enabled t :json-false)
+            ;;                              :pydocstyle  (:enabled t :convention "numpy")
+            ;;                              :yapf        (:enabled :json-false)
+            ;;                              :autopep8    (:enabled :json-false))))))
 
             ;; For JavaScript and TypeScript...
             (add-to-list 'eglot-server-programs
@@ -113,7 +123,10 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
 
             ;; For Rust
             (add-to-list 'eglot-server-programs
-                         '(rustic-mode "rust-analyzer"))
+                         `(rust-mode . ("rust-analyzer" :initializationOptions
+                                        ( :procMacro (:enable t)
+                                          :cargo ( :buildScripts (:enable t)
+                                                   :features "all")))))
 
             ;; For CSS lsp support
             ;; TailwindCSS LSP: npm install -g @tailwindcss/language-server
@@ -162,6 +175,18 @@ For snippet completions while in the eglot mode, we can add the
             (lambda ()
               (add-to-list 'company-backends
                            '(company-capf :with company-yasnippet)))))
+#+end_src
+
+* Boost eglot using lsp-booster
+The ~emacs-lsp-booster~ project provides a rust-based wrapper program which substantially speeds up emacs' interactions with lsp servers. This small package enables eglot to use it.
+
+#+begin_src emacs-lisp :tangle no
+;; Boost eglot using lsp-booster
+(use-package eglot-booster
+  :quelpa
+  (eglot-booster :fetcher github :repo "jdtsmith/eglot-booster")
+  :after eglot
+  :config (eglot-booster-mode))
 #+end_src
 
 * Language support
