@@ -67,4 +67,7 @@ ccls
 # ignore eln-cache/
 eln-cache
 
-# ignore 
+# ignore .auctex-auto generated stuff
+org/personal/org-simple/.auctex-auto
+
+# ignore
