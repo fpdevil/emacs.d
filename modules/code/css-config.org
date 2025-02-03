@@ -91,6 +91,19 @@ directly in your markup.
   :init
   (setq lsp-tailwindcss-add-on-mode t)
   :config
+  ;; (dolist (tw-mode-list
+  ;;          '(css-mode
+  ;;            css-ts-mode
+  ;;            typescript-mode
+  ;;            typescript-ts-mode
+  ;;            typescript-tsx-mode
+  ;;            tsx-ts-mode
+  ;;            js-mode
+  ;;            rjsx-mode
+  ;;            js-ts-mode
+  ;;            html-mode
+  ;;            svelte-mode))
+  ;;   (add-to-list 'lsp-tailwindcss-major-modes tw-mode-list))
   (setq lsp-tailwindcss-major-modes
         '(typescript-tsx-mode
           js-mode
@@ -99,7 +112,7 @@ directly in your markup.
           html-mode
           css-mode
           svelte-mode))
-  (add-hook 'before-save-hook 'lsp-tailwindcss-rustywind-before-save))
+    (add-hook 'before-save-hook 'lsp-tailwindcss-rustywind-before-save))
 #+end_src
 
 ** CSS in JS
