@@ -349,6 +349,9 @@ Get the version information using =elisp= as below:
 #+end_src
 
 #+RESULTS:
+Emacs version: GNU Emacs 29.4 (build 2, aarch64-apple-darwin23.5.0, NS appkit-2487.60 Version 14.5 (Build 23F79))
+ of 2024-07-01
+org version: 9.6.15
 Emacs version: GNU Emacs 29.1 (build 1, aarch64-apple-darwin23.0.0, NS appkit-2487.00 Version 14.0 (Build 23A344))
  of 2023-10-21
 org version: 9.6.6
@@ -574,13 +577,12 @@ int main() {
 }
 #+end_src
 
-#+RESULTS[30cf8b93ce1e54ea72542e986cf7a1956c285963]:
+#+RESULTS[9baa434778a6b6e593e688570958b5175685a9ed]:
 : --- OpenCV Version Information ---
-:     OpenCV Version: 4.8.1
-:     OpenCV version: 4.8.1
+:     OpenCV Version: 4.10.0
 :     Major version: 4
-:     Minor version: 8
-:     Subminor version: 1
+:     Minor version: 10
+:     Subminor version: 0
 
 \FloatBarrier
 
@@ -793,7 +795,7 @@ fmt.Println("Current Time:", time.Now())
 #+end_src
 
 #+RESULTS:
-: Current Time: 2023-12-12 01:08:48.32306 +0530 IST m=+0.000517834
+: Current Time: 2025-01-14 15:11:25.772943 -0600 CST m=+0.000093668
 
 index:org-babel!python
 ** Python code
