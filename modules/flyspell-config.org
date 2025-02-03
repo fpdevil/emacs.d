@@ -15,7 +15,7 @@
   ;; flyspell setup
   (use-package flyspell
       :ensure t
-      :defer 3
+      :demand t
       ;;:ensure-system-package aspell
       :init
       ;; set the location of aspell
