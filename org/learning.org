@@ -8,6 +8,7 @@ will invoke ~org-narrow-to-subtree~ and once the work is done we can come back t
 the original buffer by pressing ~C-x n w~ which invokes ~widen~. The same is a part
 of the section ref:transitioning.
 
+
 * Transitioning between the sections <<transitioning>>
    With all the existing standard Emacs movement keybindings below are helpful:
 
@@ -35,6 +36,20 @@ and previewing documents. Here’s a list of what can be done:
 - =C-c C-p C-d= :: Preview a section right inside the buffer
 - =C-c C-p C-b= :: Preview the entire buffer
 - =C-c C-c=     :: Compile into a buffer
+
+** Formatting
+Type ~C-x f~ which will prompt to enter fill-width:
+
+#+begin_example
+C-x f
+
+Change fill-column from 70 to (default 461):
+#+end_example
+
+Now press ~C-u M-q~ to format the text to fill the width.
+
+We can instruct Emacs to automatically fill text as we write by enabling ~M-x
+auto-fill-mode~, but it is better to restrict to =text-mode=.
 
 * Getting help
 
