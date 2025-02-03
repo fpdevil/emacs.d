@@ -1569,7 +1569,7 @@ literate documents.
 
 ref: https://github.com/xenodium/chatgpt-shell
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; chatgpt-shell integration with org mode babel
 (use-package ob-chatgpt-shell
   :after (org)
@@ -1689,7 +1689,7 @@ programming.
     dot
     go             ;; via ob-go
     rust           ;; via ob-rust
-    chatgpt-shell  ;; ob-chatgpt-shell
+    ;; chatgpt-shell  ;; ob-chatgpt-shell
     python         ;; python
     ipython        ;; ipython
     jupyter        ;; load jupyter at the end
