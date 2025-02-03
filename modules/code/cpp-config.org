@@ -173,7 +173,7 @@ handling of these languages.
    (c-mode-hook . (lambda ()
 			        (setq flycheck-clang-language-standard "c17"
 				          flycheck-gcc-language-standard "c17")))
-   (c++-mode    . my/c++-mode-indent-init)
+   (c++-mode    . aqua/cpp-mode-indent-init)
    (c-mode      . (lambda ()
                     (setq comment-start "// "
                           comment-end ""))))
@@ -194,114 +194,114 @@ handling of these languages.
   (c-basic-offset 4)
 
   :preface
-    (progn
-      (defun cpp/compile-current-file ()
-        "Compiles a C/C++ file on the fly."
-        (interactive)
-        (let* ((clang-choices '(("c" . "clang -std=c17") ("cpp" . "clang++ -std=c++20")))
-	           (filename (file-name-nondirectory buffer-file-name))
-	           (file-ext (file-name-extension buffer-file-name))
-	           (compile-choice (cdr (assoc file-ext clang-choices))))
-          (compile (concat compile-choice " -Wall -pedantic " filename " -o " (file-name-sans-extension filename) ".o"))))
+  (progn
+    (defun cpp/compile-current-file ()
+      "Compiles a C/C++ file on the fly."
+      (interactive)
+      (let* ((clang-choices '(("c" . "clang -std=c17") ("cpp" . "clang++ -std=c++20")))
+	         (filename (file-name-nondirectory buffer-file-name))
+	         (file-ext (file-name-extension buffer-file-name))
+	         (compile-choice (cdr (assoc file-ext clang-choices))))
+        (compile (concat compile-choice " -Wall -pedantic " filename " -o " (file-name-sans-extension filename) ".o"))))
 
-      (defun cpp/run-exec-file ()
-        "Runs an executable file named after the buffer if it exists."
-        (interactive)
-        (if (file-executable-p (concat (file-name-sans-extension buffer-file-name) ".o"))
-	        (async-shell-command
-	         (concat "./" (file-name-nondirectory (file-name-sans-extension buffer-file-name)) ".o"))))
+    (defun cpp/run-exec-file ()
+      "Runs an executable file named after the buffer if it exists."
+      (interactive)
+      (if (file-executable-p (concat (file-name-sans-extension buffer-file-name) ".o"))
+	      (async-shell-command
+	       (concat "./" (file-name-nondirectory (file-name-sans-extension buffer-file-name)) ".o"))))
 
-      (defun cpp/compile-and-run ()
-        (interactive)
-        "Compiles a C/C++ file then runs it."
-        (cpp/compile-current-file)
-        (cpp/run-exec-file))
+    (defun cpp/compile-and-run ()
+      (interactive)
+      "Compiles a C/C++ file then runs it."
+      (cpp/compile-current-file)
+      (cpp/run-exec-file))
 
-      ;; Default C++ style
-      (defun my/build-tab-stop-list (width)
-        (let ((num-tab-stops (/ 80 width))
-              (counter 1)
-              (ls nil))
-          (while (<= counter num-tab-stops)
-            (setq ls (cons (* width counter) ls))
-            (setq counter (1+ counter)))
-          (set (make-local-variable 'tab-stop-list) (nreverse ls))))
+    ;; Default C++ style
+    (defun my/build-tab-stop-list (width)
+      (let ((num-tab-stops (/ 80 width))
+            (counter 1)
+            (ls nil))
+        (while (<= counter num-tab-stops)
+          (setq ls (cons (* width counter) ls))
+          (setq counter (1+ counter)))
+        (set (make-local-variable 'tab-stop-list) (nreverse ls))))
 
-      (defun my/c++-mode-indent-init ()
-        (interactive)
-        (google-set-c-style)
-        (setq-default tab-width 4) ;; change this to taste, this is what K&R uses
-        (make-local-variable 'c-basic-offset)
-        (setq c-basic-offset tab-width)
-        (make-local-variable 'c-indent-level)
-        (setq c-indent-level tab-width)
-        (setq indent-tabs-mode nil))
+    (defun aqua/cpp-mode-indent-init ()
+      (interactive)
+      (google-set-c-style)
+      (setq-default tab-width 4) ;; change this to taste, this is what K&R uses
+      (make-local-variable 'c-basic-offset)
+      (make-local-variable 'c-indent-level)
+      (setq c-basic-offset tab-width)
+      (setq c-indent-level tab-width)
+      (setq indent-tabs-mode nil))
 
-      ;; Default C-style
-      (setq my/cc-style
-            '("cc-mode"
-              (c-offsets-alist .
-                               ((func-decl-cont       . ++)
-                                (member-init-intro    . +)
-                                (inher-intro          . ++)
-                                (comment-intro        . 0)
-                                (arglist-close        . c-lineup-arglist)
-                                (topmost-intro        . 0)
-                                (block-open           . 0)
-                                (inline-open          . 0)
-                                (substatement-open    . 0)
-                                (label                . /)
-                                (case-label           . +)
-                                (statement-case-open  . +)
-                                (statement-case-intro . +)
-                                (access-label         . /)
-                                (innamespace          . -)
-                                (label                . 0)
-                                (case-label           . +)
-                                (inextern-lang        . 0)
-                                ))))
+    ;; Default C-style
+    (setq my/cc-style
+          '("cc-mode"
+            (c-offsets-alist .
+                             ((func-decl-cont       . ++)
+                              (member-init-intro    . +)
+                              (inher-intro          . ++)
+                              (comment-intro        . 0)
+                              (arglist-close        . c-lineup-arglist)
+                              (topmost-intro        . 0)
+                              (block-open           . 0)
+                              (inline-open          . 0)
+                              (substatement-open    . 0)
+                              (label                . /)
+                              (case-label           . +)
+                              (statement-case-open  . +)
+                              (statement-case-intro . +)
+                              (access-label         . /)
+                              (innamespace          . -)
+                              (label                . 0)
+                              (case-label           . +)
+                              (inextern-lang        . 0)
+                              ))))
 
-      ;; Make C/C++ indentation reliable
-      (defun my/c-indent-offset-according-to-syntax-context (key val)
-        ;; remove the old element
-        (setq c-offsets-alist (delq (assoc key c-offsets-alist) c-offsets-alist))
-        ;; new value
-        (add-to-list 'c-offsets-alist '(key . val)))
+    ;; Make C/C++ indentation reliable
+    (defun my/c-indent-offset-according-to-syntax-context (key val)
+      ;; remove the old element
+      (setq c-offsets-alist (delq (assoc key c-offsets-alist) c-offsets-alist))
+      ;; new value
+      (add-to-list 'c-offsets-alist '(key . val)))
 
-      ;; Default C-style
-      (defun my/c-mode-indent-init ()
-        (interactive)
-        (c-set-style "Linux")
-        (c-set-offset 'substatement-open 0)
-        (c-set-offset 'innamespace 0)
-        (c-set-offset 'inextern-lang 0)
-        (c-toggle-electric-state -1)
+    ;; Default C-style
+    (defun my/c-mode-indent-init ()
+      (interactive)
+      (c-set-style "Linux")
+      (c-set-offset 'substatement-open 0)
+      (c-set-offset 'innamespace 0)
+      (c-set-offset 'inextern-lang 0)
+      (c-toggle-electric-state -1)
 
-        (setq-default c-default-style "Linux")
-        (c-add-style "Linux" my/cc-style)
-        (my/tabs-setup t 8)
+      (setq-default c-default-style "Linux")
+      (c-add-style "Linux" my/cc-style)
+      (my/tabs-setup t 8)
 
-        (make-local-variable 'c-basic-offset)
-        (setq c-basic-offset tab-width)
-        (make-local-variable 'c-indent-level)
-        (setq c-indent-level tab-width)
+      (make-local-variable 'c-basic-offset)
+      (make-local-variable 'c-indent-level)
+      (setq c-basic-offset tab-width)
+      (setq c-indent-level tab-width)
 
-        (my/c-indent-offset-according-to-syntax-context 'substatement-open 0)
+      (my/c-indent-offset-according-to-syntax-context 'substatement-open 0)
 
-        ;; ensure fill-paragraph takes doxygen @ markers as start of new
-        ;; paragraphs properly
-        (setq-default comment-multi-line t
-                      paragraph-start "^[ ]*\\(//+\\|\\**\\)[ ]*\\([ ]*$\\|@param\\)\\|^\f"))
+      ;; ensure fill-paragraph takes doxygen @ markers as start of new
+      ;; paragraphs properly
+      (setq-default comment-multi-line t
+                    paragraph-start "^[ ]*\\(//+\\|\\**\\)[ ]*\\([ ]*$\\|@param\\)\\|^\f"))
 
-      (defun my/c-files-hook ()
-        (when (string= (file-name-extension buffer-file-name) "c")
-          (my/c-mode-indent-init))
+    (defun my/c-files-hook ()
+      (when (string= (file-name-extension buffer-file-name) "c")
+        (my/c-mode-indent-init))
 
-        (when (string= (file-name-extension buffer-file-name) "cpp")
-          (my/c++-mode-indent-init))
+      (when (string= (file-name-extension buffer-file-name) "cpp")
+        (my/c++-mode-indent-init))
 
-        (when (string= (file-name-extension buffer-file-name) "h")
-          (my/c++-mode-indent-init)))))
+      (when (string= (file-name-extension buffer-file-name) "h")
+        (my/c++-mode-indent-init)))))
 #+end_src
 
 ** Some LSP configuration
@@ -713,7 +713,7 @@ Format =c/c++= code using the command line tool ~clang-format~
    clang-format-buffer)
 
   :config
-  (setq clang-format-style-option "llvm"))
+  (setq clang-format-style-option "google"))
 #+end_src
 
 ** clang-format-plus
