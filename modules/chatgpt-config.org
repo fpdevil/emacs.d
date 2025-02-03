@@ -32,7 +32,7 @@ Otherwise add it to the ~/.authinfo configuration file
 =chatgpt-shell= depends on shell-maker. This dependency is resolved without issues
 on MELPA but seems to run into issues if installed using =straight= or =quelpa=.
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 ;; installing the dependencies for chatgpt-shell
 (use-package shell-maker
   :defer 5
@@ -84,7 +84,7 @@ editor.
 
 ref: https://github.com/emacs-openai/chatgpt
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 ;; Use ChatGPT inside Emacs
 ;; install openai which is a dependency for chatgpt
 (use-package openai
