@@ -467,7 +467,7 @@ and enable whichever we want as per our choice.
   (catppuccin-theme :fetcher github :repo "catppuccin/emacs")
   :config
   ;; or 'latte, 'macchiato, or 'mocha
-  ;; (setq catppuccin-flavor 'frappe)
+  (setq catppuccin-flavor 'latte)
   ;; (catppuccin-reload)
   )
 #+end_src
@@ -508,6 +508,7 @@ Now set the required theme for Emacs using the custom function defined.
 ;; (aqua/toggle-theme 'doom-oceanic-next)
 ;; (load-theme 'doom-oksolar-light t)
 ;; (load-theme 'modus-vivendi-tritanopia t)
+;; (load-theme 'catppuccin :no-confirm)
 #+end_src
 
 * Switch themes using Hydra
