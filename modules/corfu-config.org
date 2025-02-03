@@ -38,9 +38,9 @@ We have the choice between =company-mode= and =corfu= when it comes for auto com
         corfu-on-exact-match 'quit           ;; Configure handling of exact matches
         corfu-scroll-margin 5                ;; Use scroll margin
         corfu-popup-delay 0.5
-        corfu-popupinfo-delay '(1.0 . 0.5))
+        corfu-popupinfo-delay '(0.5 . 0.2))  ;; Update popupinfo after num. seconds automatically
 
-  ;; Optional customizations
+  ;; Optional customisation's
   ;; :custom
   ;; (corfu-separator ?\s)          ;; Orderless field separator
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
@@ -60,16 +60,27 @@ We have the choice between =company-mode= and =corfu= when it comes for auto com
          (emacs-lisp-mode . corfu-mode)
          (ielm-mode       . corfu-mode)
          (eshell-mode     . corfu-mode))
+
   :init
   (corfu-popupinfo-mode)
   (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+  (add-hook 'eshell-mode-hook #'crafted-completion-corfu-eshell)
 
+  :preface
   (defun corfu-enable-always-in-minibuffer ()
     "Enable Corfu in the minibuffer if Vertico/Mct are not active."
     (unless (or (bound-and-true-p mct--active) ; Useful if I ever use MCT
                 (bound-and-true-p vertico--input))
       (setq-local corfu-auto nil)       ; Ensure auto completion is disabled
-      (corfu-mode 1))))
+      (corfu-mode 1)))
+
+  ;; No auto-completion or completion-on-quit in eshell
+  (defun crafted-completion-corfu-eshell ()
+    "Special settings for when using corfu with eshell."
+    (setq-local corfu-quit-at-boundary t
+                corfu-quit-no-match t
+                corfu-auto nil)
+    (corfu-mode)))
 #+end_src
 
 * Capf For Org
@@ -105,6 +116,7 @@ by completion-at-point are so called completion-at-point-functions (Capfs).
   (:fetcher github :repo "minad/cape")
 
   :init
+  ;; add useful defaults completion sources from cape
   (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
@@ -114,6 +126,14 @@ by completion-at-point are so called completion-at-point-functions (Capfs).
 
   :config
   (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
+
+  ;; silence the pcomplete capf, no errors or messages!
+  ;; important for corfu
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
+
+  ;; ensure that pcomplete does not write to the buffer
+  ;; and behaves as a pure `completion-at-point-function'.
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
 
   :preface
   (defun my/eglot-capf ()
