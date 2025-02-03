@@ -25,6 +25,8 @@
   - [[#unclutter-the-mode-line][Unclutter the Mode line]]
   - [[#cua-mode-settings][CUA Mode settings]]
   - [[#window-and-frame-settings][Window and Frame settings]]
+  - [[#scrolling-settings][Scrolling settings]]
+    - [[#ultra-scroll-scroll-emacs-like-lightning][ultra-scroll: scroll emacs like lightning]]
   - [[#cursor-settings][Cursor settings]]
   - [[#formatting-and-indentation-settings][Formatting and Indentation settings]]
   - [[#word-wrapping-and-text-auto-fill][Word wrapping and Text auto fill]]
@@ -48,6 +50,9 @@
   - [[#request][request]]
   - [[#transient][transient]]
   - [[#tramp][tramp]]
+  - [[#additional-custom-settings][Additional custom settings]]
+- [[#profiling][Profiling]]
+  - [[#final-report][Final report]]
 
 * Emacs custom configurations
 This contains all custom functions and configurations along with certain
@@ -245,11 +250,13 @@ is opened
 #+begin_src emacs-lisp :lexical no
 ;; saveplace remembers your location in a file when saving files
 (use-package saveplace
+  :diminish
   :hook (after-init . save-place-mode)
   :config
   (setq save-place-file (expand-file-name "saveplace" aqua-savefile-dir))
   ;; activate it for all the buffers
-  (setq-default save-place t))
+  (setq-default save-place t)
+  :demand t)
 
 ;; remember last editing position
 (use-package savehist
@@ -271,6 +278,7 @@ Keep a list of the most recently opened files for quick access.
 #+begin_src emacs-lisp :lexical no
 ;; keeping track of the recently opened file list
 (use-package recentf
+  :after saveplace
   :config
   (setq recentf-save-file (expand-file-name "recentf" aqua-savefile-dir)
         recentf-max-saved-items 500
@@ -467,6 +475,8 @@ display a file or a buffer name in case if the buffer is not visiting a file.
 ;;   managers, as it might leave unseemly gaps.
 (setq frame-resize-pixelwise t)
 
+(setq resize-mini-windows 'grow-only)
+
 ;; ^ Do not resize windows pixelwise, which may cause crashes in some cases
 ;;   while resizing too many windows at once or rapidly.
 (setq window-resize-pixelwise nil)
@@ -480,7 +490,80 @@ display a file or a buffer name in case if the buffer is not visiting a file.
 ;; ^ Favour for vertical splits over horizontal ones
 (setq split-width-threshold 160
       split-height-threshold nil)
+
+;; ^ Ensure window-start is never invisible.
+;; This enhances user experience when folding/unfolding code
+;; (outline, org-mode, outline-minor-mode...)
+(setq-default make-window-start-visible t)
 #+end_src
+
+** Scrolling settings
+Settings related to scrolling.
+
+#+begin_src emacs-lisp :tangle yes
+;;; Scrolling
+;; Enables faster scrolling through unfontified regions. This may result in
+;; brief periods of inaccurate syntax highlighting immediately after scrolling,
+;; which should quickly self-correct.
+(setq fast-but-imprecise-scrolling t)
+
+;; Move point to top/bottom of buffer before signaling a scrolling error.
+(setq scroll-error-top-bottom t)
+
+;; Keeps screen position if the scroll command moved it vertically out of the
+;; window.
+(setq scroll-preserve-screen-position t)
+
+;; Emacs spends excessive time recentering the screen when the cursor moves more
+;; than N lines past the window edges (where N is the value of
+;; `scroll-conservatively`). This can be particularly slow in larger files
+;; during extensive scrolling. If `scroll-conservatively` is set above 100, the
+;; window is never automatically recentered. The default value of 0 triggers
+;; recentering too aggressively. Setting it to 10 reduces excessive recentering
+;; and only recenters the window when scrolling significantly off-screen.
+;; (setq scroll-conservatively 10)
+(setq scroll-conservatively 1000)
+
+;; Enables smooth scrolling by making Emacs scroll the window by 1 line whenever
+;; the cursor moves off the visible screen.
+(setq scroll-step 10)
+
+;; Reduce cursor lag by :
+;; 1. Prevent automatic adjustments to `window-vscroll' for long lines.
+;; 2. Resolve the issue of random half-screen jumps during scrolling.
+(setq auto-window-vscroll nil)
+
+;; Number of lines of margin at the top and bottom of a window.
+(setq scroll-margin 0)
+
+;; How far to scroll windows UP or DOWN
+(setq scroll-up-aggressively 0.0
+      scroll-down-aggressively 0.0)
+
+;; Horizontal scrolling
+(setq hscroll-margin 2
+      hscroll-step 1)
+
+;; mouse scroll
+(setq       mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
+            mouse-wheel-scroll-amount-horizontal 2)
+#+end_src
+
+
+*** ultra-scroll: scroll emacs like lightning
+
+#+begin_src emacs-lisp :lexical no
+(use-package ultra-scroll
+  ;; if you git clone'd instead of package-vc-install
+  :straight '(ultra-scroll :host github :repo "jdtsmith/ultra-scroll")
+  :ensure t
+  :init
+  (setq scroll-conservatively 101 ; this is important!
+        scroll-margin 0)
+  :config
+  (ultra-scroll-mode 1))
+#+end_src
+
 
 ** Cursor settings
 Display the cursor by changing colour and shape as per the buffer state.
@@ -790,27 +873,35 @@ Improve =eshell= prompt and assign aliases, also setup some custom helper
 functions for easier use.
 
 #+begin_src emacs-lisp :lexical no
-;; set a prompt
-(setq eshell-prompt-function
-      (lambda nil
-        (concat
-         (if (string= (eshell/pwd) (getenv "HOME"))
-             (propertize "~" 'face `(:foreground "#2255bb"))
-           (replace-regexp-in-string
-            (getenv "HOME")
-            (propertize "~" 'face `(:foreground "#2255bb"))
-            (propertize (eshell/pwd) 'face `(:foreground "#2255bf"))))
-         (if (= (user-uid) 0)
-             (propertize " α " 'face `(:foreground "#aa0000"))
-           (propertize " λ " 'face `(:foreground "#68228b"))))))
-(setq eshell-prompt-regexp "^[^αλ\n]*[αλ] ")
+(use-package eshell
+  :commands (eshell eshell-command)
+  :config
+  ;; set a prompt
+  (setq eshell-prompt-function
+        (lambda nil
+          (concat
+           (if (string= (eshell/pwd) (getenv "HOME"))
+               (propertize "~" 'face `(:foreground "#2255bb"))
+             (replace-regexp-in-string
+              (getenv "HOME")
+              (propertize "~" 'face `(:foreground "#2255bb"))
+              (propertize (eshell/pwd) 'face `(:foreground "#2255bf"))))
+           (if (= (user-uid) 0)
+               (propertize " α " 'face `(:foreground "#aa0000"))
+             (propertize " λ " 'face `(:foreground "#68228b"))))))
+  (setq eshell-prompt-regexp "^[^αλ\n]*[αλ] ")
 
-;; do not highlight prompt
-(setq eshell-highlight-prompt nil)
+  ;; do not highlight prompt
+  (setq eshell-highlight-prompt nil)
 
-;; disable global highlight
-(add-hook 'eshell-mode-hook
-          (lambda () (global-hl-line-mode 0)))
+  ;; disable global highlight
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (global-hl-line-mode 0)
+              (setq eshell-path-env (concat "/usr/local/bin:" eshell-path-env))))
+
+  :ensure nil
+  :demand t)
 #+end_src
 
 *** Syntax highlighting for Eshell
@@ -929,6 +1020,7 @@ Similarly,   the  ~transient-history-file~   stores  history   of  transients   
 #+begin_src emacs-lisp :lexical no
 ;; customise caching locations of files for transient library
 (use-package transient
+  :demand t
   :config
   (setq transient-levels-file (expand-file-name "transient/levels.el" user-cache-directory)
         transient-history-file (expand-file-name "transient/history.el" user-cache-directory)))
@@ -945,4 +1037,29 @@ Emacs.   It  maintains   the  connection   history  of   Tramp  connections   to
 (use-package tramp
   :config
   (setq tramp-persistency-file-name (expand-file-name "tramp" user-cache-directory)))
+#+end_src
+
+** Additional custom settings
+Some additional custom settings which can be housed here.
+
+#+begin_src emacs-lisp :lexical no
+;; Remove duplicates from the kill ring to reduce clutter
+(setq kill-do-not-save-duplicates t)
+
+;; Ensures that empty lines within the commented region are also commented out.
+;; This prevents unintended visual gaps and maintains a consistent appearance,
+;; ensuring that comments apply uniformly to all lines, including those that are
+;; otherwise empty.
+(setq comment-empty-lines t)
+
+;; Eliminate delay before highlighting search matches
+(setq lazy-highlight-initial-delay 0)
+#+end_src
+
+
+* Profiling
+
+** Final report
+#+begin_src emacs-lisp
+(aqua/report-time "addons-config")
 #+end_src
