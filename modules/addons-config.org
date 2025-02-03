@@ -65,6 +65,7 @@
   - [[#highlight-defined][highlight-defined]]
 - [[#colour-identifiers-mode][Colour identifiers mode]]
 - [[#mixed-pitch][Mixed pitch]]
+  - [[#custom-settings][Custom settings]]
 - [[#profiling][Profiling]]
   - [[#final-report][Final report]]
 
@@ -98,7 +99,7 @@ global-visual-line-mode.
 ;; leave some padding of text in windows
 (use-package visual-fill-column
   :ensure t
-  :defer 3
+  :demand t
   :commands visual-fill-column-mode
   :hook (visual-line-mode . visual-fill-column-mode)
   :custom ((visual-fill-column-center-text             t)
@@ -146,7 +147,7 @@ A simpler package for restarting *Emacs* from within *Emacs*
 #+begin_src emacs-lisp
 ;; restart Emacs for within Emacs
 (use-package restart-emacs
-  :defer 3)
+  :demand t)
 #+end_src
 
 ** Comment in a smart way
@@ -154,7 +155,7 @@ The package =smart-comment= provides a smarter way for commenting in Emacs.
 #+begin_src emacs-lisp
 ;; smart commenting with M-;
 (use-package smart-comment
-  :defer 3
+  :demand t
   :bind ("M-;" . smart-comment))
 #+end_src
 
@@ -348,7 +349,7 @@ and better not to have the colour names to be highlighted (x-colors).
 
 ;; ielm settings
 (use-package ielm
-  :defer 3
+  :demand t
   :config
   (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode)
   (add-to-list 'display-buffer-alist
@@ -375,7 +376,7 @@ This is a minor mode to increase selected region by semantic units.
 ;; An Emacs extension to increase selected region by semantic units.
 (use-package expand-region
   :ensure t
-  :defer 3
+  :demand t
   :config (setq er--show-expansion-message t)
   :bind ("C-=" . er/expand-region))
 #+end_src
@@ -393,7 +394,7 @@ hard tabs and mixed indentation, and it behaves well in large buffers.
 
 #+begin_src emacs-lisp
 (use-package highlight-indent-guides
-  :defer 3
+  :demand t
   :diminish
   :hook
   ((prog-mode yaml-mode) . highlight-indent-guides-mode)
@@ -417,7 +418,7 @@ The available keybindings are:
 - C-c C-e	“Export” diagram and show online on websequencediagrams.com
   #+begin_src emacs-lisp
 (use-package wsd-mode
-  :defer 5
+  :demand t
   :config
   (add-hook 'wsd-mode-hook 'company-mode))
   #+end_src
@@ -428,6 +429,7 @@ Drag lines, words, region, etc... around
 ;; Drag stuff (lines, words, region, etc...) around
 (use-package drag-stuff
   :diminish
+  :demand t
   :commands drag-stuff-define-keys
   :hook (after-init . drag-stuff-global-mode)
   :config
@@ -439,7 +441,7 @@ Drag lines, words, region, etc... around
 #+begin_src emacs-lisp
 ;; csv file handling
 (use-package csv-mode
-  :defer 3
+  :demand t
   :mode ("\\.[Cc][Ss][Vv]\\'" . csv-mode)
   :config (setq csv-separators '("," ";" "|" " "))
   :hook (csv-mode . csv-align-mode))
@@ -450,7 +452,7 @@ The ~wc-mode~ allows counting characters and words, both on demand and
 continuously. It also allows setting up a word/character goal.
 #+begin_src emacs-lisp
 (use-package wc-mode
-  :defer 3
+  :demand t
   :hook
   (org-journal-mode . wc-mode))
 #+end_src
@@ -465,7 +467,7 @@ buffer, but we can just leave it to run the function as needed.
 ;; Emacs library minor mode for intelligently calling whitespace-cleanup
 ;;
 (use-package whitespace-cleanup-mode
-  :defer 5)
+  :demand t)
 #+end_src
 
 ** Code Indentation with aggressive indentation
@@ -476,18 +478,20 @@ available at ~https://github.com/Malabarba/aggressive-indent-mode~.
   ;; aggressive-indent-mode is a minor mode that keeps your code always indented.
   ;; It reindents after every change, making it more reliable than electric-indent-mode.
   (use-package aggressive-indent
-    :defer 5
+    :demand t
     :quelpa
     (:fetcher github :repo "https://github.com/Malabarba/aggressive-indent-mode")
     :commands (aggressive-indent-mode)
     :config
       (dolist (hook
-	     '(;; python-mode-hook
-	       ;; nxml-mode-hook
-	       emacs-lisp-mode-hook
-	       lisp-mode-hook
-           css-mode-hook
-	       c-mode-common-hook))
+	     '(
+            ;; python-mode-hook
+	        ;; nxml-mode-hook
+	        ;; c-mode-common-hook
+	        emacs-lisp-mode-hook
+	        lisp-mode-hook
+            css-mode-hook
+           ))
 	(add-hook hook #'aggressive-indent-mode)))
 #+end_src
 
@@ -532,7 +536,7 @@ Or if you want to try out some package from the web, just paste in the URL
 ;; M-x try RET <package-name>
 ;; EXAMPLE: M-x try RET multiple-cursors RET
 (use-package try
-  :defer 5
+  :demand t
   :commands try)
 #+end_src
 
@@ -543,6 +547,7 @@ Multiple cursors for Emacs is a pretty crazy functionality.
 ;; select lines and press C-c m c to enter into the multiple cursors
 ;; To get out of multiple-cursors-mode, press <return> or C-g.
 (use-package multiple-cursors
+  :ensure t
   :demand t
   ;; key bindings
   ;; :bind (("C-c m c" . mc/edit-lines)
@@ -553,29 +558,29 @@ Multiple cursors for Emacs is a pretty crazy functionality.
   ;; define a hydra
   :init
   (defhydra hydra-mc (:color blue :hint nil)
-                          "
+    "
    Up^^             Down^^          Miscellaneous    % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
   ------------------------------------------------------------------
    [_p_]   Next     [_n_]   Next    [_l_] Edit lines [_0_] Insert numbers
    [_P_]   Skip     [_N_]   Skip    [_a_] Mark all   [_A_] Insert letters
    [_M-p_] Unmark   [_M-n_] Unmark  [_s_] Search
    [Click] Cursor at point       [_q_] Quit"
-                          ("l" mc/edit-lines :exit t)
-                          ("a" mc/mark-all-like-this :exit t)
-                          ("n" mc/mark-next-like-this :exit nil)
-                          ("N" mc/skip-to-next-like-this :exit nil)
-                          ("M-n" mc/unmark-next-like-this :exit nil)
-                          ("p" mc/mark-previous-like-this :exit nil)
-                          ("P" mc/skip-to-previous-like-this :exit nil)
-                          ("M-p" mc/unmark-previous-like-this :exit nil)
-                          ("s" mc/mark-all-in-region-regexp :exit t)
-                          ("0" mc/insert-numbers :exit t)
-                          ("A" mc/insert-letters :exit t)
-                          ("<mouse-1>" mc/add-cursor-on-click)
-                          ;; Help with click recognition in this hydra
-                          ("<down-mouse-1>" ignore)
-                          ("<drag-mouse-1>" ignore)
-                          ("q" nil)))
+    ("l" mc/edit-lines :exit t)
+    ("a" mc/mark-all-like-this :exit t)
+    ("n" mc/mark-next-like-this :exit nil)
+    ("N" mc/skip-to-next-like-this :exit nil)
+    ("M-n" mc/unmark-next-like-this :exit nil)
+    ("p" mc/mark-previous-like-this :exit nil)
+    ("P" mc/skip-to-previous-like-this :exit nil)
+    ("M-p" mc/unmark-previous-like-this :exit nil)
+    ("s" mc/mark-all-in-region-regexp :exit t)
+    ("0" mc/insert-numbers :exit t)
+    ("A" mc/insert-letters :exit t)
+    ("<mouse-1>" mc/add-cursor-on-click)
+    ;; Help with click recognition in this hydra
+    ("<down-mouse-1>" ignore)
+    ("<drag-mouse-1>" ignore)
+    ("q" nil)))
 #+end_src
 
 ** Vi tilde fringe
@@ -585,6 +590,7 @@ do anything except showing a ~~~ for empty lines similar to =vi=.
 ;; Display tildes on empty lines in the Emacs fringe a la Vi.
 (use-package vi-tilde-fringe
   :diminish vi-tilde-fringe-mode
+  :demand t
   :init
   (global-vi-tilde-fringe-mode))
 #+end_src
@@ -606,7 +612,7 @@ Highlight Lisp quotes and quoted symbols
 #+begin_src emacs-lisp :lexical no
 ;; Highlight Lisp quotes and quoted symbols
 (use-package highlight-quoted
-  :defer 3
+  :demand t
   :config (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode))
 #+end_src
 
@@ -689,6 +695,7 @@ that to work as we want it to: C-h o to describe the symbol at point.
   ;; replace the default Emacs help keybindings,
   (global-set-key (kbd "C-h o") #'my/describe-symbol)
   (global-set-key (kbd "C-h k") #'helpful-key)
+  (global-set-key (kbd "C-h u") #'helpful-update)
   (global-set-key (kbd "C-h x") #'helpful-command))
 #+end_src
 
@@ -730,6 +737,7 @@ updated something in a file.
 #+begin_src emacs-lisp
 ;; Uptime tracking system for Emacs.
 (use-package goto-chg
+  :demand t
   :quelpa
   (:fetcher github :repo "https://github.com/emacs-evil/goto-chg"))
 #+end_src
@@ -790,6 +798,7 @@ tabs and ribbons. It also provides replacements for a few built-in elements.
 #+begin_src emacs-lisp :lexical no
 ;; moody - Tabs and ribbons for the mode line
 (use-package moody
+  :demand t
   :straight
   (moody type git :host github :repo "tarsius/moody")
   :config
@@ -807,6 +816,7 @@ information about modes.
 #+begin_src emacs-lisp :lexical no
 ;; minions mode for menu and mode line
 (use-package minions
+  :demand t
   :straight
   (minions :type git :host github :repo "tarsius/minions")
   :ensure t
@@ -880,7 +890,7 @@ Available from https://github.com/alphapapa/plz.el
 ;; Install `plz' HTTP library
 (use-package plz
   ;;:ensure nil
-  :defer 5
+  :demand t
   :quelpa (plz
             :fetcher github
             :repo "alphapapa/plz.el"))
@@ -903,6 +913,7 @@ make it highlight all the defined names as long as we're in Lisp mode, whence in
 ;; Highlight known symbols in emacs lisp
 ;; Emacs Lisp specific
 (use-package highlight-defined
+  :demand t
   :quelpa
   (:fetcher github :repo "Fanael/highlight-defined")
   :hook
@@ -917,10 +928,9 @@ identifier uniquely based on its name.
 ;; Color Identifiers is a minor mode for Emacs that highlights
 ;; each source code identifier uniquely based on its name.
 (use-package color-identifiers-mode
-  :defer 5
+  :demand t
   :quelpa (:fetcher github :repo "ankurdave/color-identifiers-mode")
-  :init
-  ;; (add-hook 'after-init-hook 'global-color-identifiers-mode)
+  ;;:init (add-hook 'after-init-hook 'global-color-identifiers-mode)
   :config
   (defun myfunc-color-identifiers-mode-hook ()
     "To make the variables stand out, you can turn off highlighting
@@ -960,7 +970,7 @@ Mixed pitch is a minor mode that enables mixing fixed-pitch (also known as fixed
 ;; It is a better version of the variable-pitch mode. It keeps certain faces
 ;; (defined in mixed-pitch-fixed-pitch-faces) fixed-pitch.
 (use-package mixed-pitch
-  :defer 5
+  :demand t
 
   :quelpa (mixed-pitch :fetcher github :repo "emacsmirror/mixed-pitch")
 
@@ -987,6 +997,20 @@ Mixed pitch is a minor mode that enables mixing fixed-pitch (also known as fixed
     (if mixed-pitch-mode
         (setq line-spacing 0.12)
       (setq line-spacing 0.0))))
+#+end_src
+
+** Custom settings
+Custom settings that can be housed under addons.
+#+begin_src emacs-lisp :lexical no
+;;; Mode line
+
+;; Setting `display-time-default-load-average' to nil makes Emacs omit the load
+;; average information from the mode line.
+(setq display-time-default-load-average nil)
+
+;; Display the current line and column numbers in the mode line
+(setq line-number-mode t)
+(setq column-number-mode t)
 #+end_src
 
 * Profiling
