@@ -72,4 +72,7 @@ ONWjdChPeQiDKrHdQDLlY4VWubfwVMCsG9IRVrW5t3A=
 # truncate the base64 characters
 λ openssl rand -base64 32 | tr -d '/|=|+|-'
 hQERlt87wWoW5U1j9vtzCrWX86kYkmWCjyZ754Eig
+
+# only generate a string of specific length (24 characters here)
+openssl rand -base64 36 | tr -d '/|+|-|=' | cut -c 1-24
 ```
