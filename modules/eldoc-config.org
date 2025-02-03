@@ -5,10 +5,10 @@
   :defer t
   :diminish eldoc-mode
   :init
+  (eldoc-mode 1)
   (setq eldoc-idle-delay 0.1
 	    eldoc-echo-area-use-multiline-p t        ; Prevent eldoc from resizing
 	    eldoc-echo-area-prefer-doc-buffer t)
-  (eldoc-mode 1)
   :config
   (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
   (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
