@@ -134,8 +134,8 @@ The code is meant to go into the [[file:early-init.el][early-init.el]] file, whi
 (push '(vertical-scroll-bars) default-frame-alist)
 ;; And set these to nil so users don't have to toggle the modes twice to
 ;; reactivate them.
-(scroll-bar-mode nil)                  ; ^Turn off scrollbars
-(tool-bar-mode   nil)                  ; ^Turn off toolbar
+(scroll-bar-mode -1)                  ; ^Turn off scrollbars
+(tool-bar-mode   -1)                  ; ^Turn off toolbar
 
 
 ;; ^ Compilation Warnings Handling
@@ -259,6 +259,7 @@ control. This enables us to keep specific config local to each machine
 ** Optional settings
 Optionally enable the =debug-on-error= value.
 #+begin_src emacs-lisp :eval no
+;;; Features, warnings, and errors
 ;; enable debug setting value to t for troubleshooting any startup issues
 (setq debug-on-error nil)
 #+end_src
@@ -539,10 +540,11 @@ Set additional configuration options for =use-package=:
 
 - The extension =use-package-ensure-system-package= allows to ensure that the required system binaries
   exist alongside the mentioned package declarations.
-
-#+begin_src emacs-lisp
+  This extension now resides within the official use-package distribution.
+#+begin_src emacs-lisp :tangle no
+;; Deprecated: This extension now resides within the official use-package distribution.
 (use-package use-package-ensure-system-package
-  :defer 5
+  :defer 1
   :ensure t)
 #+end_src
 
@@ -789,14 +791,17 @@ Now switch between the fonts
     (exec-path-from-shell-initialize))
   :config
   (dolist (var
-           '("SSH_AUTH_SOCK"
-             "SSH_AGENT_PID"
-             "GPG_AGENT_INFO"
+           '("PATH"
+             "MANPATH"
              "LANG"
              "LC_CTYPE"
-             "NIX_SSL_CERT_FILE"
-             "NIX_PATH"))
-    (add-to-list 'exec-path-from-shell-variables var)))
+             "GOROOT"
+             "GOPATH"
+             "SSH_AUTH_SOCK"
+             "SSH_AGENT_PID"))
+    (add-to-list 'exec-path-from-shell-variables var))
+  :ensure t
+  :demand t)
 
 ;; set the new M1 Mac bin directory
 ;; (set exec-path (append "/opt/homebrew/bin" exec-path))
@@ -817,15 +822,18 @@ Now switch between the fonts
 ** For certain modes enable line numbers
 Foe the modes in the list, the line numbers are enabled by default
 #+begin_src  emacs-lisp
-  ;; Enable line numbers for some modes
-  (dolist (mode '(text-mode-hook
-		  prog-mode-hook
-		  conf-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 1))))
+;; Enable line numbers for some modes
+(dolist (mode '(text-mode-hook
+		        prog-mode-hook
+		        conf-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-  ;; we may override few modes that derive from the above
-  (dolist (mode '(org-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+(setq-default display-line-numbers-width 3)
+(setq-default display-line-numbers-widen t)
+
+;; we may override few modes that derive from the above
+(dolist (mode '(org-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 #+end_src
 
 ** Loading of the Custom configurations and modules
