@@ -22,6 +22,7 @@
   - [[#auto-fill-mode][Auto fill mode]]
   - [[#writeroom-mode][Writeroom Mode]]
   - [[#olivetti-mode][Olivetti mode]]
+  - [[#custom-faces-for-markdown][Custom faces for markdown]]
 - [[#markdown-mode][Markdown mode]]
   - [[#generate-toc-for-markdown-file][Generate TOC for markdown file]]
   - [[#imenu-setup-for-markdown][iMenu setup for Markdown]]
@@ -115,40 +116,72 @@ The cursor becomes a blinking bar, per `prot/cursor-type-mode'."
   :bind ("C-c w o" . prot/olivetti-mode))
 #+end_src
 
+** Custom faces for markdown
+Customise the headings of markdown document similar to org mode.
+#+begin_src emacs-lisp :lexical no
+;; customise the markdown document faces
+(with-eval-after-load "markdown-mode"
+  (custom-set-faces
+   '(markdown-header-face-1
+     ((t (:inherit markdown-header-face :height 1.8 :foreground "#A3BE8C" :weight extra-bold))))
+   '(markdown-header-face-2
+     ((t (:inherit markdown-header-face :height 1.4 :foreground "#EBCB8B" :weight extra-bold))))
+   '(markdown-header-face-3
+     ((t (:inherit markdown-header-face :height 1.2 :foreground "#D08770" :weight extra-bold))))
+   '(markdown-header-face-4
+     ((t (:inherit markdown-header-face :height 1.15 :foreground "#BF616A" :weight extra-bold))))
+   '(markdown-header-face-5
+     ((t (:inherit markdown-header-face :height 1.11 :foreground "#b48ead" :weight extra-bold))))
+   '(markdown-header-face-6
+     ((t (:inherit markdown-header-face :height 1.06 :foreground "#5e81ac" :weight extra-bold)))))
+  )
+#+end_src
+
 * Markdown mode
 Markdown is an extremely useful tool; we will set up variable pitch and visual line mode. The
 binary =multimarkdown= has been installed using =homebrew= and the location of the same is specified for _markdown-command_.
 
 Detailed information for customisation is available at [[https://leanpub.com/markdown-mode/read][markdown-mode]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; enabling markdown Mode
 (use-package markdown-mode
-  :defer 3
+  :defer 1
 
   :quelpa
-  (:fetcher github :repo "jrblevin/markdown-mode")
+  (markdown-mode :fetcher github :repo "jrblevin/markdown-mode")
 
   :commands
-  (markdown-mode gfm-mode)
+  (markdown-mode
+   gfm-mode
+   markdown-view-mode
+   gfm-view-mode)
 
   :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.markdown"    . gfm-mode)
-         ("\\.mdwn"        . gfm-mode))
+         ("\\.md\\'"       . markdown-mode)
+         ("\\.markdown"    . markdown-mode)
+         ("\\.text"        . markdown-mode))
 
-  :hook
-  (gfm-mode      . visual-line-mode)
-  (markdown-mode . visual-line-mode)
-  (markdown-mode . variable-pitch-mode)
+  ;; :hook
+  ;; (gfm-mode      . visual-line-mode)
+  ;; (markdown-mode . visual-line-mode)
+  ;; (markdown-mode . variable-pitch-mode)
 
   :init
-  (setq markdown-enable-wiki-links t
+  ;; `multimarkdown' is necessary for `highlight.js' and `mermaid.js'
+  (when (executable-find "multimarkdown")
+    (setq markdown-command "multimarkdown --snippet"))
+  (setq markdown-header-scaling t
+        markdown-hide-urls t
+        markdown-marginalize-headers t
+        markdown-marginalize-headers-margin-width 4
+        markdown-enable-wiki-links t
         markdown-italic-underscore t
         markdown-asymmetric-header t
-        markdown-make-gfm-checkboxes-buttons t
-        markdown-gfm-uppercase-checkbox t
         markdown-fontify-code-blocks-natively t
 
+        markdown-gfm-uppercase-checkbox t
+        markdown-make-gfm-checkboxes-buttons t
         markdown-content-type "application/xhtml+xml"
         markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"
                              "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/github.min.css")
@@ -188,9 +221,21 @@ mermaid.initialize({
         markdown-gfm-additional-languages "Mermaid")
 
   :config
-  ;; `multimarkdown' is necessary for `highlight.js' and `mermaid.js'
-  (when (executable-find "multimarkdown")
-    (setq markdown-command "multimarkdown"))
+  (setq markdown-open-command "mark"
+        markdown-enable-wiki-links t
+        markdown-indent-on-enter 'indent-and-new-item
+        markdown-link-space-sub-char " "
+        markdown-unordered-list-item-prefix "*   "
+        markdown-footnote-location 'end
+        markdown-reference-location 'header
+        markdown-asymmetric-header t
+        markdown-nested-imenu-heading-index t
+        markdown-live-preview-delete-export 'delete-on-destroy
+        markdown-max-image-size '(640 . 480)
+        markdown-hr-strings
+        '("------------------------------------------------------------------------------"
+          "*** *** ***"
+          "--- --- ---"))
 
   ;; Support for `mermaid'
   (add-to-list 'markdown-code-lang-modes '("mermaid" . mermaid-mode))
@@ -209,6 +254,11 @@ mermaid.initialize({
           ("h6"     "^###### \\(.*\\)$" 1)
           ("fn"     "^\\[\\^\\(.*\\)\\]" 1)))
 
+  ;; Use visual-line-mode in gfm-mode
+  (defun my-gfm-mode-hook ()
+    (visual-line-mode 1))
+  (add-hook 'gfm-mode-hook 'my-gfm-mode-hook)
+
   :custom-face
   (markdown-header-face   ((t (:inherit font-lock-function-name-face :weight bold :family "variable-pitch"))))
   (markdown-header-face-1 ((t (:inherit markdown-header-face :foreground "violet" :height 1.8))))
@@ -218,12 +268,6 @@ mermaid.initialize({
   (markdown-list-face     ((t (:foreground "mediumpurple"))))
   (markdown-pre-face      ((t (:foreground "#bd98fe"))))
   (markdown-header-delimiter-face ((t (:foreground "mediumpurple")))))
-
-
-;; Use visual-line-mode in gfm-mode
-;; (defun my-gfm-mode-hook ()
-;;   (visual-line-mode 1))
-;; (add-hook 'gfm-mode-hook 'my-gfm-mode-hook)
 #+end_src
 
 ** Generate TOC for markdown file
@@ -231,15 +275,15 @@ mermaid.initialize({
 #+begin_src emacs-lisp
 ;; generate TOC for markdown file
 (use-package markdown-toc
-  :after (markdown-mode)
+  ;;:after (markdown)
   :quelpa
-  (:fetcher github :repo "ardumont/markdown-toc")
+  (markdown-toc :fetcher github :repo "ardumont/markdown-toc")
   :hook
   (markdown-mode . markdown-toc-mode)
   :init
   (setq markdown-toc-header-toc-start "<!-- markdown-toc start -->"
         markdown-toc-indentation-space markdown-list-indent-width
-        markdown-toc-header-toc-title "\n## Contents")
+        markdown-toc-header-toc-title "\n# Table Of Contents")
 
   ;; ISSUE https://github.com/ardumont/markdown-toc/issues/47
   (defun markdown-toc-refresh-before-save ()
@@ -268,24 +312,24 @@ Configuration of =imenu= for markdown
 ** Polymode
 [[https://polymode.github.io/][Polymode]] is a framework for multiple major modes (~MMM~) inside a single Emacs buffer. It is fast and has a simple but flexible object oriented design. Creating new polymodes normally takes a few lines of code. Using polymode, let’s add syntax coloring to Markdown code blocks similar to what we do with Org.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
 ;; Polymode
 (use-package poly-markdown
   :ensure t
-  :defer 3
   :quelpa (poly-markdown :fetcher "github" :repo "polymode/poly-markdown")
-  :mode (("\\.md\\'" . poly-markdown-mode)
+  ;;:pin melpa-stable
+  :mode (("\\.md\\'" . poly-markdown-mode))
   :config
-    (define-hostmode poly-markdown-hostmode :mode 'markdown-mode)
-    (define-auto-innermode poly-markdown-fenced-code-innermode
-                           :head-matcher (cons "^[ \t]*\\(```{?[[:alpha:]].*\n\\)" 1)
-                           :tail-matcher (cons "^[ \t]*\\(```\\)[ \t]*$" 1)
-                           :mode-matcher (cons "```[ \t]*{?\\(?:lang *= *\\)?\\([^ \t\n;=,}]+\\)" 1)
-                           :head-mode 'host
-                           :tail-mode 'host)
-    (define-polymode poly-markdown-mode
-                     :hostmode 'poly-markdown-hostmode
-                     :innermodes '(poly-markdown-fenced-code-innermode)))
+  (define-hostmode poly-markdown-hostmode :mode 'markdown-mode)
+  (define-auto-innermode poly-markdown-fenced-code-innermode
+                         :head-matcher (cons "^[ \t]*\\(```{?[[:alpha:]].*\n\\)" 1)
+                         :tail-matcher (cons "^[ \t]*\\(```\\)[ \t]*$" 1)
+                         :mode-matcher (cons "```[ \t]*{?\\(?:lang *= *\\)?\\([^ \t\n;=,}]+\\)" 1)
+                         :head-mode 'host
+                         :tail-mode 'host)
+  (define-polymode poly-markdown-mode
+                   :hostmode 'poly-markdown-hostmode
+                   :innermodes '(poly-markdown-fenced-code-innermode)))
 #+end_src
 
 * Get word definition at a point
