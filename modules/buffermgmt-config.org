@@ -276,9 +276,14 @@ When deleting or copying files, you can have dired default to acting recursively
 by setting:
 
 #+begin_src emacs-lisp :lexical no
-;; Recursive copying and deleting
-(setq dired-recursive-copies 'always)
-(setq dired-recursive-deletes 'always)
+;; Confirmations, Recursive copying and deleting
+(setq dired-free-space nil
+      dired-deletion-confirmer 'y-or-n-p
+      dired-filter-verbose nil
+      dired-clean-confirm-killing-deleted-buffers nil
+      dired-recursive-deletes 'top
+      dired-recursive-copies  'always
+      dired-create-destination-dirs 'ask)
 #+end_src
 
 Just like with ls, if you want an "@" appended to the end of file names if
