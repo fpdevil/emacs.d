@@ -17,7 +17,7 @@
 #+begin_src emacs-lisp
 (use-package company
   :ensure t
-  :defer 0.5
+  :demand t
   :delight company-mode
 
   :hook ((prog-mode . company-mode)
@@ -111,6 +111,7 @@
 #+begin_src emacs-lisp
   (use-package company-quickhelp
       :ensure t
+      :demand t
       :diminish
       :after company
       :init
