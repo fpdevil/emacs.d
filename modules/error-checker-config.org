@@ -27,6 +27,8 @@ using the appropriate **linter/compiler/syntax** checker(s).
 
   :ensure t
 
+  :demand t
+
   ;; :init
   ;; (add-hook 'after-init-hook #'global-flycheck-mode)
 
