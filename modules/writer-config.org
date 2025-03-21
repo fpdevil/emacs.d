@@ -282,8 +282,9 @@ mermaid.initialize({
   (markdown-mode . markdown-toc-mode)
   :init
   (setq markdown-toc-header-toc-start "<!-- markdown-toc start -->"
-        markdown-toc-indentation-space markdown-list-indent-width
-        markdown-toc-header-toc-title "\n# Table Of Contents")
+        markdown-toc-header-toc-end "<!-- markdown-toc end -->"
+        markdown-toc-header-toc-title "\n# Table Of Contents"
+        markdown-toc-indentation-space 4)
 
   ;; ISSUE https://github.com/ardumont/markdown-toc/issues/47
   (defun markdown-toc-refresh-before-save ()
