@@ -62,6 +62,9 @@ ac-comphist.dat
 cursory-latest-state
 cursory-latest-state.eld
 
+# ignore tree-sitter installed so files
+tree-sitter
+
 # exclude the ccls build file
 ccls
 
