@@ -121,10 +121,7 @@ An emacs minor mode for using =css= in =js= mode.
 #+begin_src emacs-lisp :lexical no
 ;; css-in-js
 (use-package css-in-js
-  :ensure t
-  :defer t
-  :quelpa
-  (css-in-js :fetcher github :repo "orzechowskid/css-in-js.el")
-  :init
+  :straight (css-in-js :type git :host github :repo "orzechowskid/css-in-js.el")
+  :config
   (css-in-js-mode t))
 #+end_src
