@@ -51,6 +51,37 @@ Now press ~C-u M-q~ to format the text to fill the width.
 We can instruct Emacs to automatically fill text as we write by enabling ~M-x
 auto-fill-mode~, but it is better to restrict to =text-mode=.
 
+* Regular Emacs Tips and Tricks
+** Playing with Macros
+We can record a set of actions that we may then apply to a selected region. As
+an example, consider transforming the below lines:
+
+#+begin_example
+One
+Two
+Three
+Four
+Five
+#+end_example
+
+In order to transform the above into below:
+#+begin_example
+- One
+- Two
+- Three
+- Four
+- Five
+#+end_example
+
++ Place cursor on very first line and start recording a new keyboard macro by
+  typing: =C-x (=.
++ Go to the beginning of the line with =C-a= and then insert a hyphen followed by
+  a space and then move down one line so that the cursor resides on second line.
++ Stop recording the macro with =C-x )=.
++ Now select the rest of lines from second line onwards and apply the newly
+  recorded macro to the selected region by pressing =C-x C-k r=.
+
+
 * Getting help
 
 help:org-format-latex-header
