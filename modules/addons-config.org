@@ -98,7 +98,6 @@ global-visual-line-mode.
 #+begin_src emacs-lisp
 ;; leave some padding of text in windows
 (use-package visual-fill-column
-  :ensure t
   :demand t
   :commands visual-fill-column-mode
   :hook (visual-line-mode . visual-fill-column-mode)
