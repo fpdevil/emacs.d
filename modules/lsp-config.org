@@ -68,6 +68,7 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
    (c-mode         . lsp-deferred)
    (c-or-c++-mode  . lsp-deferred)
    (python-mode    . lsp-deferred)
+   (terraform-mode . lsp-deferred)
    (lsp-mode       . efs/lsp-mode-setup))
 
   ;; :bind
@@ -77,6 +78,8 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
   ;;   ("<tab>" . company-indent-or-complete-common))
 
   :init (progn
+          (setq lsp-server-install-dir (expand-file-name "lsp" user-cache-directory)
+                lsp-session-file (expand-file-name ".lsp-session-v1" lsp-server-install-dir))
           ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
           (setq lsp-keymap-prefix "C-c l")
           (with-eval-after-load "lsp-go"
@@ -86,9 +89,7 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
                               :major-modes '(go-mode)
                               :remote? t
                               :priority '1
-                              :server-id 'lsp-go-remote)))
-
-          )
+                              :server-id 'lsp-go-remote))))
 
   :custom
   (setq lsp-completion-enable t
@@ -124,6 +125,7 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
 
         lsp-idle-delay 0.5
         lsp-enable-file-watchers nil)
+  (setq lsp-terraform-ls-enable-show-reference t)
 
   :config (progn
             (with-no-warnings
@@ -204,23 +206,23 @@ between symbols using ~M-., M-, and M-?~ keys.
                ([remap xref-find-references]  . lsp-ui-peek-find-references)))
 
   :custom ((lsp-ui-sideline-enable              t)
-           (lsp-ui-sideline-delay               0.05)
-           (lsp-ui-sideline-show-hover          nil)
-           (lsp-ui-sideline-ignore-duplicate    t)
-           (lsp-ui-sideline-show-diagnostics    t)
-           (lsp-ui-sideline-show-code-actions   nil)
-           (lsp-ui-sideline-update-mode         'point)
-           (lsp-ui-peek-enable                  t)
-           (lsp-ui-peek-always-show             t)
-           (lsp-ui-doc-enable                   t)
-           (lsp-ui-doc-header                   t)
-           (lsp-ui-doc-show-with-cursor         t)
-           (lsp-ui-doc-include-signature        t)
-           (lsp-ui-doc-use-childframe           nil)
-           (lsp-ui-doc-position                 'at-point)
-           (lsp-ui-doc-delay                    0.3 "higher than eldoc delay")
-           (lsp-ui-doc-max-width                100)
-           (lsp-ui-doc-max-height               30)
+           ;; (lsp-ui-sideline-delay               0.05)
+           ;; (lsp-ui-sideline-show-hover          nil)
+           ;; (lsp-ui-sideline-ignore-duplicate    t)
+           ;; (lsp-ui-sideline-show-diagnostics    t)
+           ;; (lsp-ui-sideline-show-code-actions   nil)
+           ;; (lsp-ui-sideline-update-mode         'point)
+           ;; (lsp-ui-peek-enable                  t)
+           ;; (lsp-ui-peek-always-show             t)
+           ;; (lsp-ui-doc-enable                   t)
+           ;; (lsp-ui-doc-header                   t)
+           ;; (lsp-ui-doc-show-with-cursor         t)
+           ;; (lsp-ui-doc-include-signature        t)
+           ;; (lsp-ui-doc-use-childframe           nil)
+           ;; (lsp-ui-doc-position                 'at-point)
+           ;; (lsp-ui-doc-delay                    0.3 "higher than eldoc delay")
+           ;; (lsp-ui-doc-max-width                100)
+           ;; (lsp-ui-doc-max-height               30)
            (lsp-ui-doc-border                   (face-foreground 'default))
            (lsp-ui-sideline-code-actions-prefix ""))
 
