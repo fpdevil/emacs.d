@@ -253,7 +253,7 @@ is opened
   :diminish
   :hook (after-init . save-place-mode)
   :config
-  (setq save-place-file (expand-file-name "saveplace" aqua-savefile-dir))
+  (setq save-place-file (expand-file-name "places" aqua-savefile-dir))
   ;; activate it for all the buffers
   (setq-default save-place t)
   :demand t)
@@ -500,7 +500,7 @@ display a file or a buffer name in case if the buffer is not visiting a file.
 ** Scrolling settings
 Settings related to scrolling.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
 ;;; Scrolling
 ;; Enables faster scrolling through unfontified regions. This may result in
 ;; brief periods of inaccurate syntax highlighting immediately after scrolling,
@@ -749,22 +749,35 @@ the same while saving the buffer.
 Move text lines UP or DOWN easily.
 
 #+begin_src emacs-lisp
-  ;; Moving lines up and down are very common editing operations
-  ;; to move line up
-  (defun aqua/move-line-up ()
-    (interactive)
-    (transpose-lines 1)
-    (previous-line 2))
-  (global-set-key [(meta shift up)] 'aqua/move-line-up)
+;; Moving lines up and down are very common editing operations
+;; to move line up
+(defun aqua/move-line-up ()
+  (interactive)
+  (transpose-lines 1)
+  (previous-line 2))
 
-  ;; to move line down
-  (defun aqua/move-line-down ()
-    (interactive)
-    (next-line 1)
-    (transpose-lines 1)
-    (previous-line 1))
+;; to move line down
+(defun aqua/move-line-down ()
+  (interactive)
+  (next-line 1)
+  (transpose-lines 1)
+  (previous-line 1))
 
-  (global-set-key [(meta shift down)] 'aqua/move-line-down)
+;; (global-set-key [(meta shift up)] 'aqua/move-line-up)
+;; (global-set-key [(meta shift down)] 'aqua/move-line-down)
+
+
+;;; Move lines
+(advice-add 'move-text-up
+            :after 'indent-region-advice)
+(advice-add 'move-text-down
+            :after 'indent-region-advice)
+
+(use-package move-text
+  :no-require t
+  :bind (("M-p" . move-text-up)
+         ("M-n" . move-text-down)))
+;;;
 #+end_src
 
 ** Unfill region
