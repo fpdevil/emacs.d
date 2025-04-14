@@ -28,6 +28,7 @@
 * Emacs for Typescript support                                          :TOC:
 - [[#typescript-configuration][TypeScript configuration]]
   - [[#tree-sitter][Tree Sitter]]
+  - [[#extend-emacs-jsxtsx-built-in-support][Extend Emacs JSX/TSX built-in support.]]
   - [[#typescript-treesitter-integrated-configuration][TypeScript treesitter integrated configuration]]
   - [[#tide][Tide]]
 
@@ -82,6 +83,24 @@ will select its =tsx= parser.
   (flycheck-disable-checker 'typescript-tslint)
   (lsp-clients-typescript-tsserver "/opt/homebrew/bin/typescript-language-server")
   (lsp-clients-typescript-server-args '("--stdio")))
+#+end_src
+
+** Extend Emacs JSX/TSX built-in support.
+
+~jtsx~ is an Emacs package for editing ~JSX~ or ~TSX~ files. It provides ~jtsx-jsx-mode~
+and ~jtsx-tsx-mode~ major modes implemented respectively on top of ~js-ts-mode~ and
+~tsx-ts-mode~, benefiting thus from the new built-in Tree-sitter feature.
+
+#+begin_src emacs-lisp :lexical no
+;; Extends Emacs JSX/TSX built-in support
+(use-package jtsx
+  :mode (("\\.tsx?\\'" . jtsx-jsx-mode)
+         ("\\.ts\\'" . jtsx-typescript-mode))
+  :commands jtsx-install-treesit-language
+  :hook ((jtsx-tsx-mode . hs-minor-mode)
+         ;; (jtsx-jsx-mode . hs-minor-mode)
+         (jtsx-typescript-mode . hs-minor-mode)))
+;;
 #+end_src
 
 ** TypeScript treesitter integrated configuration
