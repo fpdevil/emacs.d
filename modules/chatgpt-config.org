@@ -49,6 +49,7 @@ on MELPA but seems to run into issues if installed using =straight= or =quelpa=.
   :config
   (setq chatgpt-shell-openai-key
         (auth-source-pick-first-password :host "api.openai.com")
+	chatgpt-shell-root-path (expand-file-name "chatgpt/" user-cache-directory)
         chatgpt-shell-history-path (expand-file-name "chatgpt/" user-cache-directory)))
 #+end_src
 
