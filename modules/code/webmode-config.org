@@ -94,7 +94,7 @@ Now for the actual ~web-mode~ package installation, setup and configuration:
 
   :mode
   (("\\.ts[x]?\\'" . web-mode)
-   ("\\.jsx?$"     . web-mode)
+   ;;("\\.jsx?$"   . web-mode)
    ("\\.html?$"    . aqua/setup-web-mode-mixed)
    ("\\.json\\'"   . web-mode))
 
