@@ -87,6 +87,7 @@ Disabling the below block:
 
 #+begin_src emacs-lisp
 (use-package js2-mode
+  ;;:mode (("\\.[cm]?js\\'"  . js2-mode))
   :mode ("\\.js\\'" . js2-minor-mode)
 
   :commands (js2-mode
@@ -113,11 +114,11 @@ Disabling the below block:
                                     (if local " " "-g")
                                     (if module module "tern"))))))
 
-  ;; :ensure-system-package ((typescript-language-server            . "npm install -g typescript-lsp")
-  ;;                         (javascript-typescript-language-server . "npm install -g javascript-typescript-language-server")
-  ;;                         (tsc                                   . "npm install -g typescript")
-  ;;                         (tern                                  . "npm install -g tern")
-  ;;                         (flow-bin                              . "npm install -g flow-bin"))
+  ;; :ensure-system-package ((typescript-language-server            . "npm i -g typescript-lsp")
+  ;;                         (javascript-typescript-language-server . "npm i -g javascript-typescript-language-server")
+  ;;                         (tsc                                   . "npm i -g typescript")
+  ;;                         (tern                                  . "npm i -g tern")
+  ;;                         (flow-bin                              . "npm i -g flow-bin"))
 
   :custom ((js2-basic-offset                       4)
            (js2-allow-rhino-new-expr-initializer   nil)
@@ -253,14 +254,14 @@ checking and highlighting of JSX code blocks.
 ;; https://github.com/felipeochoa/rjsx-mode
 (use-package rjsx-mode
   :ensure t
-  ;;:demand t
+  :demand t
   :quelpa (rjsx-mode :fetcher github :repo "felipeochoa/rjsx-mode")
   :hook (rjsx-mode . lsp-deferred)
   :init
   ;; use react jsx extension mode for javascript files
+  (add-to-list 'auto-mode-alist '("\\jsx?$\\'"              . rjsx-mode)))
   (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
   (add-to-list 'auto-mode-alist '("pages\\/.*\\.js\\'"      . rjsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.js\\'"                . rjsx-mode)))
 #+end_src
 
 
