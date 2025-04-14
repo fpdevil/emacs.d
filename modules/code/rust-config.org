@@ -142,6 +142,7 @@ is been under under very active development.
 (use-package rustic
   :ensure
   :quelpa (:fetcher github :repo "https://github.com/brotzeit/rustic")
+  :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq
    ;; eglot seems to be the best option right now.
