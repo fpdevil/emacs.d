@@ -290,7 +290,7 @@ Setting =LSP= for python completion
 #+begin_src emacs-lisp :tangle no
 (use-package lsp-jedi
   :after (lsp)
-
+  :ensure t
   :quelpa (lsp-jedi :fetcher github :repo "fredcamps/lsp-jedi")
 
   :config
