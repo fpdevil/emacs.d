@@ -22,13 +22,15 @@ basic support from an `LSP` component as well as a `company` support plugin.
 #+begin_src emacs-lisp :lexical no
 ;; Terraform major mode configuration
 (use-package terraform-mode
+  :ensure t
   :quelpa (terraform-mode :fetcher "github" :repo "hcl-emacs/terraform-mode")
   :mode (("\\.tf\\'" . terraform-mode))
   :custom (terraform-indent-level 2)
   :config
+  (add-hook 'terraform-mode-hook 'aqua/tf-mode-init)
+  :preface
   (defun aqua/tf-mode-init ()
-    (outline-minor-mode 1))
-  (add-hook 'terraform-mode-hook 'aqua/tf-mode-init))
+    (outline-minor-mode 1)))
 #+end_src
 
 ** Company backend for Terraform
