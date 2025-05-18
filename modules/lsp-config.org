@@ -25,6 +25,7 @@
 * LSP Configuration                                                     :TOC_4:
   - [[#installation-and-setup-of-lsp][Installation and setup of LSP]]
   - [[#lsp-servers][LSP Servers]]
+  - [[#handling-lsp-warnings][Handling LSP Warnings]]
   - [[#lsp-ui][LSP UI]]
   - [[#lsp-ivy][LSP ivy]]
   - [[#lsp-flycheck][LSP Flycheck]]
@@ -180,6 +181,21 @@ can manipulate and install manually as well, for instance here is for
 #+begin_src shell :tangle no
 npm -g --prefix $HOME/.emacs.d/.cache/lsp/npm/typescript-language-server i typescript-language-server
 npm -g --prefix $HOME/.emacs.d/.cache/lsp/npm/typescript i typescript
+#+end_src
+
+** Handling LSP Warnings
+To suppress errors from semgrep =semgrep/rulesRefreshed=
+#+begin_src emacs-lisp :lexical no
+;; handling the errors causing
+;; Unknown notification: semgrep/rulesRefreshed
+(with-eval-after-load 'lsp-mode
+  (defun aqua/lsp-ignore-semgrep-rulesRefreshed (workspace notification)
+    "Ignore semgrep/rulesRefreshed notification."
+    (when (equal (gethash "method" notification) "semgrep/rulesRefreshed")
+      (lsp--info "Ignored semgrep/rulesRefreshed notification")
+      t)) ;; Return t to indicate the notification is handled
+
+  (advice-add 'lsp--on-notification :before-until #'aqua/lsp-ignore-semgrep-rulesRefreshed))
 #+end_src
 
 ** LSP UI
