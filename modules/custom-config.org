@@ -9,7 +9,6 @@
   - [[#toggling-annoying-and-gui-features-not-needed][Toggling annoying and GUI features not needed]]
   - [[#handling-file-backups-and-autosaves][Handling file backups and autosaves]]
   - [[#find-file-customisations][find-file customisation's]]
-  - [[#get-rid-of-lock-files][Get rid of lock files]]
   - [[#custom-settings-to-act-globally][Custom settings to act globally]]
     - [[#personalised-settings][Personalised settings]]
     - [[#better-settings-for-macos][Better settings for MacOS]]
@@ -25,8 +24,6 @@
   - [[#unclutter-the-mode-line][Unclutter the Mode line]]
   - [[#cua-mode-settings][CUA Mode settings]]
   - [[#window-and-frame-settings][Window and Frame settings]]
-  - [[#scrolling-settings][Scrolling settings]]
-    - [[#ultra-scroll-scroll-emacs-like-lightning][ultra-scroll: scroll emacs like lightning]]
   - [[#cursor-settings][Cursor settings]]
   - [[#formatting-and-indentation-settings][Formatting and Indentation settings]]
   - [[#word-wrapping-and-text-auto-fill][Word wrapping and Text auto fill]]
@@ -78,7 +75,7 @@ more real estate for writing and it sometimes also helps for distraction free
 writing. Also certain features like mouse intervention can be turned off as
 well.
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 (scroll-bar-mode 0)                  ; ^Turn off scrollbars
 (tool-bar-mode   0)                  ; ^Turn off toolbar
 
@@ -95,7 +92,7 @@ recover-session~. Here, we parameterize how files are saved in the background.
 
 Here are the settings for controlling how auto saving happens.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; ^ Turn on/off auto-save. We can have fallback in case of any crashes or data loss.
   ;;   Use `recover-file' or `recover-session' to recover the same.
   (setq auto-save-default t
@@ -124,7 +121,7 @@ then visit  the file again, a  new backup file  will be made. Here,  we activate
 backup and parameterize the number of backups to keep.
 
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; ^ Put backups in another directory.
 ;;   first create directory for backup
 (let ((aqua/backup-dir (expand-file-name "backups/" aqua-savefile-dir)))
@@ -153,7 +150,7 @@ Configure the option to resolve symlinks while opening files, so that any
 operations are conducted from the file's original or true directory. We can also
 disable warnings while opening same file with different names.
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; Resolve symlinks when opening files, so that any operations are
 ;; conducted from the file's true directory (like `find-file').
 (setq find-file-visit-truename t
@@ -162,16 +159,6 @@ disable warnings while opening same file with different names.
 ;; Disable the warning "X and Y are the same file". It's fine to ignore this
 ;; warning as it will redirect you to the existing buffer anyway.
 (setq find-file-suppress-same-file-warnings t)
-#+end_src
-
-** Get rid of lock files
-Lock files are created to avoid editing collisions and also these lock files
-will kill =npm= start when using =node=. We don't need that setting.
-
-#+begin_src emacs-lisp :tangle no
-;; this now set in early-init
-;; do not create any lock files
-(setq-default create-lockfiles nil)
 #+end_src
 
 ** Custom settings to act globally
@@ -197,35 +184,23 @@ The possible values are: /banish, exile, jump, animate, proteus/
 
 *** Better settings for MacOS
 Integrate with the Mac OSX clipboard
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; Integrate with MacOS clipboard
 (setq select-enable-clipboard t)
 #+end_src
 
 Making fonts look better with anti-aliasing
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; make fonts look better with anti-aliasing
 (setq mac-allow-anti-aliasing t)
-#+end_src
-
-Improve the look and feel of =titlebar= on Macos. Set =ns-appearance= to dark for
-white title text and nil for black title text.
-
-Disabling the below as it is better to use the
-[[https://github.com/purcell/ns-auto-titlebar][ns-auyo-titlebar]] package foe setting this.
-#+begin_src emacs-lisp :lexical no :tangle no
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . dark))
 #+end_src
 
 *** Window Management
 
 This configuration allows to use the last buffer for splitting windows instead of the
-current one.
+current one. It is adapted from [[https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org#make-window-splitting-more-useful][Sacha]].
 
-It is adapted from [[https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org#make-window-splitting-more-useful][Sacha]].
-
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp tangle no
 (defun my-vsplit-last-buffer ()
   (interactive)
   (split-window-vertically)
@@ -247,7 +222,7 @@ It is adapted from [[https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org#
 The =savehist= package provides way to go to the last cursor position when a file
 is opened
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; saveplace remembers your location in a file when saving files
 (use-package saveplace
   :diminish
@@ -275,7 +250,7 @@ is opened
 
 Keep a list of the most recently opened files for quick access.
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; keeping track of the recently opened file list
 (use-package recentf
   :after saveplace
@@ -293,7 +268,7 @@ Keep a list of the most recently opened files for quick access.
 
 Set ~tab~ to either indent or complete
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp tangle no
 ;; ^set smart tab to either indent or complete
 (setq tab-always-indent 'complete)
 #+end_src
@@ -303,7 +278,7 @@ Set ~tab~ to either indent or complete
 
 Customise the way parentheses match look is done.
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; ^parentheses match
 (use-package paren
   :ensure nil
@@ -333,7 +308,7 @@ Customise the way parentheses match look is done.
 
 To delete the selected text easily enable this.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp tangle no
 ;; delete selection with a simple keypress
 (delete-selection-mode t)
 #+end_src
@@ -349,7 +324,7 @@ M-/ perform (dabbrev-expand)
 M-C-/ perform (dabbrev-completion)
 #+end_example
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; abbrevs configuration
 (setq abbrev-file-name (expand-file-name "user/abbrev_defs" user-emacs-directory))
 (setq save-abbrevs t)
@@ -366,7 +341,7 @@ from matching text found in a buffer (like =`‘dabbrev-expand’’=) or expand
 ways defined by your own functions. Which of these it tries and in what order
 is controlled by a configurable list of functions.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp tangle no
 ;; Hippie Expand is dabbrev expand on steroids
 (use-package hippie-exp
   ;; a binding to replace the dabbrev expansions to hippie
@@ -388,29 +363,11 @@ is controlled by a configurable list of functions.
           try-expand-line)))
 #+end_src
 
-
-#+begin_src emacs-lisp :tangle no
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                         try-expand-dabbrev-all-buffers
-                                         try-expand-dabbrev-from-kill
-                                         try-complete-file-name-partially
-                                         try-complete-file-name
-                                         try-expand-all-abbrevs
-                                         try-expand-list
-                                         try-expand-line
-                                         try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
-
-;; use hippie-expand instead of dabbrev
-(global-set-key (kbd "M-/") #'hippie-expand)
-(global-set-key (kbd "s-/") #'hippie-expand)
-#+end_src
-
 *** Apropos
 The ~apropos~ commands answer questions like, “What are the commands for working
 with files?” More precisely, you specify your query as an apropos pattern, which
 is either a word, a list of words, or a regular expression.
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 (with-eval-after-load "apropos"
   ;; apropos commands will search more extensively by checking all
   ;; the variables and non-interactive functions as well.
@@ -421,7 +378,7 @@ is either a word, a list of words, or a regular expression.
 ** Unclutter the Mode line
 Unclutter the modeline by either removing the mode names or renaming the same
 using =diminish= package.
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 ;; Unclutter the mode line.
 (with-eval-after-load "diminish-autoloads"
   (with-eval-after-load "abbrev"       (diminish 'abbrev-mode " Ⓐ"))
@@ -448,7 +405,7 @@ as is customary in many computer programs. The mode interferes the rectangle
 mode and after the mark setup with the press of ~C-x~ the selection gets
 deleted. The following will clear that issue.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; CUA-mode is a minor-mode that enables the use of Ctrl-X/C/V
   ;; for cut/copy/paste, as is customary in many computer programs.
   ;; With the below settings, C-x for cut only works when a selection
@@ -463,7 +420,7 @@ deleted. The following will clear that issue.
 Set the ~Frame title~ using a more useful format for the frame title to either
 display a file or a buffer name in case if the buffer is not visiting a file.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; ^ Using a more useful format for the frame title
 (setq frame-title-format
       '((:eval (if (buffer-file-name)
@@ -496,74 +453,6 @@ display a file or a buffer name in case if the buffer is not visiting a file.
 ;; (outline, org-mode, outline-minor-mode...)
 (setq-default make-window-start-visible t)
 #+end_src
-
-** Scrolling settings
-Settings related to scrolling.
-
-#+begin_src emacs-lisp :tangle no
-;;; Scrolling
-;; Enables faster scrolling through unfontified regions. This may result in
-;; brief periods of inaccurate syntax highlighting immediately after scrolling,
-;; which should quickly self-correct.
-(setq fast-but-imprecise-scrolling t)
-
-;; Move point to top/bottom of buffer before signaling a scrolling error.
-(setq scroll-error-top-bottom t)
-
-;; Keeps screen position if the scroll command moved it vertically out of the
-;; window.
-(setq scroll-preserve-screen-position t)
-
-;; Emacs spends excessive time recentering the screen when the cursor moves more
-;; than N lines past the window edges (where N is the value of
-;; `scroll-conservatively`). This can be particularly slow in larger files
-;; during extensive scrolling. If `scroll-conservatively` is set above 100, the
-;; window is never automatically recentered. The default value of 0 triggers
-;; recentering too aggressively. Setting it to 10 reduces excessive recentering
-;; and only recenters the window when scrolling significantly off-screen.
-;; (setq scroll-conservatively 10)
-(setq scroll-conservatively 1000)
-
-;; Enables smooth scrolling by making Emacs scroll the window by 1 line whenever
-;; the cursor moves off the visible screen.
-(setq scroll-step 10)
-
-;; Reduce cursor lag by :
-;; 1. Prevent automatic adjustments to `window-vscroll' for long lines.
-;; 2. Resolve the issue of random half-screen jumps during scrolling.
-(setq auto-window-vscroll nil)
-
-;; Number of lines of margin at the top and bottom of a window.
-(setq scroll-margin 0)
-
-;; How far to scroll windows UP or DOWN
-(setq scroll-up-aggressively 0.0
-      scroll-down-aggressively 0.0)
-
-;; Horizontal scrolling
-(setq hscroll-margin 2
-      hscroll-step 1)
-
-;; mouse scroll
-(setq       mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-            mouse-wheel-scroll-amount-horizontal 2)
-#+end_src
-
-
-*** ultra-scroll: scroll emacs like lightning
-
-#+begin_src emacs-lisp :lexical no
-(use-package ultra-scroll
-  ;; if you git clone'd instead of package-vc-install
-  :straight '(ultra-scroll :host github :repo "jdtsmith/ultra-scroll")
-  :ensure t
-  :init
-  (setq scroll-conservatively 101 ; this is important!
-        scroll-margin 0)
-  :config
-  (ultra-scroll-mode 1))
-#+end_src
-
 
 ** Cursor settings
 Display the cursor by changing colour and shape as per the buffer state.
@@ -598,7 +487,7 @@ Certain variables are ~buffer-local~, and hence changing them using ~setq~
 will only change them in a single buffer. Using setq-default we change
 the buffer-local variable’s default value.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; ^ Favour for spaces over tabs. 4 spaces is a more consistent default than 8-space tabs.
 ;;   It can be changed on a per-mode basis anyway
 (setq-default indent-tabs-mode nil
@@ -644,22 +533,12 @@ the buffer-local variable’s default value.
 (add-hook 'text-mode-hook #'visual-line-mode)
 #+end_src
 
-Some custom settings for tab stops.
-#+begin_src emacs-lisp :tangle no
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100 104 108 112 116 120))))
-#+end_src
-
 ** Word wrapping and Text auto fill
 In =fill mode=, when we type past the end of a line, Emacs automatically starts a
 new line, cleverly formatting paragraphs. This is a powerful form of "word
 wrap".
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; Wrap long lines when editing text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'org-mode-hook 'turn-on-auto-fill)
@@ -783,7 +662,7 @@ Move text lines UP or DOWN easily.
 ** Unfill region
 Unfilling a region joins all the lines in a paragraph into a single line for
 each paragraphs in that region. It is the contrary of ~fill-region~.
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 (defun unfill-region (beg end)
   "Unfill the region, joining text paragraphs into a single
     logical line.  This is useful, e.g., for use with
@@ -798,7 +677,7 @@ each paragraphs in that region. It is the contrary of ~fill-region~.
 Rectangle commands serve as handy tools while working with multi-column and
 tabular text.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; ^Create a menu for rectangle commands
   ;; easymenu is preloaded without needing (require 'easymenu)
   ;; The below elisp snippet does the following things
@@ -856,7 +735,7 @@ tabular text.
 A function that reformats the current buffer by regenerating the text from its
 internal parsed representation.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun aqua/org-reformat-buffer ()
   "Reformat the current buffer."
   (interactive)
