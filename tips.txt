@@ -104,3 +104,10 @@ issuer=
     O=DigiCert Inc
     CN=DigiCert TLS Hybrid ECC SHA384 2020 CA1
 ```
+
+7. OpenSSL get the validity of the main certificate
+```bash
+openssl s_client -connect aws.prdgw.api.united.com:443 -showcerts </dev/null 2>&1 | openssl x509 -noout -dates | awk -F"=" '/=/{print $2}' | sed 'N;s/\n/ TO /' | tr -s " "
+
+Mar 6 00:00:00 2025 GMT TO Mar 6 23:59:59 2026 GMT
+```
