@@ -1,0 +1,159 @@
+#+TITLE: TCBox Demo
+
+#+LATEX_HEADER: \usepackage[dvipsnames]{xcolor}
+#+LATEX_HEADER: \usepackage[listings]{tcolorbox}
+#+LATEX_HEADER: \tcbuselibrary{raster,skins,breakable,listings,theorems}
+#+LATEX_HEADER: \usepackage{lipsum}
+
+#+LATEX_HEADER: \newenvironment{qbox}[1]{ % qbox
+#+LATEX_HEADER:     \begin{tcolorbox}[
+#+LATEX_HEADER:         colframe = RoyalBlue,
+#+LATEX_HEADER:         colback = RoyalBlue!10!White,
+#+LATEX_HEADER:         title = {#1},
+#+LATEX_HEADER:         fonttitle = \bfseries,
+#+LATEX_HEADER:         breakable = true
+#+LATEX_HEADER:     ]
+#+LATEX_HEADER: }{
+#+LATEX_HEADER:     \end{tcolorbox}
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \newenvironment{warnbox}[1]{ % warnbox
+#+LATEX_HEADER:     \begin{tcolorbox}[
+#+LATEX_HEADER:         colframe = Yellow!40!Orange,
+#+LATEX_HEADER:         colback = Yellow!20!White,
+#+LATEX_HEADER:         title = {#1},
+#+LATEX_HEADER:         fonttitle = \color{Black} \bfseries,
+#+LATEX_HEADER:         breakable = true
+#+LATEX_HEADER:     ]
+#+LATEX_HEADER: }{
+#+LATEX_HEADER:     \end{tcolorbox}
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \newenvironment{exambox}[1]{ % exambox
+#+LATEX_HEADER:     \begin{tcolorbox}[
+#+LATEX_HEADER:         colframe = OliveGreen,
+#+LATEX_HEADER:         colback = ForestGreen!20!White,
+#+LATEX_HEADER:         title = {#1},
+#+LATEX_HEADER:         fonttitle = \bfseries,
+#+LATEX_HEADER:         breakable = true
+#+LATEX_HEADER:     ]
+#+LATEX_HEADER: }{
+#+LATEX_HEADER:     \end{tcolorbox}
+#+LATEX_HEADER: }
+
+
+#+LATEX_HEADER: \newenvironment{greaterbox}[1]{ % greaterbox
+#+LATEX_HEADER:     \begin{tcolorbox}[
+#+LATEX_HEADER:         colframe = Maroon,
+#+LATEX_HEADER:         colback = Dandelion!20!Brown!10!White,
+#+LATEX_HEADER:         title = {#1},
+#+LATEX_HEADER:         fonttitle = \color{White} \bfseries,
+#+LATEX_HEADER:         breakable = true
+#+LATEX_HEADER:     ]
+#+LATEX_HEADER: }{
+#+LATEX_HEADER:     \end{tcolorbox}
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \setlength{\columnseprule}{0.4pt}
+
+Matlab is a funny language.
+ - Scope :: Scope doesn't work as expected, and messes everything up
+   when loops mix variables up in recursive functions.
+ - Namespaces :: You wish.
+ - Header Files :: Nope.
+
+
+\begin{qbox}{My Equation}
+    Here is the equation
+    \begin{equation*}
+        \Biggl\lbrace
+        \begin{alignedat}{2}
+            1+1 &= 2 \\
+            2 &= 1+1
+        \end{alignedat}
+    \end{equation*}
+\end{qbox}
+
+\begin{warnbox}{A Warning Box}
+    Another equation here
+    \begin{alignat*}
+        1+1 &= 0 \\
+        2 &= 2+1
+    \end{alignat*}
+\end{warnbox}
+
+
+\begin{exambox}{An Exam Box}
+    Set of Equations here
+    \tcblower
+    \begin{enumerate}[(1).]
+        \item $1+1=$
+        \item $2+1=$
+        \item $3+1=$
+        \item $4+1=$
+        \item
+        \begin{equation*}
+            \mbox{\hspace{-45px}}10\times\lim_{n \to \infty}{\frac{1}{n} \sum_{k=1}^{n}{f\left(\frac{k}{n}\right)}}+1
+        \end{equation*}
+        \item $6+1$
+        \item $7+1$
+        \item $8+1$
+        \item $9+1$
+    \end{enumerate}
+\end{exambox}
+
+
+\begin{greaterbox}{Greater Box}
+    Contents of the Box...
+
+    Some questions here...
+    Questions(X\hspace{-1.2pt}V\hspace{-1.2pt}I\hspace{-1.2pt}I\hspace{-1.2pt}I)Answers Expected
+
+    \tcblower
+    \begin{enumerate}[Q1: ]
+        \item Space & Universe
+        \item Mathematics
+        \item Geography
+        \item History
+    \end{enumerate}
+\end{greaterbox}
+
+
+This is random text.
+
+\begin{tcolorbox}
+  a b c d
+\end{tcolorbox}
+
+This is random text
+
+\begin{tcolorbox}
+  \lipsum[5]
+\end{tcolorbox}
+
+
+This is random text.
+
+\begin{tcolorbox}
+This is a \textbf{tcolorbox}.
+\end{tcolorbox}
+
+
+\begin{tcolorbox}
+This is another \textbf{tcolorbox}.
+\tcblower
+Here, you see the lower part of the box.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=My nice heading]
+This is another \textbf{tcolorbox}.
+\tcblower
+Here, you see the lower part of the box.
+\end{tcolorbox}
+
+#+attr_latex: colback=red!5!white,colframe=red!75!black
+#+begin_tcolorbox
+#+begin_equation
+a + ar + ar^2 + \ldots + ar^n
+#+end_equation
+#+end_tcolorbox

@@ -1,0 +1,62 @@
+\documentclass[landscape,margin=0mm,subcolspace=2mm]{tikzposter}
+
+\usetheme{Wave}
+
+\usepackage{lipsum}
+\usepackage{graphicx} 
+\graphicspath{{pictures}}
+\usepackage{multicol} 
+
+\setlength{\columnsep}{4cm}
+\setlength{\columnseprule}{1mm}
+
+\begin{document}
+    \title{\LaTeX\ in the Cartoon World!}
+    \author{Walt Disney}
+    \maketitle
+
+    \begin{columns}
+        \column{.65}
+        \block{Workflow}{
+            \lipsum[1]
+            \begin{tikzfigure}[\LaTeX\ workflow]
+                \includegraphics[width=0.35\linewidth]{pinoccio}
+            \end{tikzfigure}
+        }
+    \begin{subcolumns}
+        \subcolumn{.5}
+        \block{Mathematics}{
+            Take a coffee, then:
+            \bigskip
+            \coloredbox{
+                \begin{itemize}
+                    \item Slate
+                    \item Proof
+                    \item Write in \LaTeX
+                \end{itemize}}
+            \bigskip
+            \innerblock{Integral approximation}{
+                \[
+                    \int_a^b f(x) dx \approx (b - a)
+                    \sum_{i=0}^n w_i f(x_i)
+                \]
+            }
+        }
+
+        \note[targetoffsetx = 5cm, targetoffsety = -5cm, angle = -30, connection]{Weight function}
+        \subcolumn{.5}
+        \block{Text}{\lipsum[1]}
+    \end{subcolumns}
+    \column{.35}
+    \block{Plotting functions}{
+        \includegraphics[width=0.7\linewidth]{lion}
+        \lipsum[4]
+    }
+    \end{columns}
+    \block{Conclusion and outlook}{
+        \begin{multicols}{4}
+            \lipsum[10-11]
+        \end{multicols}
+        
+    }
+\end{document}

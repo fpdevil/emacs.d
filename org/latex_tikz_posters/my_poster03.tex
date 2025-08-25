@@ -1,0 +1,71 @@
+\documentclass[25pt,a1paper]{tikzposter}
+%% Available themes: see also
+%% https://bitbucket.org/surmann/tikzposter/downloads/themes.pdf
+% \usetheme{Default}
+% \usetheme{Rays}
+% \usetheme{Basic}
+% \usetheme{Simple}
+\usetheme{Envelope}
+% \usetheme{Wave}
+% \usetheme{Board}
+% \usetheme{Autumn}
+% \usetheme{Desert}
+
+%% Further changes to the title etc is possible
+% \usetitlestyle{Default}
+% \usetitlestyle{Basic}
+% \usetitlestyle{Empty}
+% \usetitlestyle{Filled}
+\usetitlestyle{Envelope}
+% \usetitlestyle{Wave}
+% \usetitlestyle{verticalShading}
+
+\usepackage{graphicx}
+\graphicspath{{pictures}}
+
+\author{Me Me Me}
+\title{Title title title}
+\institute{ACME Institute}
+%% Optional title graphic
+\titlegraphic{\includegraphics[width=7cm]{pinoccio}}
+%% Uncomment to switch off tikzposter footer
+% \tikzposterlatexaffectionproofoff
+
+\begin{document}
+    \maketitle
+
+    \block{A test!}{
+        \begin{itemize}
+        \item We try to do this. What?
+        \item we try to do that.
+        \end{itemize}
+    }
+
+    \note[rotate=8, connection, width = 7cm,
+    % roundedcorners=15, targetoffsetx=2cm
+    ]{Oh wait! A note!}
+
+    \begin{columns}
+        \column{0.7}
+        \block{Block A!}{
+        \begin{itemize}
+        \item We try to do this. what?
+        \item we try to do that.
+        \end{itemize}
+        }
+
+        \column{0.3}
+        \block{Block B!}{
+        \begin{itemize}
+        \item We try to do this. what?
+        \item we try to do that.
+        \end{itemize}
+        }
+    \end{columns}
+
+    \block{Random Picture}{%
+    \begin{tikzfigure}[Figures in tikzposter]
+        \includegraphics[width=0.8\linewidth]{pluto_dog}
+    \end{tikzfigure}
+    }
+\end{document}
