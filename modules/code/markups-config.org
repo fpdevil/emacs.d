@@ -1,0 +1,55 @@
+#+TITLE: Markup languages
+
+* File type handling
+The section deals with handling varying file formats and types like
+~json~, ~yaml~, ~toml~ etc.
+
+** Handling json files
+~json-mode~ provides a major mode for editing ~json~ format files in emacs and it extends the builtin js-mode to add better syntax highlighting for JSON with some nice editing keybindings.
+#+begin_src emacs-lisp
+(use-package json-mode
+  :ensure json-mode
+  :delight "J"
+  :config (bind-keys :map json-mode-map
+                     ("C-c i" . json-mode-beautify))
+  :mode ("\\.\\(json\\)$" . json-mode))
+#+end_src
+
+** Handling yaml files
+~yaml-mode~ package is an emacs major mode for editing files in the YAML data serialization format.
+#+begin_src emacs-lisp
+;; installing yaml-mode for editing yaml format files
+;;
+;; (use-package yaml-mode
+;;   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
+;;   :ensure yaml-mode
+;;   :defer t)
+
+(use-package yaml-mode
+  :straight t
+  ;; :mode "\\.yml\\'"
+  :mode "(\\.\\(yml?\\|yaml\\|config\\|sls\\)\\'"
+  :config
+  ;; (add-hook 'yaml-mode-hook 'smartparens-mode)
+  (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode)
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+#+end_src
+
+** yaml-pro
+~yaml-pro~ has tools for editing YAML leveraging tree-sitter/parser.
+
+#+begin_src emacs-lisp :lexical no
+;; Edit YAML in Emacs like a pro
+(use-package yaml-pro
+    :straight t)
+#+end_src
+
+** Handling toml files
+This is an Emacs Mojor mode for editing the TOML files. =TOML= files are pretty common in Rust as the package configurations are always in that format named as _Cargo.toml_.
+#+begin_src emacs-lisp
+;; editing TOML files
+;; Usefule specifically for Cargo.toml and other config files
+(use-package toml-mode
+  :quelpa
+  (:fetcher github :repo "dryman/toml-mode.el"))
+#+end_src
