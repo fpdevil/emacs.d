@@ -2186,9 +2186,7 @@ Turning on =org-auctex-mode= in an org buffer will replace your binding for =org
 #+begin_src emacs-lisp :lexical no
 ;; fast latex previews in org-mode
 (use-package org-auctex
-  :quelpa (org-auctex
-           :fetcher github
-           :repo "karthink/org-auctex")
+  :straight (:type git :host github :repo "karthink/org-auctex")
   :after (org)
   :hook (org-mode . org-auctex-mode))
 #+end_src
@@ -2271,8 +2269,10 @@ Enable math symbol backend only in =TeX-mode= and =org-mode=.
 #+begin_src emacs-lisp :lexical no
 ;; Xenops latex for math documents
 (use-package xenops
-  :quelpa
-  (xenops :fetcher github :repo "dandavison/xenops")
+  :straight
+  (:type git :host github :repo "dandavison/xenops")
+  :defer 3
+  :demand t
   :hook
   ((latex-mode . xenops-mode)
    (LaTeX-mode . xenops-mode)))
@@ -3187,7 +3187,7 @@ Installation of the ~org-ref~ package for handling bibliographies and citations.
 (use-package org-ref
   :quelpa
   (org-ref :fetcher github :repo "jkitchin/org-ref")
-  :after org
+  ;; :after org
   ;; :demand t ;; ensure that it loads so that links work immediately
   ;; :defer t
   :custom-face
@@ -3295,9 +3295,9 @@ entry into the org document.
 ;; org-ref with ivy completion
 ;;
 (use-package org-ref-ivy
-  :quelpa
-  (:fetcher github :repo "jkitchin/org-ref/blob/master/org-ref-ivy.el")
-  :ensure nil
+  ;; :quelpa
+  ;; (org-ref-ivy :fetcher github :repo "jkitchin/org-ref/blob/master/org-ref-ivy.el")
+  :load-path (lambda () (file-name-directory (locate-library "org-ref")))
   :init (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
               org-ref-insert-cite-function 'org-ref-cite-insert-ivy
               org-ref-insert-label-function 'org-ref-insert-label-link
@@ -3323,9 +3323,9 @@ Searching and managing the bibliographies and citations in Emacs through
 #+begin_src emacs-lisp :tangle no
 ;; search and manage bibliographies in Emacs
 (use-package ivy-bibtex
-  :defer t
   :quelpa
   (:fetcher github :repo "https://github.com/tmalsburg/helm-bibtex")
+  :defer t
   :config
   (defun bibtex-pdf-open-function (fpath)
     (call-process "open" nil 0 nil "-a" "/Applications/Skim.app" fpath))
@@ -3410,8 +3410,8 @@ using its doi that is searched automatically.
 #+begin_src emacs-lisp
 ;; pdf-drop-mode for adding bibliography with drag and drop of pdf
 (use-package pdf-drop-mode
-  :defer t
   :quelpa (:fetcher github :repo "rougier/pdf-drop-mode")
+  :defer t
   :config
   (defun aqua/pdf-process (file doi)
   (message "%s : %s" file doi))
@@ -3424,18 +3424,20 @@ using its doi that is searched automatically.
 The =org-imenu= mode allows to easily nagivate among entries and allowing various
 operations such as filtering entries, moving entries, etc.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; org imenu for easily navigating among entries
 (use-package org-imenu
-  :defer t
-  :quelpa (:fetcher github :repo "rougier/org-imenu"))
+  ;; :quelpa (org-imenu :fetcher github :repo "rougier/org-imenu"))
+  :straight (:type git :host github :repo "rougier/org-imenu" :build t))
 #+end_src
 
 Now install the ~org-bib-mode~ which is the minor mode for literate & annotated bibliography.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; org-bib-mode
+;; A better option and advanced one is org-ref
 (use-package org-bib
-  :quelpa (:fetcher github :repo "rougier/org-bib-mode"))
+  ;; :quelpa (org-bib :fetcher github :repo "rougier/org-bib-mode")
+  :straight (:type git :host github :repo "rougier/org-bib-mode" :build t))
 #+end_src
 
 ** Prettify org-ref citation links
@@ -3454,19 +3456,21 @@ are several keys) and the end of the current link.
 #+begin_src emacs-lisp :lexical no
 ;; a minor mode for prettifying the org-ref citation links
 (use-package org-ref-prettify
-  :after (org)
   :quelpa
-  (:fetcher github :repo "https://github.com/alezost/org-ref-prettify.el")
+  (org-ref-prettify :fetcher github :repo "alezost/org-ref-prettify.el")
+  ;; :after (org)
   :hook (org-mode . org-ref-prettify-mode))
 #+end_src
 
 *** org-ref exports
 ~org-ref~ now supports the use of citeproc-el to export citations to non-LaTeX
 backends.
-#+begin_src emacs-lisp :lexical no
-;; for citations to non-latex backends
+#+begin_src emacs-lisp :tangle yes
+;; For citations to non-latex backends
+;; A CSL 1.0.2 Citation Processor for Emacs.
 (use-package citeproc
-    :after (org))
+  :quelpa (citeproc :fetcher github :repo "https://github.com/andras-simonyi/citeproc-el")
+  :defer 3)
 #+end_src
 
 *** org-glossary
