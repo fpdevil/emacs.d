@@ -174,6 +174,7 @@ To kill all the buffers at once, use the below
 #+begin_src emacs-lisp
 ;; undo-tree for undoing anything
 (use-package undo-tree
+  :straight t
   :demand t
   :diminish (undo-tree-mode . "")
   :bind (:map undo-tree-map ("C-x y u" . hydra-undo-tree/body))
@@ -330,6 +331,7 @@ results are cached for speed.
 
 #+begin_src emacs-lisp :lexical no
 (use-package disk-usage
+  :straight t
   :demand
   :commands (disk-usage))
 #+end_src
