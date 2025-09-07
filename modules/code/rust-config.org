@@ -113,10 +113,13 @@ Support for ~Rust~ in ~Emacs~ has been continuously improving with plugins and a
 ~rust-mode~ may be configured as below:
 #+begin_src emacs-lisp :tangle no
 (use-package rust-mode
+  :ensure t
   :init
   (setq rust-mode-treesitter-derive t)
   :config
-  (setq indent-tabs-mode nil))
+  (setq indent-tabs-mode nil)
+  :hook
+  (rust-mode . prettify-symbols-mode))
 #+end_src
 
 Once proper configuration on =Emacs= has been done, the editor will be capable of
