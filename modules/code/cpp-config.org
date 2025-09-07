@@ -130,7 +130,8 @@ Additional formatting settings
 (defun aqua/cpp-mode-hook ()
   ;; EMACS customizations for c++-mode
   (c-set-offset 'substatement-open 0)
-  (c-set-offset 'innamespace 0)
+  ;; No indentation within namespace block
+  (c-set-offset 'innamespace [0])
 
   ;; other customizations can go here
   (setq c-tab-always-indent t)
@@ -548,8 +549,8 @@ echo | clang -x c++ -v -E - 2>&1 | sed -n '/^#include </,/^End/s|^[^/]*\([^ ]*/i
               (setq irony-additional-clang-options
                     '("-std=c++20 -Wall"
                       "-I/usr/local/include/opencv4"
-                      "-I/opt/homebrew/opt/llvm/bin/../include/c++/v1"
-                      "-I/opt/homebrew/Cellar/llvm/18.1.6/lib/clang/18/include"
+                      "-I/opt/homebrew/Cellar/llvm/20.1.8/bin/../include/c++/v1"
+                      "-I/opt/homebrew/Cellar/llvm/20.1.8/lib/clang/20/include"
                       "-I/Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include"))))
   :custom
   (custom-set-variables
@@ -713,7 +714,29 @@ Format =c/c++= code using the command line tool ~clang-format~
    clang-format-buffer)
 
   :config
-  (setq clang-format-style-option "google"))
+  (setq clang-format-style (concat "{BasedOnStyle: Google,"
+                                   " BreakBeforeBraces: Mozilla,"
+                                   " BinPackParameters: true,"
+                                   " BreakBeforeBinaryOperators: NonAssignment,"
+                                   " IndentWidth: 2,"
+                                   " ColumnLimit: 100,"
+                                   " AlwaysBreakBeforeMultilineStrings: false,"
+                                   " SpacesBeforeTrailingComments: 4,"
+                                   " AccessModifierOffset: -2,"
+                                   " AllowShortFunctionsOnASingleLine: Inline,"
+                                   " NamespaceIndentation: All,"
+                                   " UseTab: Never,"
+                                   " ConstructorInitializerIndentWidth: 2,"
+                                   " ContinuationIndentWidth: 2,"
+                                   " PointerAlignment: Left,"
+                                   " DerivePointerAlignment: false,"
+                                   " Standard: Cpp11,"
+                                   " SortIncludes: false}"))
+
+  (setq clang-format-executable "clang-format")
+
+  (fset 'c-indent-region 'clang-format-region)
+  (fset 'c-indent-line-or-region 'clang-format-region))
 #+end_src
 
 ** clang-format-plus
