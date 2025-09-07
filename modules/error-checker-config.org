@@ -71,7 +71,8 @@ using the appropriate **linter/compiler/syntax** checker(s).
   ;; so we switch off checkdoc.
   ;; (add-to-list 'flycheck-disabled-checkers 'emacs-lisp-checkdoc)
   (add-hook 'org-src-mode-hook 'aqua/disable-fylcheck-in-org-src-block)
-  (setq flycheck-checkers (--remove (eq it 'emacs-lisp-checkdoc) flycheck-checkers))
+  ;; (setq flycheck-checkers (--remove (eq it 'emacs-lisp-checkdoc) flycheck-checkers))
+  (setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers))
 
   (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
     [#b00000000
