@@ -59,6 +59,7 @@
   - [[#custom-settings-and-preferences][Custom settings and preferences]]
     - [[#always-start-with-the-scratch-window][Always start with the scratch window]]
     - [[#set-default-font][Set default font]]
+    - [[#uniqie-buffer-names-in-minibuffer][Uniqie buffer names in minibuffer]]
     - [[#define-function-aliases][Define function aliases]]
     - [[#highlight-the-current-line][Highlight the current line]]
   - [[#highlight-matching-parenthesis][Highlight matching parenthesis]]
@@ -163,6 +164,10 @@ The code is meant to go into the [[file:early-init.el][early-init.el]] file, whi
 (setq gc-cons-threshold (* 50 1000 1000))
 (setq gc-cons-percentage 0.6)
 
+;; Get custom-set-variables out of init.el
+(setq custom-file (expand-file-name "custom-settings.el" user-emacs-directory))
+(add-hook 'after-init-hook (lambda () (load custom-file 'noerror)))
+
 ;; Profile emacs startup
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -249,12 +254,15 @@ The =aqua-savefile-dir= is for all auto save and recent files storage.
 Set a custom configuration file for storing the ~emacs~ custom settings.
 Place all custom-defined variables in their own file and store the custom
 variable file in the local machine's ~HONE~ directory outside of version
-control. This enables us to keep specific config local to each machine
-#+begin_src emacs-lisp
+control. This enables us to keep specific config local to each machine.
+
+Offloading the =custom-file= configuration to =early-init.el=
+
+#+begin_src emacs-lisp :tangle no
 ;; Get custom-set-variables out of init.el
 ;; (setq custom-file (concat user-emacs-directory "custom-settings.el"))
-(defvar my/custom-file (concat user-emacs-directory "custom-settings.el"))
-(setq custom-file my/custom-file)
+(defvar aqua/custom-file (expand-file-name "custom-settings.el" user-emacs-directory))
+(setq custom-file aqua/custom-file)
 (when (file-exists-p custom-file)
   (load custom-file 'noerror))
 
@@ -564,6 +572,32 @@ Set additional configuration options for =use-package=:
   :ensure t)
 #+end_src
 
+#+begin_src emacs-lisp :tangle no
+;; * org-mode
+;; load this first before anything else to avoid mixed installations
+(use-package org
+  :straight t
+  :ensure t
+  :pin gnu
+  :mode ("\\.org\\'" . org-mode)
+  :init
+  ;; Use the current window for C-c ' source editing
+  (setq org-src-window-setup 'current-window
+        org-support-shift-select t)
+
+  ;; I like to press enter to follow a link. mouse clicks also work.
+  (setq org-return-follows-link t)
+  :bind
+  (("C-c l"     . org-store-link)
+   ("C-c L"     . org-insert-link-global)
+   ("C-c o"     . org-open-at-point-global)
+   ("C-c a"     . org-agenda)
+   ("C-c c"     . org-capture)
+   ("M-<SPC>"   . org-mark-ring-goto)
+   ("H-."       . org-time-stamp-inactive)))
+#+end_src
+
+
 **** Use a feature or a library from existing package
 Certain libraries do exist in the packages which can be loaded explicitly using
 the standard =emacs require= or the =use-package=. Below provides a more better
@@ -659,21 +693,18 @@ from the GNU ELPA archive.
 ;; mode-line information. Github integration, customizability, asynchronous
 ;; upgrading, and more.
 (use-package paradox
+  :straight t
+  :defer nil
   :ensure t
-  :init
-  (progn
-    ;; The "paradox-token" file is supposed to contain this line:
-    ;;     (setq paradox-github-token "<YOUR_TOKEN>")
-    ;; (load (locate-user-emacs-file "paradox-token") :noerror :nomessage)
-    (setq paradox-lines-per-entry 1)
-    (paradox-enable))
   :custom
   ;; the value is set true to disable GitHub integration
   (paradox-github-token t)
   (paradox-column-width-package 25)
   (paradox-display-star-count nil)
   (paradox-execute-asynchronously t)
-  (paradox-hide-wiki-packages t))
+  (paradox-hide-wiki-packages t)
+  :config
+  (paradox-enable))
 #+end_src
 
 The following keys mappings are available for ~paradox~.
@@ -708,7 +739,14 @@ A Simple library for asynchronous processing in Emacs.
   (defun colorize-compilation-buffer ()
     (when (eq major-mode 'compilation-mode)
       (ansi-color-apply-on-region (point-min) (point-max))))
-  (setq compilation-scroll-output t)
+  (setq compilation-scroll-output t)        ;; Scroll down compilation messages
+
+  (defun compile-notify (buffer message)
+    (if (string-match "^finished" message)
+        (sk-popup "Emacs compilation" message "normal")
+      (sk-popup "Emacs compilation fails" message "normal")))
+  (setq compilation-finish-function 'compile-notify)
+
   :hook
   (compilation-filter . colorize-compilation-buffer))
 #+end_src
@@ -726,6 +764,8 @@ Here we set certain custom settings and preferences as needed.
 *** Set default font
 Set a *font* of choice along with the size.
 #+begin_src emacs-lisp
+;; Setting the main font for Emacs
+;; Note: height = px * 100
 (set-face-attribute 'default nil
                     :family "Monaco"
                     :height 160
@@ -778,6 +818,22 @@ Now switch between the fonts
 
 ;; (when (display-graphic-p)
 ;;   (change-font))
+#+end_src
+
+*** Uniqie buffer names in minibuffer
+Add ~unique~ buffer names in the ~minibuffer~, where there may be many
+identical files. This will be extremely useful if we are relying on the folders for
+organization and have lots of files with the same name,
+e.g. foo/index.ts and bar/index.ts.
+
+#+begin_src emacs-lisp
+;; Add unique buffer names in the minibuffer where there are many
+;; identical files. This is super useful if you rely on folders for
+;; organization and have lots of files with the same name,
+(require 'uniquify)
+
+(setq uniquify-separator "/"
+      uniquify-buffer-name-style 'forward)
 #+end_src
 
 *** Define function aliases
@@ -904,7 +960,8 @@ may hide them by using ~diminish~ and ~delight~ packages.
   (use-package diminish)
 
   ;; delight
-  (use-package delight)
+  (use-package delight
+     :straight t)
 #+end_src
 
 ** ORG Contrib
