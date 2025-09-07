@@ -318,8 +318,7 @@ and better not to have the colour names to be highlighted (x-colors).
 #+begin_src emacs-lisp
 ;; Highlight hex strings in respective color.
 (use-package rainbow-mode
-  :defer 3
-  :ensure t
+  :straight t
   :commands (rainbow-mode)
   :config
   ;; diminish on the mode line
@@ -440,6 +439,7 @@ Drag lines, words, region, etc... around
 #+begin_src emacs-lisp
 ;; csv file handling
 (use-package csv-mode
+  :straight t
   :demand t
   :mode ("\\.[Cc][Ss][Vv]\\'" . csv-mode)
   :config (setq csv-separators '("," ";" "|" " "))
@@ -546,7 +546,6 @@ Multiple cursors for Emacs is a pretty crazy functionality.
 ;; select lines and press C-c m c to enter into the multiple cursors
 ;; To get out of multiple-cursors-mode, press <return> or C-g.
 (use-package multiple-cursors
-  :ensure t
   :demand t
   ;; key bindings
   ;; :bind (("C-c m c" . mc/edit-lines)
@@ -555,31 +554,38 @@ Multiple cursors for Emacs is a pretty crazy functionality.
   ;;        ("C-c m m" . mc/mark-all-like-this))
   :bind ("C-c m c" . hydra-mc/body)
   ;; define a hydra
-  :init
-  (defhydra hydra-mc (:color blue :hint nil)
-    "
-   Up^^             Down^^          Miscellaneous    % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
-  ------------------------------------------------------------------
-   [_p_]   Next     [_n_]   Next    [_l_] Edit lines [_0_] Insert numbers
-   [_P_]   Skip     [_N_]   Skip    [_a_] Mark all   [_A_] Insert letters
-   [_M-p_] Unmark   [_M-n_] Unmark  [_s_] Search
-   [Click] Cursor at point       [_q_] Quit"
-    ("l" mc/edit-lines :exit t)
-    ("a" mc/mark-all-like-this :exit t)
-    ("n" mc/mark-next-like-this :exit nil)
-    ("N" mc/skip-to-next-like-this :exit nil)
-    ("M-n" mc/unmark-next-like-this :exit nil)
-    ("p" mc/mark-previous-like-this :exit nil)
-    ("P" mc/skip-to-previous-like-this :exit nil)
-    ("M-p" mc/unmark-previous-like-this :exit nil)
-    ("s" mc/mark-all-in-region-regexp :exit t)
-    ("0" mc/insert-numbers :exit t)
-    ("A" mc/insert-letters :exit t)
-    ("<mouse-1>" mc/add-cursor-on-click)
-    ;; Help with click recognition in this hydra
-    ("<down-mouse-1>" ignore)
-    ("<drag-mouse-1>" ignore)
-    ("q" nil)))
+  :config
+  (progn
+    (defun aqua/mc-typo-mode ()
+      (add-to-list 'mc/unsupported-minor-modes 'typo-mode))
+    (add-hook 'multiple-cursors-mode-hook #'aqua/mc-typo-mode)
+
+    (defhydra aqua/hydra-mc (:hint nil)
+      "
+ Up^^             Down^^           Miscellaneous           % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
+------------------------------------------------------------------
+ [_p_]   Next     [_n_]   Next     [_l_] Edit lines  [_0_] Insert numbers
+ [_P_]   Skip     [_N_]   Skip     [_a_] Mark all    [_A_] Insert letters
+ [_M-p_] Unmark   [_M-n_] Unmark   [_s_] Search
+ [Click] Cursor at point       [_q_] Quit"
+      ("l" mc/edit-lines :exit t)
+      ("a" mc/mark-all-like-this :exit t)
+      ("n" mc/mark-next-like-this)
+      ("N" mc/skip-to-next-like-this)
+      ("M-n" mc/unmark-next-like-this)
+      ("p" mc/mark-previous-like-this)
+      ("P" mc/skip-to-previous-like-this)
+      ("M-p" mc/unmark-previous-like-this)
+      ("s" mc/mark-all-in-region-regexp :exit t)
+      ("0" mc/insert-numbers :exit t)
+      ("A" mc/insert-letters :exit t)
+      ("<mouse-1>" mc/add-cursor-on-click)
+      ;; Help with click recognition in this hydra
+      ("<down-mouse-1>" ignore)
+      ("<drag-mouse-1>" ignore)
+      ("q" nil))
+
+    (bind-key "C-x m" #'aqua/hydra-mc/body)))
 #+end_src
 
 ** Vi tilde fringe
@@ -835,6 +841,7 @@ or “a bar with faster blinking" and set them on demand.
 #+begin_src emacs-lisp :lexical no
 ;; cursory - cursor shape control
 (use-package cursory
+  :straight t
   :ensure t
   :demand t
   :if (display-graphic-p)
