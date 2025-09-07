@@ -254,7 +254,6 @@ checking and highlighting of JSX code blocks.
 ;; https://github.com/felipeochoa/rjsx-mode
 (use-package rjsx-mode
   :ensure t
-  :demand t
   :quelpa (rjsx-mode :fetcher github :repo "felipeochoa/rjsx-mode")
   :hook (rjsx-mode . lsp-deferred)
   :init
