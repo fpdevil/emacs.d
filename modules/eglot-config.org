@@ -36,9 +36,11 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
 
 #+begin_src emacs-lisp :lexical no
 ;; eglot lsp client
+;; Adds LSP support. Note that you must have the respective LSP
+;; server installed on your machine to use it with Eglot. e.g.
+;; rust-analyzer to use Eglot with `rust-mode'.
 (use-package eglot
   :ensure t
-  :defer t
   :preface
   ;; Collects and displays all available documentation immediately, even if
   ;; multiple sources provide it. It concatenates the results.
@@ -46,13 +48,14 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
     (setq eldoc-documentation-strategy
           'eldoc-documentation-compose-eagerly))
 
-  ;; modes for which eglot is enabled
+  ;; add the modes for which eglot needs to be enabled
   :hook ((js-mode
           web-mode
           css-mode
           c-mode
           c++-mode
           go-mode
+          lsp-mode
           latex-mode
           LaTeX-mode
           python-mode
@@ -60,11 +63,15 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
   ((eglot-managed-mode . mp-eglot-eldoc))
 
   :init
+  ;; A setting of nil or 0 means Eglot will not block the UI at all, allowing
+  ;; Emacs to remain fully responsive, although LSP features will only become
+  ;; available once the connection is established in the background.
   (setq eglot-sync-connect             0
         eglot-connect-timeout          10
-        eglot-events-buffer-size       0       ; No event buffers, disable providers cause
-                                        ; a lot of hover traffic.
-        eglot-autoshutdown             t       ; shutdown unused servers.
+        eglot-events-buffer-size       0        ; No event buffers, disable providers cause
+                                                ; a lot of hover traffic.
+        eglot-autoshutdown             t        ; shutdown unused servers after killing last managed buffer
+        eglot-extend-to-xref           t        ; activate Eglot in cross-referenced non-project files
         eglot-send-changes-idle-time   0.5
         ;; NOTE We disable eglot-auto-display-help-buffer because :select t in
         ;;      its popup rule causes eglot to steal focus too often.
@@ -89,6 +96,7 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
             (fset #'jsonrpc--log-event #'ignore)
 
             ;; eglot lsp server registrations
+            ;; Additional LSP servers may be configured by modifying `eglot-server-programs'
             ;; For C/C++
             (add-to-list 'eglot-server-programs
                          '((c++-mode c-mode) "clangd"
@@ -119,7 +127,7 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
 
             ;; For JavaScript and TypeScript...
             (add-to-list 'eglot-server-programs
-                         '((web-mode) "typescript-language-server" "--stdio"))
+                         '(web-mode . ("typescript-language-server" "--stdio")))
 
             ;; For Rust
             (add-to-list 'eglot-server-programs
@@ -139,7 +147,7 @@ Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
             ;; CSS LSP: npm i -g vscode-langservers-extracted
             ;; https://github.com/hrsh7th/vscode-langservers-extracted
             (add-to-list 'eglot-server-programs
-                         '(css-mode "vscode-css-language-server" "--stdio")))
+                         '(css-mode . ("vscode-css-language-server" "--stdio"))))
   :bind
   ;; key bindings
   (:map eglot-mode-map
@@ -221,10 +229,8 @@ syntactic checks performed by the LSP server.
 #+begin_src emacs-lisp :lexical no
 ;;  Flycheck support for eglot
 (use-package flycheck-eglot
-  :ensure t
-  :quelpa
-  (:fetcher github :repo "intramurz/flycheck-eglot" :upgrade t)
-  :after (flycheck eglot)
+  :quelpa ((flycheck-eglot :fetcher github :repo "flycheck/flycheck-eglot") :upgrade t)
+  ;;:after (flycheck eglot)
   :config
   (setq flycheck-eglot-exclusive nil)
   (setq flycheck-eglot-enable-diagnostic-tags)
