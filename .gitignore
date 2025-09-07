@@ -74,4 +74,7 @@ eln-cache
 # ignore .auctex-auto generated stuff
 org/personal/org-simple/.auctex-auto
 
+# ignore byte compiled custom config for persistent directories
+ielm-history.eld
+
 # ignore
