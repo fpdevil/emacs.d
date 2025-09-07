@@ -912,6 +912,7 @@ Similarly,   the  ~transient-history-file~   stores  history   of  transients   
 #+begin_src emacs-lisp :lexical no
 ;; customise caching locations of files for transient library
 (use-package transient
+  :straight t
   :demand t
   :config
   (setq transient-levels-file (expand-file-name "transient/levels.el" user-cache-directory)
