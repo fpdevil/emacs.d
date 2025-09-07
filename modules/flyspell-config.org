@@ -52,6 +52,12 @@
       ;; Hack ispell-local-dictionary-alist instead.
       (setq-default ispell-extra-args (flyspell-detect-ispell-args t))
 
+      ;; Improves flyspell performance by preventing messages from being displayed for
+      ;; each word when checking the entire buffer.
+      (setq flyspell-issue-message-flag nil)
+
+
+
       ;; (setq ispell-cmd-args (flyspell-detect-ispell-args))
       (defadvice ispell-word (around my-ispell-word activate)
         (let ((old-ispell-extra-args ispell-extra-args))
