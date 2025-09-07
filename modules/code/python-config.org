@@ -208,43 +208,52 @@ Install the preferred company backend for Python jedi
   (setenv "WORKON_HOME" "~/.virtualenv")
   (setq pyvenv-workon "~/.virtualenv")  ; Default venv
   (setq pyvenv-activate "~/.virtualenv/")
-  (pyvenv-mode 1))
+  (pyvenv-mode 1)
+
+  :config
+  ;; Set correct Python interpreter
+  (setq pyvenv-post-activate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+  (setq pyvenv-post-deactivate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter "ipython")))))
 #+end_src
 
 ** Conda virtualenv support
 ~conda.el~ is an Emacs helper library (and minor mode) to work with conda environments.
 It detects and auto-activates the right conda environment for a particular buffer.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package conda
-  :quelpa (conda :fetcher github :repo "necaris/conda.el")
+  :straight (:type git :host github :repo "necaris/conda.el")
   :commands conda-env-activate
   :hook (eshell-first-time-mode . conda-env-initialize-eshell)
-  :ensure t
   :config
-  (setq conda-anaconda-home "/opt/homebrew/Caskroom/miniforge/base/")
-  (setq conda-env-home-directory (expand-file-name "~/.conda/"))
+  (progn
+    (conda-env-initialize-interactive-shells)   ;; interactive shell support
+    (conda-env-initialize-eshell)               ;; eshell support
+    (conda-env-autoactivate-mode t)             ;; automatically activate
+    (setq conda-env-home-directory (expand-file-name "~/.conda/"))
+    (custom-set-variables '(conda-anaconda-home "/opt/homebrew/Caskroom/miniforge/base/"))
 
-  (add-to-list
-   'global-mode-string
-   '(:eval
-     (list
-      (if conda-env-current-name
-          (propertize (concat "(py: " conda-env-current-name ") ")
-                      'face 'font-lock-builtin-face
-                      'help-echo "Conda Environment"
-                      'mouse-face '(:box 1)
-                      'local-map (make-mode-line-mouse-map
-                                  'mouse-1
-                                  (lambda () (interactive)
-                                    (conda-env-activate))))
-        ""))))
-
-  ;; (conda-env-initialize-interactive-shells) ; if interactive shell support is needed
-  ;; (conda-env-initialize-eshell)             ; if eshell support is needed
-  ;; (conda-env-autoactivate-mode t)           ; if auto-activation is needed
-  )
+    (add-to-list
+     'global-mode-string
+     '(:eval
+       (list
+        (if conda-env-current-name
+            (propertize (concat "(py: " conda-env-current-name ") ")
+                        'face 'font-lock-builtin-face
+                        'help-echo "Conda Environment"
+                        'mouse-face '(:box 1)
+                        'local-map (make-mode-line-mouse-map
+                                    'mouse-1
+                                    (lambda () (interactive)
+                                      (conda-env-activate))))
+          ""))))))
 #+end_src
+
+Then, in each project related to ~tensorflow~, I have a =.dir-locals.el= file containing =((nil . ((conda-project-env-path . "tensorflow"))))= which is then picked up by ~conda-env-autoactivate-mode~ to activate the "tensorflow" conda environment.
 
 ** Error checking
 
@@ -287,7 +296,7 @@ Setting =LSP= for python completion
 
 *** A LSP client for Emacs using Python Jedi Language Server
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package lsp-jedi
   :after (lsp)
   :ensure t
@@ -311,6 +320,8 @@ as a ~node~ dependency or as a ~pip~ dependency.
 ;; pyright lsp
 ;; $ npm -g install pyright
 (use-package lsp-pyright
+  :ensure t
+
   :hook
   (python-mode . lsp-pyright/python-mode-hook)
 
