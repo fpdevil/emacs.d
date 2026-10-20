@@ -185,7 +185,7 @@ snippets using *ivy*.
 (use-package ivy-yasnippet
   :after (ivy)
   :quelpa
-  (ivy-yasnippet :fetcher github :repo "mkcms/ivy-yasnippet"))
+  (ivy-yasnippet :fetcher github :repo "emacsattic/ivy-yasnippet"))
   #+end_src
 
 ** Using ivy posframe

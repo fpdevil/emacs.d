@@ -57,20 +57,22 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
   ;; (diminish 'lsp-mode "LSP")
 
   :hook
-  ((js-mode        . lsp-deferred)
-   (css-mode       . lsp-deferred)
-   (html-mode      . lsp-deferred)
-   (rust-mode      . lsp-deferred)
-   (go-mode        . lsp-deferred)
-   (xml-mode       . lsp-deferred)
-   (nxml-mode      . lsp-deferred)
-   (yaml-mode      . lsp-deferred)
-   (c++-mode       . lsp-deferred)
-   (c-mode         . lsp-deferred)
-   (c-or-c++-mode  . lsp-deferred)
-   (python-mode    . lsp-deferred)
-   (terraform-mode . lsp-deferred)
-   (lsp-mode       . efs/lsp-mode-setup))
+  ((js-mode         . lsp-deferred)
+   (css-mode        . lsp-deferred)
+   (html-mode       . lsp-deferred)
+   (rust-mode       . lsp-deferred)
+   (go-mode         . lsp-deferred)
+   (xml-mode        . lsp-deferred)
+   (nxml-mode       . lsp-deferred)
+   (yaml-mode       . lsp-deferred)
+   (c++-mode        . lsp-deferred)
+   (c-mode          . lsp-deferred)
+   (c-or-c++-mode   . lsp-deferred)
+   (python-mode     . lsp-deferred)
+   (clojure-mode    . lsp-deferred)
+   (clojuredoc-mode . lsp-deferred)
+   (terraform-mode  . lsp-deferred)
+   (lsp-mode        . efs/lsp-mode-setup))
 
   ;; :bind
   ;; (:map company-active-map
@@ -93,39 +95,44 @@ at [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview
                               :server-id 'lsp-go-remote))))
 
   :custom
-  (setq lsp-completion-enable t
-        lsp-completion-show-detail t
-        lsp-completion-show-kind t
-        lsp-enable-indentation t
-        lsp-auto-guess-root t
+  (setq lsp-auto-configure t
+	lsp-keep-workspace-alive t
 
-        ;; enable log for debug lsp-workspace-show-log will switch
-        ;; to the corresponding log buffer.
-        ;; set this to t, else TRAMP + lsp-mode won't work
-        lsp-log-io t
+	lsp-inlay-hint-enable t
 
-        ;; turn off for better performance
-        lsp-enable-symbol-highlighting nil
-        lsp-enable-on-type-formatting  nil
+	lsp-completion-enable t
+	lsp-completion-show-detail t
+	lsp-completion-show-kind t
+	lsp-enable-indentation t
+	lsp-auto-guess-root t
 
-        ;; reduce unexpected modifications to code
-        ;; lsp-enable-on-type-formatting nil
-        ;; disable below 2 features that have great potential to make slow
-        lsp-enable-folding nil
-        lsp-enable-text-document-color nil
-        lsp-enable-links nil
-        lsp-signature-auto-activate nil
-        lsp-signature-render-documentation t
+	;; enable log for debug lsp-workspace-show-log will switch
+	;; to the corresponding log buffer.
+	;; set this to t, else TRAMP + lsp-mode won't work
+	lsp-log-io t
 
-        ;; lsp-print-performance t
-        lsp-eldoc-hook nil
-        lsp-eldoc-render-all t
+	;; turn off for better performance
+	lsp-enable-symbol-highlighting nil
+	lsp-enable-on-type-formatting  nil
 
-        ;; this is set in config.org (1Mb from default of 4Kb or 4096)
-        read-process-output-max (* 1024 1024 10)
+	;; reduce unexpected modifications to code
+	;; lsp-enable-on-type-formatting nil
+	;; disable below 2 features that have great potential to make slow
+	lsp-enable-folding nil
+	lsp-enable-text-document-color nil
+	lsp-enable-links nil
+	lsp-signature-auto-activate nil
+	lsp-signature-render-documentation t
 
-        lsp-idle-delay 0.5
-        lsp-enable-file-watchers nil)
+	;; lsp-print-performance t
+	lsp-eldoc-hook nil
+	lsp-eldoc-render-all t
+
+	;; this is set in config.org (1Mb from default of 4Kb or 4096)
+	read-process-output-max (* 1024 1024 10)
+
+	lsp-idle-delay 0.5
+	lsp-enable-file-watchers nil)
   (setq lsp-terraform-ls-enable-show-reference t)
 
   :config (progn
@@ -211,8 +218,6 @@ between symbols using ~M-., M-, and M-?~ keys.
 ;; lsp-ui gives blue colored documentation boxes and the sidebar info
 (use-package lsp-ui
   :quelpa (lsp-ui :fetcher github :repo "emacs-lsp/lsp-ui" :upgrade t)
-  ;;:after (lsp-mode)
-
   :hook (lsp-mode . lsp-ui-mode)
 
   ;; bindings
@@ -220,28 +225,10 @@ between symbols using ~M-., M-, and M-?~ keys.
          (:map lsp-ui-mode-map
                ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
                ([remap xref-find-references]  . lsp-ui-peek-find-references)))
-
   :custom ((lsp-ui-sideline-enable              t)
-           ;; (lsp-ui-sideline-delay               0.05)
-           ;; (lsp-ui-sideline-show-hover          nil)
-           ;; (lsp-ui-sideline-ignore-duplicate    t)
-           ;; (lsp-ui-sideline-show-diagnostics    t)
-           ;; (lsp-ui-sideline-show-code-actions   nil)
-           ;; (lsp-ui-sideline-update-mode         'point)
-           ;; (lsp-ui-peek-enable                  t)
-           ;; (lsp-ui-peek-always-show             t)
-           ;; (lsp-ui-doc-enable                   t)
-           ;; (lsp-ui-doc-header                   t)
-           ;; (lsp-ui-doc-show-with-cursor         t)
-           ;; (lsp-ui-doc-include-signature        t)
-           ;; (lsp-ui-doc-use-childframe           nil)
-           ;; (lsp-ui-doc-position                 'at-point)
-           ;; (lsp-ui-doc-delay                    0.3 "higher than eldoc delay")
-           ;; (lsp-ui-doc-max-width                100)
-           ;; (lsp-ui-doc-max-height               30)
+		   (lsp-ui-doc-include-signature        t)
            (lsp-ui-doc-border                   (face-foreground 'default))
            (lsp-ui-sideline-code-actions-prefix ""))
-
   :config (progn
             (lsp-ui-doc-show)
 
@@ -411,15 +398,10 @@ Treemacs is a tree layout file explorer for Emacs and it provides UI elements th
   ;; lsp-treemacs configuration
   (use-package lsp-treemacs
     :ensure t
-
     :quelpa
     (:fetcher github :repo "https://github.com/emacs-lsp/lsp-treemacs")
-
     :after (lsp treemacs)
-
-    :commands
-    (lsp-treemacs-errors-list)
-
+    :commands (lsp-treemacs-errors-list)
     ;; enable bidirectional synchronization of lsp workspace folders
     ;; and treemacs projects.
     :hook
@@ -446,10 +428,8 @@ Helm and Ivy users have extra commands that leverage lsp-mode extra information.
 ;; consult-lsp
 (use-package consult-lsp
   :defer t
-
   :quelpa
   (:fetcher github :repo "https://github.com/gagbo/consult-lsp")
-
   :commands
   (consult-lsp-symbols consult-lsp-diagnostics consult-lsp-file-symbols))
 #+end_src
@@ -462,8 +442,7 @@ Helm and Ivy users have extra commands that leverage lsp-mode extra information.
 ;; THIS IS NOT AVAILABLE, SO USE
 ;; USE :CONFIG (setq lsp-completion-provider :capf) IN COMPANY
 (use-package company-lsp
-  :defer t
-  :after lsp-mode
+  ;;:after lsp-mode
   :config (push 'company-lsp company-backends)
   :config
   (setq company-lsp-cache-candidates 'auto

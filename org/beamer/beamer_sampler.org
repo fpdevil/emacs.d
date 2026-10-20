@@ -1,0 +1,42 @@
+#+title: Beamer Adding Terms
+#+subtitle: Algebraic Techniques
+#+author: Sampath Singamsetty
+#+startup: beamer
+#+options: H:1 toc:nil
+#+latex_class: beamer
+#+latex_class_options: [bigger]
+#+columns: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+beamer_theme: SimplePlus
+#+LATEX_HEADER: \usepackage{tasks}
+
+* DO NOW
+1. Identify the like terms:
+   \[ 4ab^2, 4ab, 2a^2b^2, 3b^2a \]
+   \vskip+5ex
+2. Which is the constant term?
+   | 3x | 4x^2 | 5x^0 | x |
+
+* Adding Terms
+To add terms:
+- make sure the two terms are *like* terms
+- add the coefficients
+
+** Careful! :B_block:
+Don't forget to take any minus signs into account!
+
+* Practice
+Simplify the below expression's:
+\begin{tasks}[after-item-skip=8ex](2)
+\task $2x+3x$
+\task $3a+5b+6a$
+\task $a+b+2b+a$
+\task $a^{2}+2ab-2ba+b^{2}$
+\task* $a+2a-3a+4a-5a+6a-7a+8a-9a+10a$
+\end{tasks}
+
+* :B_ignoreheading:
+#+begin_center
+*What's $2n$ plus $2n$?*
+\vskip+2ex
+I don't know, it sounds $4n$ to me...
+#+end_center

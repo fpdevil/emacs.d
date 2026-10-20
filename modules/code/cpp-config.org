@@ -308,10 +308,10 @@ handling of these languages.
 ** Some LSP configuration
 Set extra arguments for =clangd= if =LSP= is used.
 
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 ;; extra arguments for clangd and lsp
 (with-no-warnings
-  (defconst ccls-args nil)
+  (defconst ccls-args '("--log-file=/tmp/ccls.log"))
   (defconst clangd-args '("-j=4"
                           "--background-index"
                           "--clang-tidy"
@@ -322,7 +322,7 @@ Set extra arguments for =clangd= if =LSP= is used.
   (with-eval-after-load 'lsp-mode
     ;; We Prefer `clangd' over `ccls'
     (cond ((executable-find "clang")
-           (setq lsp-clients-clangd-executable "clangd"
+           (setq lsp-clients-clangd-executable (concat (shell-command-to-string "printf %s \"$(brew --prefix llvm)\"") "/bin/clangd")
                  lsp-clients-clangd-args clangd-args))
           ((executable-find "ccls")
            (setq lsp-clients-clangd-executable "ccls"
@@ -347,10 +347,9 @@ Homebrew ccls version <unknown>
 clang version 16.0.6
 #+end_src
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; ccls - language server
 (use-package ccls
-  :disabled t
   :init
   (setq ccls-sem-highlight-method 'font-lock)
   :hook
@@ -360,7 +359,10 @@ clang version 16.0.6
   (setq ccls-initialization-options '(:index (:comments 2)
                                              :completion (:detailedLabel t)
                                              :cacheDirectory "/tmp/ccls_cache")
-        ccls-executable "~/.emacs.d/ccls/Release/ccls")
+        ccls-executable "~/.emacs.d/ccls/Release/ccls"
+        ccls-args '("--log-file=/tmp/ccls.log")
+		lsp-prefer-flymake nil)
+  (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
 
   ;; lsp customisations
   (lsp-register-client
@@ -377,21 +379,6 @@ clang version 16.0.6
     :library-folders-fn nil))
 
   :custom (ccls-enable-skipped-ranges nil))
-#+end_src
-
-CCLS and Eglot configuration
-
-#+begin_src emacs-lisp :lexical no
-;; eglot ccls workspace configuration
-(with-eval-after-load "eglot"
-  (add-to-list 'eglot-workspace-configuration
-               `((:ccls . ((:clang . ,(list
-                                       :extraArgs
-                                       ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
-                                        "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
-                                        "-isystem/usr/local/include"]
-                                       :resourceDir
-                                       (cdr (aqua/get-process "clang" "-print-resource-dir")))))))))
 #+end_src
 
 * Irony mode
@@ -423,7 +410,7 @@ package management procedures like =use-package= or custom =elisp= code.
 The simplest configuration would be just including the below in
 appropriate =elisp=
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (add-hook 'c++-mode-hook  'irony-mode)
 (add-hook 'c-mode-hook    'irony-mode)
 (add-hook 'objc-mode-hook 'irony-mode)
@@ -522,8 +509,7 @@ echo | clang -x c++ -v -E - 2>&1 | sed -n '/^#include </,/^End/s|^[^/]*\([^ ]*/i
 
 #+begin_src emacs-lisp
 (use-package irony
-  :defer 5
-  :quelpa (:fetcher github :repo "https://github.com/Sarcasm/irony-mode")
+  ;;:quelpa (:fetcher github :repo "https://github.com/Sarcasm/irony-mode")
   :init
   (add-hook 'c++-mode-hook 'irony-mode)
   (add-hook 'c-mode-hook 'irony-mode)
@@ -549,8 +535,9 @@ echo | clang -x c++ -v -E - 2>&1 | sed -n '/^#include </,/^End/s|^[^/]*\([^ ]*/i
               (setq irony-additional-clang-options
                     '("-std=c++20 -Wall"
                       "-I/usr/local/include/opencv4"
-                      "-I/opt/homebrew/Cellar/llvm/20.1.8/bin/../include/c++/v1"
-                      "-I/opt/homebrew/Cellar/llvm/20.1.8/lib/clang/20/include"
+                      "-I/opt/homebrew/Cellar/llvm/21.1.6/bin/../include/c++/v1"
+                      "-I/opt/homebrew/Cellar/llvm/21.1.6/lib/clang/21/include"
+                      "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
                       "-I/Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include"))))
   :custom
   (custom-set-variables
@@ -562,11 +549,20 @@ echo | clang -x c++ -v -E - 2>&1 | sed -n '/^#include </,/^End/s|^[^/]*\([^ ]*/i
 #+begin_src emacs-lisp :lexical no
 ;; company integration
 (use-package company-irony
-  :defer 3
-  :after (company)
+  :after (company irony)
+  :ensure t
   :config
   (progn
     (eval-after-load 'company '(add-to-list 'company-backends 'company-irony))))
+#+end_src
+
+#+begin_src emacs-lisp :lexical no
+;; company irony c `headers
+(use-package company-irony-c-headers
+  :after (irony company)
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'company-irony-c-headers))
 #+end_src
 
 ** Eldoc integration

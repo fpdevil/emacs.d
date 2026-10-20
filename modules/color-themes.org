@@ -506,10 +506,9 @@ Moe theme is a customizable colorful eye-candy theme for Emacs which is optimize
 Now set the required theme for Emacs using the custom function defined.
 
 #+begin_src emacs-lisp
-;; (aqua/toggle-theme 'doom-oceanic-next)
-(load-theme 'doom-one t)
 ;; (load-theme 'modus-vivendi-tritanopia t)
-;; (load-theme 'catppuccin :no-confirm)
+(setq catppuccin-flavor 'latte)
+(load-theme 'catppuccin :no-confirm)
 #+end_src
 
 * Switch themes using Hydra

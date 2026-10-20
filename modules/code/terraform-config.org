@@ -33,14 +33,37 @@ basic support from an `LSP` component as well as a `company` support plugin.
     (outline-minor-mode 1)))
 #+end_src
 
+Terraform lsp integration
+#+begin_src emacs-lisp :lexical no
+(with-eval-after-load "lsp"
+  (add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
+
+  (lsp-register-client
+   (make-lsp-client :new-connection
+		    (lsp-stdio-connection '("~/aquamacs.d/.cache/lsp/terraform_ls/terraform-ls"
+					    "-enable-log-file"))
+                    :major-modes '(terraform-mode)
+                    :server-id 'terraform-ls))
+
+  (add-hook 'terraform-mode-hook #'lsp))
+#+end_src
+
 ** Company backend for Terraform
 =company-terraform= module provides company backend for terraform files to help
 with auto completions.
 #+begin_src emacs-lisp :lexical no
 ;; Company backend for terraform files
 (use-package company-terraform
-  :after (company)
-  :demand t
   :quelpa (company-terraform :fetcher "github" :repo "rafalcieslak/emacs-company-terraform")
+  :ensure t
   :config (company-terraform-init))
+#+end_src
+
+** Terraform Documentation
+Lookup docs from https://registry.terraform.io page on fly!
+
+#+begin_src emacs-lisp
+;; refer to terraform docs
+(use-package terraform-doc
+    :ensure t)
 #+end_src

@@ -1,0 +1,239 @@
+Here, =:exports both= in the ~org-babel~ code listings will automatically
+include the source code as well as the results without any explicit
+copying.
+
+* Sequence Diagrams
+
+A simple "sequence diagram" is provided here for reference:
+
+#+attr_html: :title Simple UML Diagram :align middle
+#+begin_src plantuml :results file :file ./sequence-sample.png :exports both
+skin rose
+
+title Example Sequence Diagram
+
+activate Client
+Client -> Server: Session Initiation
+note right: Client requests new session
+activate Server
+Client <-- Server: Authorization Request
+note left: Server requires authentication
+Client -> Server: Authorization Response
+note right: Client provides authentication details
+Server --> Client: Session Token
+note left: Session established
+deactivate Server
+Client -> Client: Saves token
+deactivate Client
+#+end_src
+
+#+RESULTS:
+[[file:./sequence-sample.png]]
+
+* Dot
+
+The following example of chaining uses the input table, dot-eg-table,
+which has one column for node names and another column for node
+labels. The table column names are optional in this case; the chain
+does not require them.
+
+#+name: dot-eg-table
+| node | label  |
+|------+--------|
+| a    | Hello  |
+| b    | World! |
+
+Now pass the =dot-eg-table= to an ~emacs-lisp~ code block named =make-dot=
+which will be responsible for producing a valid dot code.
+
+#+name: make-dot
+#+BEGIN_SRC emacs-lisp :var table=dot-eg-table shape="box" :results output
+(mapcar #'(lambda (x)
+            (princ (format "%s [label =\"%s\", shape = \"%s\"];\n"
+                           (cl-first x) (cl-second x) shape))) table)
+(princ (format "%s -- %s;\n" (cl-first (cl-first table)) (cl-first (cl-second table))))
+#+END_SRC
+
+#+RESULTS: make-dot
+: a [label ="Hello", shape = "box"];
+: b [label ="World!", shape = "box"];
+: a -- b;
+
+The =make-dot= code block is chained to a dot code block that wraps the
+input in a =graph{}= command.
+
+
+#+name: write-dot
+#+BEGIN_SRC dot :file ./test-dot.png :var input=make-dot
+graph {
+ $input
+}
+#+END_SRC
+
+#+RESULTS: write-dot
+[[file:./test-dot.png]]
+
+The following dot code block, =write-dot-cmdline= uses =cmdline= header
+argument to color the node labels red. Note that the =cmdline= header
+argument overwrites the default value, which sets =-T= to the graphic
+file type based on the name passed to the file header argument.
+
+#+name: write-dot-cmdline
+#+BEGIN_SRC dot :file ./test-dot-cmdline.png :var input=make-dot :cmdline -Tpng -Nfontcolor=red
+graph {
+ $input
+}
+#+END_SRC
+
+#+RESULTS: write-dot-cmdline
+[[file:./test-dot-cmdline.png]]
+** Another sample graph diagram
+
+#+name: sample-digraph
+#+BEGIN_SRC dot :file ./sample-digraph.png
+digraph G {
+  { rank=same;HTML;PDF; }
+  { rank=same;Orgexport;Nikola; }
+  Orgbabel [color=lightblue,style=filled,label="org-babel (ob)"];
+  Orgmode [color=limegreen,style=filled];
+  Graphviz [color=lightblue,style=filled];
+  PlantUML [color=lightblue,style=filled];
+  others [color=lightblue,style=filled,label="..."];
+  Orgexport [color=gold,style=filled,label="org-export (ox)"];
+  LaTeX [color=gold,style=filled];
+  Beamer [color=gold,style=filled];
+  PDF [color=gold,style=filled];
+  HTML [color=gold,style=filled];
+  Orgnikola [color=orange,style=filled,label="org-nikola"];
+  Nikola [color=orange,style=filled,label="Nikola (blog)"];
+  Orgbabel -> Orgmode -> Orgbabel;
+  Orgbabel -> Graphviz -> Orgbabel;
+  Orgbabel -> PlantUML -> Orgbabel;
+  Orgbabel -> others -> Orgbabel;
+  Orgmode -> Orgexport [weight=2];
+  Orgexport -> HTML;
+  Nikola -> Orgnikola -> Orgexport;
+  Nikola -> HTML;
+  Orgexport -> LaTeX;
+  Orgexport -> Beamer;
+  LaTeX -> PDF;
+  Beamer -> PDF;
+}
+#+END_SRC
+
+#+RESULTS: sample-digraph
+[[file:./sample-digraph.png]]
+
+* Activity Diagrams
+Activity diagrams offer a lot of possibilities to visualize decision
+processes. Here is a little example to visualize the boot phase of an
+embedded device.
+
+#+begin_src plantuml :results file :file ./sample-activity.png
+@startuml
+:FSBL;
+:U-Boot;
+if (SD card\nfound) then (yes)
+  :Load kernel\nfrom SD;
+  :Setup cmdline for\nrootfs from SD;
+elseif (USB medium\nfound) then (yes)
+  :Load kernel\nfrom USB;
+  :Setup cmdline for\nrootfs from USB;
+elseif (eMMC found) then (yes)
+  :Load kernel\nfrom eMMC;
+  :Setup cmdline for\nrootfs from eMMC;
+else (nothing)
+  #pink:Drop to shell;
+  kill
+endif
+:Boot Linux kernel;
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:./sample-activity.png]]
+
+* Mind maps
+This diagram type allows nice visualizations of hierarchies. Here is a
+little example visualizing Zephyr RTOS.
+
+#+name: mind-map
+#+begin_src plantuml :results file :file ./sample-mindmap.png
+@startmindmap
++[#FFBBCC] Zephyr OS
+++[#lightblue] 3rd Party Libraries
+++[#FFBBCC] Application Services
++++[#FFBBCC] MQTT
++++[#FFBBCC] HTTP
++++[#FFBBCC] CoAP
+++[#FFBBCC] OS Services
++++[#FFBBCC] TCP/UDP
++++[#FFBBCC] I2C
++++[#FFBBCC] File system
+++[#FFBBCC] Kernel
++++[#FFBBCC] Services / Scheduler
++++[#FFBBCC] Power Management
+++[#lightblue] HAL
+@endmindmap
+
+#+end_src
+
+#+RESULTS: mind-map
+[[file:./sample-mindmap.png]]
+
+* DITAA
+=Diagrams Through Ascii Art= (ditaa) is a different approach to
+generating diagrams from text. Instead of using declarative languages,
+the "source code" is an Ascii drawing generated by any means preferred
+by the user.. A plain text editor will do, or Artist Mode within the
+Emacs text editor is an especially elegant way to draw them. Ditaa
+will then convert this into a nice looking diagram, albeit only as a
+bitmap, e.g. PNG. It is not possible to generate an SVG with Ditaa,
+but we can circumvent this by using the Ditaa integration into
+PlantUML. As PlantUML can output SVG files, we gain one degree of
+freedom for high quality output by going this way.
+
+Here is a simple example showing the user vs. kernel space split of a
+regular Linux kernel.
+
+#+name: ditaa-sample
+#+begin_src ditaa :results file :file ./ditaa-sample.png :java -Dfile.encoding=UTF-8
+@startditaa
++-------------+ +-------------+ +-------------+
+|cBLU         | |cBLU         | |cBLU         |
+|  Process 1  | |  Process 2  | |  Process 3  |
+|             | |             | |             |
++-------------+ +-------------+ +-------------+
+       ^               ^               ^          User space
+       |        System |               |  ------------------
+       v         call  v               v        Kernel space
++---------------------------------------------+
+| Virtual memory,        cPNK Linux Kernel    |
+| Scheduler, Device driver                    |
+| Filesystems, IPC, ...                       |
++---------------------------------------------+
+                                          ------------------
++-----------+-----------+-----------+---------+     Hardware
+| Ethernet  |    CAN    |    I2C    |  .....  |
++-----------+-----------+-----------+---------+
+@endditaa
+#+end_src
+
+#+RESULTS: ditaa-sample
+[[file:./ditaa-sample.png]]
+
+** Ditaa box with rounded corners
+We can round all the corners by passing ditaa the =-r=, =--round-corners=
+command line switch as shown below:
+
+#+NAME: hello-world-round
+#+BEGIN_SRC ditaa :file ./hello-world-round.png :cmdline -r
++--------------+
+|              |
+| Hello World! |
+|              |
++--------------+
+#+END_SRC
+
+#+RESULTS: hello-world-round
+[[file:./hello-world-round.png]]

@@ -1,4 +1,5 @@
 ;;; Package --- init.el
+;;; -*- lexical-binding: t -*-
 ;;;
 ;;; Last Modified:
 ;;;
@@ -11,7 +12,8 @@
 ;;; Code:
 ;;;
 ;;; Initial boilerplate
-(require 'cl-lib)
+(eval-when-compile
+  (require 'cl-lib))
 
 ;; set emacs user directory
 (unless (boundp 'user-emacs-directory)
@@ -37,5 +39,3 @@
              (org-babel-load-file (expand-file-name "config.org" user-emacs-directory))))
 
 ;;; init.el ends here
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)

@@ -12,6 +12,9 @@
 ;; This module contains the packages to deal with the Version Control
 ;; Systems specifically with github and it's associated packages.
 ;;
+;; References and Guides
+;; GIT in Practice: https://www.dmsussman.org/resources/gitinpractice/
+;;
 ;;; Code:
 ;;;
 #+end_src

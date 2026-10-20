@@ -57,8 +57,11 @@ unusedvariable: check for unused variables
             (useany         . t)
             (unusedvariable . t)))
     ;; formatting...
-    (setq-local tab-width 4)
-    (setq gofmt-command "goimports")
+    (add-hook 'go-mode-hook
+              (lambda ()
+                (setq indent-tabs-mode 1)
+                (setq tab-width 2)
+                (setq gofmt-command "goimports")))
     (add-hook 'before-save-hook 'gofmt-before-save))
 
   :custom

@@ -111,3 +111,48 @@ openssl s_client -connect aws.prdgw.api.united.com:443 -showcerts </dev/null 2>&
 
 Mar 6 00:00:00 2025 GMT TO Mar 6 23:59:59 2026 GMT
 ```
+
+8. LDAP Account details (Only Windows)
+```sh
+# Get-ADUser -Identity "SVC-PKANAPR" -Properties LastLogonDate | Select-Object Name,LastLogonDate
+
+PS C:\Users\n073866> Get-ADUser -Identity "SVC-PKANAPR" -Properties LastLogonDate | Select-Object Name,LastLogonDate
+
+Name                                                        LastLogonDate
+----                                                        -------------
+SVC-PKANAPR                                                 11/25/2025 8:36:11 AM
+```
+
+9. If the exported pdf from an org file is adding an unwanted blank page at the beginning, we can trim that by adding below in preamble section and compiling again.
+
+```elisp
+#+LATEX_HEADER: \usepackage{atbegshi}
+#+LATEX_HEADER: \AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
+```
+or if a plain latex file, add below:
+```tex
+\usepackage{atbegshi}
+\AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
+```
+
+10. Check CRL
+```sh
+λ openssl s_client -connect api.qa.aws.united.com:443 -showcerts </dev/null 2>&1 | openssl x509 -noout -text | grep -A 4 'X509v3 CRL Distribution Points'
+            X509v3 CRL Distribution Points:
+                Full Name:
+                  URI:http://crl3.digicert.com/DigiCertGlobalG3TLSECCSHA3842020CA1-2.crl
+```
+
+11. SAN, Chain and Validity of remote certificate
+```bash
+λ openssl s_client -connect api.qa.aws.united.com:443 -showcerts </dev/null 2>&1 | openssl x509 -noout -dates -subject -issuer -ext subjectAltName
+notBefore=Nov 10 00:00:00 2025 GMT
+notAfter=Nov 11 23:59:59 2026 GMT
+subject=C=US, ST=Illinois, L=Arlington Heights, O=United Airlines Inc, CN=api-qa.united.com
+issuer=C=US, O=DigiCert Inc, CN=DigiCert Global G3 TLS ECC SHA384 2020 CA1
+X509v3 Subject Alternative Name:
+    DNS:api-qa.united.com, DNS:aodcommandcenter-qa.awscloud.ual.com, DNS:api.dev.aws.united.com, DNS:api.preprod.aws.united.com, DNS:api.qa.aws.united.com, DNS:api.stg.aws.united.com, DNS:apiauth.ndc.united.com, DNS:apigw.ndc.united.com, DNS:aws.dev.webauth.united.com, DNS:aws.devgw.api.united.com, DNS:aws.oh.devgw.api.united.com, DNS:aws.oh.prdgw.api.united.com, DNS:aws.oh.preprodgw.api.united.com, DNS:aws.oh.qagw.api.united.com, DNS:aws.oh.stagegw.api.united.com, DNS:aws.preprodgw.api.united.com, DNS:aws.qagw.api.united.com, DNS:aws.svcgw.dev.useast1.pcr.ual.com, DNS:aws.svcgw.dev.useast2.pcr.ual.com, DNS:aws.svcgw.preprod.useast1.pcr.ual.com, DNS:aws.svcgw.preprod.useast2.pcr.ual.com, DNS:aws.svcgw.qa.useast1.pcr.ual.com, DNS:aws.svcgw.qa.useast2.pcr.ual.com, DNS:aws.svcgw.stg.useast1.pcr.ual.com, DNS:aws.svcgw.stg.useast2.pcr.ual.com, DNS:aws.svcgw.useast1.pcr.ual.com, DNS:aws.svcgw.useast2.pcr.ual.com, DNS:mobileapi.dev.united.com, DNS:mobileapi.qa.united.com, DNS:mobileapi.stage.united.com, DNS:promo.qa.arv.united.com, DNS:promo.qa.united.com, DNS:svcgw.dev.aws.united.com, DNS:svcgw.preprod.aws.united.com, DNS:svcgw.qa.aws.united.com, DNS:svcgw.stg.aws.united.com, DNS:travelhelp.services-qa.united.com, DNS:ucbadm.preprod.ual.com, DNS:ucbadm.stage.ual.com, DNS:webauth.dev.aws.united.com, DNS:webauth.qa.aws.united.com, DNS:webauth.stg.aws.united.com, DNS:zh.dev.mystatus.united.com, DNS:zh.staging.mystatus.united.com
+```
+
+
+# vim: set filetype=markdown:

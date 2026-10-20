@@ -1,5 +1,3 @@
-
-
 #+begin_src emacs-lisp :exports none
   ;;;-*- lexical-binding:t ; -*-
   ;;; package --- eglot lsp client configuration
@@ -13,14 +11,15 @@
   ;;; Date               :
   ;;; Last Modified Date :
   ;;
-  ;;
+  ;;  References:
+  ;;     https://mort.io/blog/emacs-eglot/
   ;;; Code:
   ;;;
 #+end_src
 
 #+STARTUP: indent
 
-* EGLOT Emacs Polyglot Integration                                      :TOC:
+* EGLOT Emacs Polyglot Integration                                      :TOC_4:
 - [[#eglot-configuration][Eglot configuration]]
   - [[#protocol-extensions-for-eglot-eglot-x][Protocol extensions for Eglot: eglot-x]]
   - [[#yasnippet-suggestions-for-eglot][YASnippet suggestions for eglot]]
@@ -35,127 +34,136 @@
 Eglot is now in Emacs's core! Upcoming Emacs 29 will have M-x eglot built-in.
 
 #+begin_src emacs-lisp :lexical no
-;; eglot lsp client
-;; Adds LSP support. Note that you must have the respective LSP
-;; server installed on your machine to use it with Eglot. e.g.
-;; rust-analyzer to use Eglot with `rust-mode'.
-(use-package eglot
-  :ensure t
-  :preface
-  ;; Collects and displays all available documentation immediately, even if
-  ;; multiple sources provide it. It concatenates the results.
-  (defun mp-eglot-eldoc ()
-    (setq eldoc-documentation-strategy
-          'eldoc-documentation-compose-eagerly))
+  ;; eglot lsp client
+  ;; Adds LSP support. Note that you must have the respective LSP
+  ;; server installed on your machine to use it with Eglot. e.g.
+  ;; rust-analyzer to use Eglot with `rust-mode'.
+  (use-package eglot
+    :ensure t
+    :preface
+    ;; Collects and displays all available documentation immediately, even if
+    ;; multiple sources provide it. It concatenates the results.
+    (defun mp-eglot-eldoc ()
+      (setq eldoc-documentation-strategy
+            'eldoc-documentation-compose-eagerly))
 
-  ;; add the modes for which eglot needs to be enabled
-  :hook ((js-mode
-          web-mode
-          css-mode
-          c-mode
-          c++-mode
-          go-mode
-          lsp-mode
-          latex-mode
-          LaTeX-mode
-          python-mode
-          rust-mode) . eglot-ensure)
-  ((eglot-managed-mode . mp-eglot-eldoc))
+    ;; add the modes for which eglot needs to be enabled
+    :hook
+    ((js-mode
+      web-mode
+      css-mode
+      c-mode
+      c++-mode
+      c-or-c++-mode
+      go-mode
+      lsp-mode
+      latex-mode
+      LaTeX-mode
+      python-mode
+      rust-mode) . eglot-ensure)
+    ((eglot-managed-mode . mp-eglot-eldoc)
+     (eglot-managed-mode . eglot-inlay-hints-mode))
 
-  :init
-  ;; A setting of nil or 0 means Eglot will not block the UI at all, allowing
-  ;; Emacs to remain fully responsive, although LSP features will only become
-  ;; available once the connection is established in the background.
-  (setq eglot-sync-connect             0
-        eglot-connect-timeout          10
-        eglot-events-buffer-size       0        ; No event buffers, disable providers cause
-                                                ; a lot of hover traffic.
-        eglot-autoshutdown             t        ; shutdown unused servers after killing last managed buffer
-        eglot-extend-to-xref           t        ; activate Eglot in cross-referenced non-project files
-        eglot-send-changes-idle-time   0.5
-        ;; NOTE We disable eglot-auto-display-help-buffer because :select t in
-        ;;      its popup rule causes eglot to steal focus too often.
-        eglot-auto-display-help-buffer nil)
+    :init
+    ;; A setting of nil or 0 means Eglot will not block the UI at all, allowing
+    ;; Emacs to remain fully responsive, although LSP features will only become
+    ;; available once the connection is established in the background.
+    (setq eglot-sync-connect             0
+          eglot-connect-timeout          10
+          eglot-events-buffer-size       0        ; No event buffers, disable providers cause a lot of hover traffic.
+          eglot-autoshutdown             t        ; shutdown unused servers after killing last managed buffer
+          eglot-extend-to-xref           t        ; activate Eglot in cross-referenced non-project files
+          ;; NOTE We disable eglot-auto-display-help-buffer because :select t in
+          ;;      its popup rule causes eglot to steal focus too often.
+          ;; eglot-auto-display-help-buffer nil
+  	eglot-send-changes-idle-time   0.5)
 
-  ;; Show all of the available eldoc information when we want it. This way Flymake errors
-  ;; don't just get clobbered by docstrings.
-  ;; (add-hook 'eglot-managed-mode-hook
-  ;;           (lambda ()
-  ;;             "Make sure Eldoc will show us all of the feedback at point."
-  ;;             (setq-local eldoc-documentation-strategy
-  ;;                         #'eldoc-documentation-compose)))
+    ;; Show all of the available eldoc information when we want it. This way Flymake errors
+    ;; don't just get clobbered by docstrings.
+    ;; (add-hook 'eglot-managed-mode-hook
+    ;;           (lambda ()
+    ;;             "Make sure Eldoc will show us all of the feedback at point."
+    ;;             (setq-local eldoc-documentation-strategy
+    ;;                         #'eldoc-documentation-compose)))
 
-  :config (progn
-            ;; set max bytes to read from subprocess in a single chunk
-            (setq read-process-output-max (* 1024 1024))
+    :config (progn
+  	    ;; set max bytes to read from subprocess in a single chunk
+              (setq read-process-output-max (* 1024 1024))
 
-            ;; Disable flymake in eglot buffers
-            (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
+              ;; Disable flymake in eglot buffers
+              (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
 
-            ;; to eliminate laggy typing by removing the debug logging
-            (fset #'jsonrpc--log-event #'ignore)
+              ;; to eliminate laggy typing by removing the debug logging
+              (fset #'jsonrpc--log-event #'ignore)
 
-            ;; eglot lsp server registrations
-            ;; Additional LSP servers may be configured by modifying `eglot-server-programs'
-            ;; For C/C++
-            (add-to-list 'eglot-server-programs
-                         '((c++-mode c-mode) "clangd"
-                           "-j=3"
-                           "--enable-config"
-                           "--background-index"
-                           "--clang-tidy"
-                           "--completion-style=detailed"))
+              ;; eglot lsp server registrations
+              ;; Additional LSP servers may be configured by modifying `eglot-server-programs'
+              ;; For C/C++
+              (add-to-list 'eglot-server-programs
+                           '((c++-mode c-mode) "clangd"
+                             "-j=3"
+                             "--enable-config"
+                             "--background-index"
+                             "--clang-tidy"
+                             "--completion-style=detailed"))
 
-            ;; For Python
-            (add-to-list 'eglot-server-programs
-                         `(python-mode
-                           . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
-                                                    ("jedi-language-server")
-                                                    ("pylsp")))))
+              ;; (add-to-list 'eglot-workspace-configuration
+              ;;      `((:ccls . ((:clang . ,(list
+              ;;                  :extraArgs
+              ;;                  ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
+              ;;                   "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+              ;;                   "-isystem/usr/local/include"]
+              ;;                  :resourceDir
+              ;;                  ;; (cdr (aqua/get-process "clang" "-print-resource-dir"))
+              ;;                  ,(replace-regexp-in-string
+              ;;                    "\n$" ""
+              ;;                    (shell-command-to-string "clang -print-resource-dir"))
+              ;;                  ))))))
 
-            ;; (setq eglot-workspace-configuration
-            ;;       '((:pylsp . (:configurationSources
-            ;;                    ["flake8"]
-            ;;                    :plugins (
-            ;;                              :pycodestyle (:enabled :json-false)
-            ;;                              :black       (:enabled nil :line_length 88 :cache_config t)
-            ;;                              :mccabe      (:enabled nil)
-            ;;                              :flake8      (:enabled t :json-false)
-            ;;                              :pydocstyle  (:enabled t :convention "numpy")
-            ;;                              :yapf        (:enabled :json-false)
-            ;;                              :autopep8    (:enabled :json-false))))))
+              ;; For Python
+              (add-to-list 'eglot-server-programs
+                           `(python-mode
+                             . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+                                                      ("jedi-language-server")
+                                                      ("pylsp")))))
 
-            ;; For JavaScript and TypeScript...
-            (add-to-list 'eglot-server-programs
-                         '(web-mode . ("typescript-language-server" "--stdio")))
+              ;; For JavaScript and TypeScript...
+              (add-to-list 'eglot-server-programs
+                           '(web-mode . ("typescript-language-server" "--stdio")))
 
-            ;; For Rust
-            (add-to-list 'eglot-server-programs
-                         `(rust-mode . ("rust-analyzer" :initializationOptions
-                                        ( :procMacro (:enable t)
-                                          :cargo ( :buildScripts (:enable t)
-                                                   :features "all")))))
+              ;; For Rust
+  	    (add-to-list 'eglot-server-programs
+  			 '((rust-mode) . ("rust-analyzer" :initializationOptions
+  					  ( :check (:command "clippy")
+  					    :procMacro ( :attributes (:enable t)
+  							 :enable t)
+  					    :cargo ( :sysroot "discover"
+  						     :features "all"
+  						     :buildScripts (:enable t))
+  					    :diagnostics ( :disabled ["unresolved-proc-macro"
+  								      "unresolved-macro-call"
+  								      "macro-error"])))))
 
-            ;; For CSS lsp support
-            ;; TailwindCSS LSP: npm install -g @tailwindcss/language-server
-            ;; (add-to-list 'eglot-server-programs
-            ;;              '(js-mode "tailwindcss-language-server" "--stdio"))
+              ;; For CSS lsp support
+              ;; TailwindCSS LSP: npm install -g @tailwindcss/language-server
+              ;; (add-to-list 'eglot-server-programs
+              ;;              '(js-mode "tailwindcss-language-server" "--stdio"))
 
-            ;; For LaTeX editing
-            (add-to-list 'eglot-server-programs '(LaTeX-mode . ("digestif")))
+              ;; For LaTeX editing
+              ;; (add-to-list 'eglot-server-programs '(LaTeX-mode . ("digestif")))
 
-            ;; CSS LSP: npm i -g vscode-langservers-extracted
-            ;; https://github.com/hrsh7th/vscode-langservers-extracted
-            (add-to-list 'eglot-server-programs
-                         '(css-mode . ("vscode-css-language-server" "--stdio"))))
-  :bind
-  ;; key bindings
-  (:map eglot-mode-map
-        ("C-c e f" . eglot-format)
-        ("C-c e r" . eglot-rename)
-        ("C-c e h" . eglot-help-at-point)
-        ("C-c e d" . eglot-find-declaration)
-        ("C-c e i" . eglot-code-action-organize-imports)))
+              ;; CSS LSP: npm i -g vscode-langservers-extracted
+              ;; https://github.com/hrsh7th/vscode-langservers-extracted
+              (add-to-list 'eglot-server-programs
+                           '(css-mode . ("vscode-css-language-server" "--stdio"))))
+    :bind
+    ;; key bindings
+    (:map eglot-mode-map
+          ("C-c e f" . eglot-format)
+          ("C-c e r" . eglot-rename)
+          ("C-c e h" . eglot-help-at-point)
+          ("C-c e d" . eglot-find-declaration)
+          ("C-c e i" . eglot-code-action-organize-imports)))
 #+end_src
 
 ** Protocol extensions for Eglot: eglot-x
@@ -217,7 +225,7 @@ a front-end interface for the workspace/symbols LSP procedure call.
 (use-package consult-eglot
   :defer t
   :after (vertico)
-  :quelpa (:fetcher github :repo "https://github.com/mohkale/consult-eglot"))
+  :quelpa (:fetcher github :repo "mohkale/consult-eglot"))
 #+end_src
 
 * FlyCheck integration
@@ -230,7 +238,6 @@ syntactic checks performed by the LSP server.
 ;;  Flycheck support for eglot
 (use-package flycheck-eglot
   :quelpa ((flycheck-eglot :fetcher github :repo "flycheck/flycheck-eglot") :upgrade t)
-  ;;:after (flycheck eglot)
   :config
   (setq flycheck-eglot-exclusive nil)
   (setq flycheck-eglot-enable-diagnostic-tags)

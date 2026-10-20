@@ -47,27 +47,27 @@ Restricting the text files to 80 characters for easy readability.
 #+begin_src emacs-lisp
 (use-package writeroom-mode
   :defer 3
-
   :init
   ;; (add-hook 'org-mode-hook 'writeroom-mode)
   (add-hook 'writeroom-mode-hook
             (lambda () (display-line-numbers-mode -1)))
-
   :custom
   (writeroom-global-effects nil)
   (writeroom-maximize-window nil)
   (writeroom-fringes-outside-margins nil)
-
   :bind
   (("C-c w w" . writeroom-mode)
    (:map writeroom-mode-map
          ("C-M-<" . writeroom-decrease-width)
          ("C-M->" . writeroom-increase-width)))
-
   :config
   (if (> (frame-width) 200)
-          (setq writeroom-width (- (frame-width) 80))
-        (setq writeroom-width 140)))
+      (setq writeroom-width (- (frame-width) 80))
+    (setq writeroom-width 140))
+  (setq writeroom-fullscreen-effect nil
+		writeroom-maximize-window nil
+		writeroom-mode-line t
+		writeroom-major-modes '(text-mode org-mode markdown-mode nov-mode Info-mode)))
 #+end_src
 
 ** Olivetti mode

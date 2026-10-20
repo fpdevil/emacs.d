@@ -253,12 +253,12 @@ beautiful presentations with 3D effects from simple but powerful Org contents.
 
 ** Trying the org-re-reveal
 Not using this at the moment
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp :tangle no
 ;; trying org-re-reveal
 (use-package org-re-reveal
-  :ensure nil
-  :disabled t
-  :quelpa (:fetcher github :repo "https://github.com/emacsmirror/org-re-reveal")
+  :ensure t
+  ;;:disabled t
+  :straight (:type git :host gitlab :repo "oer/org-re-reveal" :build t)
   :init
   (setq org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
         org-re-reveal-hlevel 2
@@ -275,6 +275,15 @@ The below code snippet if executed will generate a sample =html= presentation
        (org-reveal-export-to-html-and-browse))
 #+end_src
 
+*** oer-reveal with emacs-reveal
+=Emacs-reveal= provides package for =Emacs= configuration with the latest
+=org-re-reveal=.
+
+#+begin_src emacs-lisp :tangle no
+(use-package emacs-reveal
+  :ensure t
+  :straight (:type git :host gitlab :repo "oer/emacs-reveal" :build t))
+#+end_src
 
 ** Presentation tool for org-mode with org-tree-slide
 A presentation tool for ~org-mode~ based on the visibility of outline trees using

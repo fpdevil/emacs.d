@@ -152,8 +152,7 @@ as lsp-mode and Emacs 28's elisp-mode) provide.
 ;; kind-icon colorful icon completion for Emacs
 (use-package
   kind-icon
-  :straight '(kind-icon :host github :repo "jdtsmith/kind-icon")
-  :ensure t
+  :straight (kind-icon :type git :host github :repo "jdtsmith/kind-icon")
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly

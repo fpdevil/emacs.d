@@ -125,10 +125,6 @@
   - [[#plantuml][PlantUML]]
   - [[#ditaa-diagrams-through-ascii-art][DITAA DIagrams Through Ascii Art]]
   - [[#graphviz-dot-mode][graphviz-dot-mode]]
-- [[#ai-integration][AI Integration]]
-  - [[#org-ai][Org AI]]
-  - [[#chatgpt-shell-support-in-babel][ChatGPT Shell support in Babel]]
-  - [[#babel-extension-for-chat-assistant][BABEL extension for Chat Assistant]]
 - [[#babel-configuration-and-customisation][BABEL configuration and customisation]]
   - [[#register-languages-for-babel][Register languages for babel]]
   - [[#compiler-and-header-options][Compiler and Header options]]
@@ -671,7 +667,9 @@ This package offers an Org mode outline window that does not use indirect buffer
   (org-bars :fetcher github :repo "tonyaldon/org-bars" :upgrade t)
   :if (display-graphic-p)
   :hook
-  (org-mode . org-bars-mode))
+  (org-mode . org-bars-mode)
+  :init
+  (setq org-bars-with-dynamic-stars-p nil))
 #+end_src
 
 ** Sticky Headers
@@ -958,10 +956,10 @@ More information about this can be found at [[https://orgmode.org/worg/exporters
   :ensure nil
   :defer 3
   :init
-    (setq org-html-postamble nil)
-    (setq org-export-with-section-numbers nil)
-    (setq org-export-with-toc t)
-    (setq org-html-head-extra "
+  (setq org-html-postamble nil)
+  (setq org-export-with-section-numbers nil)
+  (setq org-export-with-toc t)
+  (setq org-html-head-extra "
      <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
      <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700' rel='stylesheet' type='text/css'>
      <style type='text/css'>
@@ -978,9 +976,22 @@ More information about this can be found at [[https://orgmode.org/worg/exporters
   ;; Output type to be used by htmlize when formatting code snippets
   (setq org-html-htmlize-output-type 'css)
   ;; coding system for HTML export
-  (setq org-html-coding-system 'utf-8)
+  (setq org-html-coding-system 'utf-8-unix)
   ;; disable HTML link validation
-  (setq org-html-validation-link nil))
+  (setq org-html-validation-link nil)
+  ;; defaults settings rely an a old MathJax version
+  (setf org-html-mathjax-options
+	'((path "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML")
+          (scale "100")
+          (align "center")
+          (indent "2em")
+          (mathml nil)))
+  (setf org-html-mathjax-template
+	"<script type=\"text/javascript\" src=\"%PATH\"></script>")
+  ;; for tables rely on CSS style rather than on HTML attributes which
+  ;; are not supported anymore in HTML5
+  (setq org-html-table-default-attributes
+	'(:border "0" :cellspacing "0" :cellpadding "6" :rules "none" :frame "none")))
 #+end_src
 ** Exporting to Markdown
 The exporter ~ox-md~ allows for exporting the org content into ~markdown~ format. It needs the [[https://daringfireball.net/projects/markdown/][markdown]] package to be installed.
@@ -1308,9 +1319,9 @@ it with babel after installation.
 ;; An interface to communicate with Jupyter kernels.
 ;; jupyter lab
 (use-package jupyter
-  :after (:all org python)
-  :quelpa
-  (jupyter :fetcher github :repo "emacs-jupyter/jupyter" :upgrade t)
+  :straight (:type git :host github :repo "emacs-jupyter/jupyter" :build t)
+  ;;:quelpa (jupyter :fetcher github :repo "emacs-jupyter/jupyter")
+  ;;:after (:all org python)
   :commands (jupyter-run-server-repl
              jupyter-run-repl
              jupyter-server-list-kernels)
@@ -1391,9 +1402,13 @@ support for plantuml is available via ~ob-plantuml~.
 Find the location of the ~Homebrew~ installed version of ~plantuml~ binary and use
 the result of the same across.
 
+;; Commands to check the plantuml:
+;; brew list plantuml | grep jar
+;; printf "%s%s" $(brew --prefix plantuml) "/libexec/plantuml.jar"
+
 #+name: plantuml-jar-path
 #+begin_src shell :tangle no :noweb-ref plantuml-jar-command :exports both
-brew list plantuml | grep jar
+printf %s $(brew --prefix plantuml)/libexec/plantuml.jar
 #+end_src
 
 #+begin_src emacs-lisp :noweb yes
@@ -1515,97 +1530,7 @@ The following commands are available for ~viewing~.
 - =C-c C-p= (graphviz-dot-preview)
 
 - =C-c v= (graphviz-dot-view)
-* AI Integration
-Emacs has the flexibility to use machine learning and artificial intelligence tools. Free versions of Generational model based systems like ChatGPT integration is possible.
 
-** Org AI
-=org-ai= is a minor mode for Emacs org-mode that provides access to generative AI
-models. It currently supports the below two:
-
-  + OpenAI API (ChatGPT, DALL-E, other text models)
-  + Stable Diffusion through stable-diffusion-webui
-
-Inside an org-mode buffer we can
-
-  * use ChatGPT to generate text, having full control over system and user prompts
-  * Speech input and output! Talk with your AI!
-  * generate images and image variations with a text prompt using Stable Diffusion or DALL-E
-  * org-ai everywhere: Various commands usable outside org-mode for prompting
-    using the selected text or multiple files.
-
-ref: https://github.com/rksm/org-ai
-
-#+begin_src emacs-lisp
-;; org-ai
-(use-package org-ai
-  :ensure
-
-  :after (org)
-
-  :quelpa
-  (org-ai :fetcher github :repo "rksm/org-ai")
-
-  :commands
-  (org-ai-mode org-ai-global-mode)
-
-  :init
-  (add-hook 'org-mode-hook #'org-ai-mode)
-  ;; (org-ai-global-mode) ; installs global keybindings on C-c M-a
-
-  :config
-  ;; if you are on the gpt-4 beta:
-  ;; (setq org-ai-default-chat-model "gpt-4")
-  ;; yansnippets with `ai` snippets
-  ;; (org-ai-install-yasnippets)
-
-  ;; use openai key
-  (setq org-ai-openai-api-token
-      (auth-source-pick-first-password :host "api.openai.com")))
-#+end_src
-
-** ChatGPT Shell support in Babel
-=ChatGPT= can be integrated with =org babel= in order to execute snippets in
-literate documents.
-
-ref: https://github.com/xenodium/chatgpt-shell
-
-#+begin_src emacs-lisp :tangle no
-;; chatgpt-shell integration with org mode babel
-(use-package ob-chatgpt-shell
-  :after (org)
-  :hook
-  (org-mode . aqua/ob-chatgpt-setup)
-  :preface
-  (defun aqua/ob-chatgpt-setup ()
-    (require 'ob-chatgpt-shell)))
-#+end_src
-
-** BABEL extension for Chat Assistant
-=org-assistant= is an Emacs plugin that provides support for accessing chat APIs
-such as *ChatGPT* in the context of an org notebook.
-
-It  provides  a function  named  ~org-assistant~  that  serves as  entrypoint  for
-displaying an  org assistant buffer.  Also, it  can be used  in any org  file by
-using a src block like below
-
-#+begin_src org :tangle no
-,#+BEGIN_SRC assistant
-
-    or
-
-,#+BEGIN_SRC ?.
-#+end_src
-
-#+begin_src emacs-lisp
-;; Org babel extension for Chat Assistant APIs such as ChatGPT
-(use-package org-assistant
-  :ensure t
-  :quelpa
-  (org-assistant :fetcher github :repo "tyler-dodge/org-assistant")
-  :config
-  (setq org-assistant-auth-function
-        (auth-source-pick-first-password :host "api.openai.com")))
-#+end_src
 
 * BABEL configuration and customisation
 ~Babel~ is the =org-mode= ability to execute source code from within org documents. It
@@ -1656,7 +1581,7 @@ language. For details, see the language-specific online documentation at
         (:noweb   . "no")))
 
 (setq org-babel-default-header-args:jupyter-python
-      '((:async . "yes")
+      '((:async   . "yes")
         (:session . "py")))
 
 ;; (setf (cdr (assoc :noweb org-babel-default-header-args)) "yes")
@@ -1675,24 +1600,26 @@ programming.
     C
     awk
     emacs-lisp
-    http            ;; ob-http
-    verb            ;; Verb mode
+    http              ;; ob-http
+    verb              ;; Verb mode
     org
     latex
     lisp
     plantuml
     ditaa
-    restclient     ;; ob-restclient
-    js             ;; javascript
+    restclient        ;; ob-restclient
+    js                ;; javascript
     java
     shell
     dot
-    go             ;; via ob-go
-    rust           ;; via ob-rust
+    go                ;; via ob-go
+    rust              ;; via ob-rust
     ;; chatgpt-shell  ;; ob-chatgpt-shell
-    python         ;; python
-    ipython        ;; ipython
-    jupyter        ;; load jupyter at the end
+    lua               ;; Lua
+    clojure           ;; for clojure
+    python            ;; python
+    ipython           ;; ipython
+    jupyter           ;; load jupyter at the end
     )
   "A list of org-babel languages to load.")
 
@@ -2308,7 +2235,7 @@ Pre-export settings useful for adding and configuring the packages.
         ("T1"   "fontenc" t)        ; This is for handling accented characters
 
         ;; for standard margins to be placed
-        ("top=1in, bottom=1.in, left=1in, right=1in" "geometry" nil)
+        ("top=1in, bottom=1in, left=1in, right=1in" "geometry" nil)
 
         ;; The below 3 are default packages included in every tex file,
         ;; whether pdflatex or xelatex
@@ -2365,6 +2292,7 @@ citecolor=magenta,filecolor=green,urlcolor=cyan" "hyperref" nil)
 ;; from scimax
 ;; do not put in \hypersetup. Use your own if you want it e.g.
 ;; \hypersetup{pdfkeywords={%s},\n pdfsubject={%s},\n pdfcreator={%}}
+;; a few examples were in the next example block
 (setq org-latex-hyperref-template nil)
 
 ;; format for displaying numbers in scientific notation
@@ -2399,6 +2327,29 @@ An example configuration for ~hyperref~ setup
   \\NewCommandCopy{\\oldtoc}{\\tableofcontents}
   \\renewcommand{\\tableofcontents}{\\begingroup\\hypersetup{hidelinks}\\oldtoc\\endgroup}
 }"
+#+end_example
+
+or the below example for ~org-latex-hyperref-template~ may be used:
+#+begin_example
+  (org-latex-hyperref-template "\\hypersetup{
+      pdfauthor={%a},
+      pdftitle={%t},
+      pdfkeywords={%k},
+      pdfsubject={%d},
+      pdfcreator={%c},
+      pdflang={%L},
+      bookmarks=true,
+      unicode=true,
+      pdftoolbar=true,
+      pdfmenubar=true,
+      pdffitwindow=false,
+      pdfstartview={FitH},
+      pdfnewwindow=true,
+      colorlinks=true,
+      linkcolor=Maroon,
+      citecolor=ForestGreen,
+      filecolor=Mulberry,
+      urlcolor=MidnightBlue}\n")
 #+end_example
 
 Here, we set the compilation command for org to latex to pdf.
@@ -2640,6 +2591,7 @@ Custom latex classes for formatted outputs from LaTeX export are configured in t
 	           ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")))
 
+;; for thesis
 (add-to-list 'org-latex-classes
              '("thesis"
                "\\documentclass{thesis}"
@@ -2647,6 +2599,16 @@ Custom latex classes for formatted outputs from LaTeX export are configured in t
                ("\\section{%s}" . "\\section*{%s}")
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+;; for paper document class
+(add-to-list 'org-latex-classes
+			 '("paper"
+			   "\\documentclass{paper}"
+			   ("\\section{%s}"       . "\\section*{%s}")
+			   ("\\subsection{%s}"    . "\\subsection*{%s}")
+			   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+			   ("\\paragraph{%s}"     . "\\paragraph*{%s}")
+			   ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
 
 
 ;; Elsarticle is Elsevier class for publications.

@@ -144,7 +144,8 @@ is been under under very active development.
 ;; rustic
 (use-package rustic
   :ensure
-  :quelpa (:fetcher github :repo "https://github.com/brotzeit/rustic")
+  :quelpa (rustic :fetcher github
+                  :repo "emacs-rustic/rustic")
   :mode ("\\.rs\\'" . rustic-mode)
   :config
   (setq

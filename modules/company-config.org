@@ -17,11 +17,11 @@
 #+begin_src emacs-lisp
 (use-package company
   :ensure t
-  :demand t
   :delight company-mode
 
-  :hook ((prog-mode . company-mode)
-         (org-mode  . company-mode))
+  :hook ((prog-mode       . company-mode)
+         (emacs-lisp-mode . company-mode)
+         (org-mode        . company-mode))
 
   :init
   (setq company-show-quick-access t
@@ -46,20 +46,7 @@
         '(company-pseudo-tooltip-unless-just-one-frontend ; always show candidates in overlay tooltip
           company-preview-if-just-one-frontend            ; show selected candidate docs in echo area
           company-echo-metadata-frontend                  ; show selected candidate docs in echo area
-          )
-
-        ;; Only search the current buffer for `company-dabbrev' (a backend that
-        ;; suggests text your open buffers). This prevents Company from causing
-        ;; lag once you have a lot of buffers open.
-        company-dabbrev-other-buffers nil
-        company-dabbrev-code-other-buffers nil
-        ;; Make `company-dabbrev' fully case-sensitive, for improved UX with
-        ;; domain-specific words with particular casing.
-	;; do not downcase completions by default.
-	company-dabbrev-downcase nil
-	;; provide the ‘correct’ casing even while writing
-	;; something with the ‘wrong’ case (set to t)
-	company-dabbrev-ignore-case nil)
+          ))
 
   :config
   ;; (global-company-mode t)
@@ -79,6 +66,18 @@
            backend
          (list backend))
        '(:with company-yasnippet))))
+
+  (setq company-dabbrev-ignore-case nil    ; Provide the ‘correct’ casing even while writing
+					; something with the ‘wrong’ case (set to t)
+        company-dabbrev-downcase nil       ; Whether to downcase the returned candidates.
+	company-dabbrev-other-buffers nil  ; whether to search other buffers
+	company-dabbrev-code-modes t       ; Whether to use for default modes
+	;; Only search the current buffer for `company-dabbrev' (a backend that
+        ;; suggests text your open buffers). This prevents Company from causing
+        ;; lag once you have a lot of buffers open.
+	company-dabbrev-code-other-buffers nil ; Whether to search other buffers
+        company-dabbrev-code-ignore-case nil   ; Ignore case when collecting completion candidates
+	)
 
   ;; adjust the company backend with yasnippet
   (setq company-backends
@@ -109,17 +108,16 @@
 
 ** Company quickhelp for providing additional completion help
 #+begin_src emacs-lisp
-  (use-package company-quickhelp
-      :ensure t
-      :demand t
-      :diminish
-      :after company
-      :init
-      (setq company-quickhelp-delay nil)
-      :config
-      (company-quickhelp-mode t)
-      :bind (:map company-active-map
-		  ("M-h" . company-quickhelp-manual-begin)))
+;; pop up documentation for completion candidate
+(use-package company-quickhelp
+  :ensure t
+  :diminish
+  :after company
+  :config
+  (setq company-quickhelp-delay nil)
+  (company-quickhelp-mode t)
+  :bind (:map company-active-map
+	      ("M-h" . company-quickhelp-manual-begin)))
 #+end_src
 
 ** Company box for providing additional completion item help for popups
@@ -242,8 +240,6 @@ With the above defined we can now set the below for options:
             <<generate-company-box-icons()>>))))
 #+end_src
 
-#+RESULTS:
-: t
 
 #+begin_src emacs-lisp
 ;; Show pretty icons
@@ -309,36 +305,37 @@ With the above defined we can now set the below for options:
 Here we define some custom settings for interacting yas with company mode.
 
 #+begin_src emacs-lisp
-;; custom functions
-(defun company-yasnippet-or-completion ()
-  (interactive)
-  (or (do-yas-expand)
-	  (company-complete-common)))
+;; custom functions for company/yasnippet integration
+(with-eval-after-load 'company
+  (defun company-yasnippet-or-completion ()
+    (interactive)
+    (or (do-yas-expand)
+	(company-complete-common)))
 
-(defun check-expansion ()
-  (save-excursion
-	(if (looking-at "\\_>") t
+  (defun check-expansion ()
+    (save-excursion
+      (if (looking-at "\\_>") t
+	(backward-char 1)
+	(if (looking-at "\\.") t
 	  (backward-char 1)
-	  (if (looking-at "\\.") t
-	    (backward-char 1)
-	    (if (looking-at "::") t nil)))))
+	  (if (looking-at "::") t nil)))))
 
-(defun do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-	(yas/expand)))
+  (defun do-yas-expand ()
+    (let ((yas/fallback-behavior 'return-nil))
+      (yas/expand)))
 
-(defun tab-indent-or-complete ()
-  "Expand the Snippet or Indent or Complete."
-  (interactive)
-  (if (minibufferp)
-	  (minibuffer-complete)
-	(if (or (not yas/minor-mode)
-		    (null (do-yas-expand)))
-	    (if (check-expansion)
-		    (company-complete-common)
-		  (indent-for-tab-command)))))
+  (defun tab-indent-or-complete ()
+    "Expand the Snippet or Indent or Complete."
+    (interactive)
+    (if (minibufferp)
+	(minibuffer-complete)
+      (if (or (not yas/minor-mode)
+	      (null (do-yas-expand)))
+	  (if (check-expansion)
+	      (company-complete-common)
+	    (indent-for-tab-command)))))
 
-(global-set-key (kbd "M-o") 'tab-indent-or-complete)
+  (global-set-key (kbd "M-o") 'tab-indent-or-complete))
 #+end_src
 
 ** Better Org Babel with Fast Block Insertion

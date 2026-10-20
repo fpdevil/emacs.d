@@ -1,3 +1,8 @@
+:DOC-CONFIG:
+#+property: header-args :emacs-lisp :tangle (concat (file-name-sans-extension (buffer-file-name)) ".el")
+#+property: header-args :mkdirp yes :comments no
+:END:
+
 #+TITLE: Python configuration for Emacs
 #+AUTHOR: Sampath Singamsetty
 
@@ -32,7 +37,7 @@
   ;; * pyvenv        -- virtualenv wrapper
 #+end_src
 
-* Introduction                                                          :TOC:
+* Introduction                                                          :TOC_4:
 - [[#python-configuration][Python configuration]]
   - [[#elpy][ELPY]]
   - [[#jedi-support][JEDI Support]]
@@ -41,8 +46,12 @@
   - [[#error-checking][Error checking]]
   - [[#sort-the-python-imports][Sort the python imports]]
   - [[#language-server-protocol][Language Server Protocol]]
+    - [[#a-lsp-client-for-emacs-using-python-jedi-language-server][A LSP client for Emacs using Python Jedi Language Server]]
+    - [[#using-pyright-lsp-client][Using pyright lsp client]]
   - [[#set-pretty-outlines-for-python][Set pretty outlines for python]]
+    - [[#docstring-skeletons-for-python][Docstring skeletons for python]]
   - [[#insert-numpy-style-docstrings-in-python-functions][Insert NumPy style docstrings in Python functions]]
+- [[#python-executable-tracker-pet][Python Executable Tracker (PET)]]
 
 * Python configuration
 The default python module provides bare minimum support for python code
@@ -228,7 +237,8 @@ It detects and auto-activates the right conda environment for a particular buffe
 (use-package conda
   :straight (:type git :host github :repo "necaris/conda.el")
   :commands conda-env-activate
-  :hook (eshell-first-time-mode . conda-env-initialize-eshell)
+  :hook ((eshell-first-time-mode . conda-env-initialize-eshell)
+         (python-mode            . (lambda () (conda-env-activate-for-buffer))))
   :config
   (progn
     (conda-env-initialize-interactive-shells)   ;; interactive shell support
@@ -316,26 +326,20 @@ Setting =LSP= for python completion
 =pyright= package must be installed to make this work. The same can be installed
 as a ~node~ dependency or as a ~pip~ dependency.
 
-#+begin_src emacs-lisp :lexical no :tangle no
+#+begin_src emacs-lisp :lexical no
 ;; pyright lsp
 ;; $ npm -g install pyright
 (use-package lsp-pyright
-  :ensure t
-
+  :after (lsp-mode pet)
+  :commands lsp-diagnostics-flycheck-enable
   :hook
-  (python-mode . lsp-pyright/python-mode-hook)
-
-  :init
-  (setq lsp-pyright-multi-root nil
-        lsp-pyright-auto-import-completions nil
-        lsp-pyright-diagnostic-mode "workspace"
-        lsp-pyright-typechecking-mode "basic"
-        lsp-pyright-disable-organize-imports t)
+  (python-mode-hook . (lambda () (require 'lsp-pyright) (lsp)))
+  ;; (python-mode . lsp-pyright/python-mode-hook)
+  :custom
   (when (executable-find "python3")
     (setq lsp-pyright-python-executable-cmd "python3"))
-
-  :config (setq lsp-pyright-log-level "trace")
-
+  (lsp-pyright-langserver-command "basedpyright")
+  (setq lsp-pyright-log-level "trace")
   :preface
   (defun lsp-pyright/python-mode-hook ()
     ;; lsp-pyright
@@ -409,4 +413,56 @@ docstring.
   (numpydoc-template-long nil)
   :bind (:map python-mode-map
               ("C-c c n" . numpydoc-generate)))
+#+end_src
+
+* Python Executable Tracker (PET)
+=pet= allows to track down the correct =python= tooling executable from
+the =virtualenv= so that the binaries can be linked to the current =Emacs=
+session.
+
+#+begin_src emacs-lisp :lexical no
+;; For system python, installing packages using the system package manager
+;; or pip is feasible. After `pet' installation, everything should work magically.
+(use-package ruff-format :ensure t)
+(use-package python-isort :ensure t)
+
+(use-package pet
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (setq-local python-shell-virtualenv-root (pet-virtualenv-root)
+                          python-shell-interpreter (if-let ((ipython (pet-executable-find "ipython")))
+                                                       ipython
+                                                     (pet-executable-find "python")))
+              ;; flycheck
+              (pet-flycheck-setup)
+              (flycheck-mode)
+              ;; lsp
+              (setq-local lsp-jedi-executable-command
+                          (pet-executable-find "jedi-language-server"))
+              (setq-local lsp-pyright-python-executable-cmd python-shell-interpreter
+                          lsp-pyright-venv-path python-shell-virtualenv-root)
+              ;; for some reason, need to do this like this. I want the flake8
+              ;; checker to run. can add any other checkers after LSP like
+              ;; this.
+              (add-hook 'lsp-diagnostics-mode-hook
+                        (lambda () (flycheck-add-next-checker 'lsp 'python-ruff))
+                        nil t)
+              (lsp) ; start lsp
+              (setq-local dap-python-executable python-shell-interpreter)))
+  ;; format on save, but only if we explicitly allow it with a dir locals variable
+  (add-hook 'hack-local-variables-hook
+            (lambda ()
+              (when (equal major-mode 'python-mode)
+                (unless (bound-and-true-p do.python/no-fmt-on-save)
+                  (when-let ((ruff-executable (pet-executable-find "ruff")))
+                    (setq-local ruff-format-command ruff-executable)
+                    (ruff-format-on-save-mode))
+                  (when-let ((black-executable (pet-executable-find "black")))
+                    (setq-local python-black-command black-executable)
+                    (python-black-on-save-mode))
+                  (when-let ((isort-executable (pet-executable-find "isort")))
+                    (setq-local python-isort-command isort-executable)
+                    (python-isort-on-save-mode)))))))
 #+end_src

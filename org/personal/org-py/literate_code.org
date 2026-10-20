@@ -302,7 +302,34 @@ print(result)
 : ['AATCC', 'ATCCA', 'CAATC', 'CCAAC', 'TCCAA']
 
 
+Pascal's triangle printed in a pretty way:
+#+begin_src jupyter-python :results output raw
+# Pascals Triangle
+nmax = 8
+rows = [[1],[1,1]]
+for n in range(2, nmax+1):
+    rows.append([1,])
+    # Insert the entries for this row by summing neighbours in the previous row
+    for k in range(n-1):
+        rows[n].append(rows[n-1][k]+rows[n-1][k+1])
+    rows[n].append(1)
 
+# Pretty-print the rows as centered strings of numbers
+for i,row in enumerate(rows):
+    print('{row:^{length:d}}'.format(length=4*(nmax+1),
+                                     row=('{:4d}'*(i+1)).format(*row)))
+#+end_src
+
+#+RESULTS:
+:                    1
+:                  1   1
+:                1   2   1
+:              1   3   3   1
+:            1   4   6   4   1
+:          1   5  10  10   5   1
+:        1   6  15  20  15   6   1
+:      1   7  21  35  35  21   7   1
+:    1   8  28  56  70  56  28   8   1
 
 
 
